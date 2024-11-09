@@ -5,6 +5,9 @@
    1. Install the docker engine by following the steps [here](https://docs.docker.com/engine/install/).
    2. Manage Docker as a non-root user by following the steps [here](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user).
 2. VSCode with the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension installed.
+3. NVIDIA Container Toolkit. (Optional)
+   1. This is only required if an NVIDIA GPU will be used within the dev container.
+   2. Install the NVIDIA Container Toolkit by following the steps [here](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html#installation).
 
 ## ROS Version
 This project uses **[ROS Jazzy](https://docs.ros.org/en/jazzy/Releases/Release-Jazzy-Jalisco.html)**.

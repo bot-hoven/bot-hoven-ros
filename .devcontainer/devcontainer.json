@@ -3,7 +3,12 @@
   "dockerFile": "Dockerfile",
   "runArgs": [
     "--privileged",
-    "--network=host"
+    "--network=host",
+    "-e",
+    "DISPLAY=${localEnv:DISPLAY}",
+    "-v",
+    "/tmp/.X11-unix:/tmp/.X11-unix",
+    "--gpus=all"
   ],
   "workspaceMount": "source=${localWorkspaceFolder},target=/${localWorkspaceFolderBasename},type=bind",
   "workspaceFolder": "/${localWorkspaceFolderBasename}",
