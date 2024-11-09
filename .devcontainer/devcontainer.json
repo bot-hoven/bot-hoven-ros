@@ -1,5 +1,5 @@
 {
-  "name": "jazzy desktop",
+  "name": "Bot-Hoven",
   "dockerFile": "Dockerfile",
   "runArgs": [
     "--privileged",
