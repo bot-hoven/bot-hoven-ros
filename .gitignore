@@ -1,0 +1,32 @@
+# ROS2 specific build artifacts
+build/
+install/
+log/
+
+# ROS2 workspace files
+.colcon/
+.colcon_cache/
+
+# Python bytecode
+*.pyc
+__pycache__/
+
+# IDE specific files
+*.iml
+*.swp
+.project
+.pydevproject
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# ROS2 launch logs
+launch_logs/
+
+# ROS2 package logs
+package_logs/
+
+# ROS2 test results
+test_results/
