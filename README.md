@@ -10,7 +10,7 @@
    2. Install the NVIDIA Container Toolkit by following the steps [here](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html#installation).
 
 ## ROS Version
-This project uses **[ROS Jazzy](https://docs.ros.org/en/jazzy/Releases/Release-Jazzy-Jalisco.html)**.
+This project uses **[ROS Jazzy](https://docs.ros.org/en/jazzy/Releases/Release-Jazzy-Jalisco.html)** and **[Gazebo Harmonic](https://gazebosim.org/docs/harmonic/getstarted/)**.
 
 ## Development Setup
 1. Open the project in VSCode.
