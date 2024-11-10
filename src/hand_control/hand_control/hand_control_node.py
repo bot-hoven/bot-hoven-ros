@@ -16,8 +16,8 @@ class HandControlNode(Node):
         # Services
         self.set_hand_home_srv = self.create_service(Empty, 'set_hand_home', self.set_hand_home_callback)
 
-    def hand_position_feedback_callback(self, msg):
-        self.get_logger().info(f'Hand position feedback: {msg.data}')
+    def hand_position_state_callback(self, msg):
+        self.get_logger().info(f'Hand position state: {msg.data}')
         
     def set_hand_home_callback(self, request, response):
         self.get_logger().info('Setting hand to home position')
