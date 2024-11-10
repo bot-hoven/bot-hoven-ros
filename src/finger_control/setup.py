@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'finger_control_node = finger_control.finger_control_node:main'
         ],
     },
 )

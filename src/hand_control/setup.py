@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'hand_control_node = hand_control.hand_control_node:main'
         ],
     },
 )
