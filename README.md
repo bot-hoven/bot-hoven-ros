@@ -15,6 +15,10 @@ This project uses **[ROS Jazzy](https://docs.ros.org/en/jazzy/Releases/Release-J
 ## Development Setup
 1. Open the project in VSCode.
 2. When prompted by the Dev Containers extension, reopen the project in the container.
+3. (Optional) If GUI applications are required to run in the container, the following command will need to run on the host machine:
+```sh
+xhost +local:docker
+```
 
 ## Building the Docker Image
 To build the Docker image, run the following command in the root of the project:
