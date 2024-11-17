@@ -26,11 +26,10 @@ def generate_launch_description():
                 name=f'finger_control_{hand}_{finger_index}',
                 namespace=namespace,
                 output='screen',
-                parameters=[{
-                    'finger_index': finger_index,
-                    'hand': hand,
+                parameters=[{ 
+                    'finger_press_duration': 1.0
                 }],
-                remappings=[
+                remappings=[ # Remap topics to the namespace
                     (f'/{namespace}/finger_position_cmd', '/finger_position_cmd'),
                     (f'/{namespace}/key_press_cmd', '/key_press_cmd'),
                 ]
