@@ -15,23 +15,23 @@ def generate_launch_description():
     # Generate 10 finger nodes (5 per each hand)
     nodes = []
     for i in range(10):
-        hand = 'left' if i < 5 else 'right'
+        hand = 'left_hand' if i < 5 else 'right_hand'
         finger_index = i % 5 + 1  # Finger index: 1 to 5
-        namespace = f'{hand}_hand/finger_{finger_index}'
+        namespace = f'{hand}/finger_{finger_index}'
         
         nodes.append(
             Node(
                 package='finger_control',
                 executable='finger_control_node',
-                name=f'finger_control_{hand}_{finger_index}',
+                name='finger_control',
                 namespace=namespace,
                 output='screen',
                 parameters=[{ 
                     'finger_press_duration': 1.0
                 }],
                 remappings=[ # Remap topics to the namespace
-                    (f'/{namespace}/finger_position_cmd', '/finger_position_cmd'),
-                    (f'/{namespace}/key_press_cmd', '/key_press_cmd'),
+                    ('/finger_position_cmd', f'/{namespace}/finger_position_cmd'),
+                    ('/key_press_cmd', f'/{namespace}/key_press_cmd'),
                 ]
             )
         )
