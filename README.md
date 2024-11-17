@@ -25,3 +25,14 @@ To build the Docker image, run the following command in the root of the project:
 
 ```sh
 docker build -t bot-hoven-ros -f .devcontainer/Dockerfile .
+```
+
+## Running the ROS Project
+1. To start the nodes, run the `startup.sh` script:
+```sh
+./startup
+```
+2. To stop the nodes, run the `shutdown.sh` script:
+```sh
+./shutdown
+```
