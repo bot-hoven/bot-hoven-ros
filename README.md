@@ -30,9 +30,9 @@ docker build -t bot-hoven-ros -f .devcontainer/Dockerfile .
 ## Running the ROS Project
 1. To start the nodes, run the `startup.sh` script:
 ```sh
-./startup
+./scripts/startup.sh
 ```
 2. To stop the nodes, run the `shutdown.sh` script:
 ```sh
-./shutdown
+./scripts/shutdown.sh
 ```
