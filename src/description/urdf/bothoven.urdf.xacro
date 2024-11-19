@@ -51,7 +51,7 @@
   </link>
 
   <!-- Joints for hand movement on rails (using stepper motors) -->
-  <joint name="left_hand_to_left_rail" type="prismatic">
+  <joint name="left_hand_stepper_joint" type="prismatic">
     <parent link="left_rail"/>
     <child link="left_hand"/>
     <origin xyz="0 0 0.05"/>
@@ -59,7 +59,7 @@
     <limit lower="0.0" upper="0.5" effort="5" velocity="1.0"/>
   </joint>
 
-  <joint name="right_hand_to_right_rail" type="prismatic">
+  <joint name="left_hand_stepper_joint" type="prismatic">
     <parent link="right_rail"/>
     <child link="right_hand"/>
     <origin xyz="0 0 0.05"/>
@@ -175,51 +175,11 @@
       <plugin>ros2_control_demo_hardware/GenericSystem</plugin>
       <param name="example_param">value</param>
     </hardware>
-    <joint name="left_hand_to_left_rail">
+    <joint name="left_hand_stepper_joint">
       <command_interface name="position"/>
       <state_interface name="position"/>
     </joint>
-    <joint name="right_hand_to_right_rail">
-      <command_interface name="position"/>
-      <state_interface name="position"/>
-    </joint>
-    <joint name="left_hand_thumb_joint">
-      <command_interface name="position"/>
-      <state_interface name="position"/>
-    </joint>
-    <joint name="left_hand_index_finger_joint">
-      <command_interface name="position"/>
-      <state_interface name="position"/>
-    </joint>
-    <joint name="left_hand_middle_finger_joint">
-      <command_interface name="position"/>
-      <state_interface name="position"/>
-    </joint>
-    <joint name="left_hand_ring_finger_joint">
-      <command_interface name="position"/>
-      <state_interface name="position"/>
-    </joint>
-    <joint name="left_hand_pinky_joint">
-      <command_interface name="position"/>
-      <state_interface name="position"/>
-    </joint>
-    <joint name="right_hand_thumb_joint">
-      <command_interface name="position"/>
-      <state_interface name="position"/>
-    </joint>
-    <joint name="right_hand_index_finger_joint">
-      <command_interface name="position"/>
-      <state_interface name="position"/>
-    </joint>
-    <joint name="right_hand_middle_finger_joint">
-      <command_interface name="position"/>
-      <state_interface name="position"/>
-    </joint>
-    <joint name="right_hand_ring_finger_joint">
-      <command_interface name="position"/>
-      <state_interface name="position"/>
-    </joint>
-    <joint name="right_hand_pinky_joint">
+    <joint name="left_hand_stepper_joint">
       <command_interface name="position"/>
       <state_interface name="position"/>
     </joint>
