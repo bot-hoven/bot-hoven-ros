@@ -13,11 +13,12 @@ def generate_launch_description():
         configured nodes.
     """
     # Generate 10 finger nodes (5 per each hand)
+    finger_names = ['thumb', 'index_finger', 'middle_finger', 'ring_finger', 'pinky']
     nodes = []
     for i in range(10):
         hand = 'left_hand' if i < 5 else 'right_hand'
-        finger_index = i % 5 + 1  # Finger index: 1 to 5
-        namespace = f'{hand}/finger_{finger_index}'
+        finger_name = finger_names[i % 5]
+        namespace = f'{hand}/{finger_name}'
         
         nodes.append(
             Node(
