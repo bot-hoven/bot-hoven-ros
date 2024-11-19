@@ -9,7 +9,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 def generate_launch_description():
     # Path to the URDF file
     urdf_file = os.path.join(
-        get_package_share_directory('bothoven_description'),
+        get_package_share_directory('description'),
         'urdf',
         'bothoven.urdf'
     )
@@ -29,10 +29,10 @@ def generate_launch_description():
         Node(
             package='ros_gz_sim',
             executable='create',
-            arguments=['-name', 'bothoven_description', '-topic', '/bothoven_description'],
+            arguments=['-name', 'description', '-topic', '/description'],
             output='screen'
         ),
-        # Publish the robot description to the /bothoven_description topic
+        # Publish the robot description to the /description topic
         # Node(
         #     package='robot_state_publisher',
         #     executable='robot_state_publisher',
