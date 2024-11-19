@@ -1,0 +1,47 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Update rate in Hz
+    controller_manager_timeout: 5.0
+    controllers:
+      - left_hand_controller
+      - right_hand_controller
+
+left_hand_controller:
+  ros__parameters:
+    type: joint_trajectory_controller/JointTrajectoryController
+    joints:
+      - left_hand_stepper_joint
+      - left_hand_thumb_solenoid_joint
+      - left_hand_thumb_servo_joint
+      - left_hand_index_solenoid_joint
+      - left_hand_index_servo_joint
+      - left_hand_middle_solenoid_joint
+      - left_hand_middle_servo_joint
+      - left_hand_ring_solenoid_joint
+      - left_hand_ring_servo_joint
+      - left_hand_pinky_solenoid_joint
+      - left_hand_pinky_servo_joint
+    gains:
+      left_hand_stepper_joint: {p: 1.0, i: 0.0, d: 1.0}
+    state_publish_rate: 50
+    command_publish_rate: 30
+
+right_hand_controller:
+  ros__parameters:
+    type: joint_trajectory_controller/JointTrajectoryController
+    joints:
+      - right_hand_stepper_joint
+      - right_hand_thumb_solenoid_joint
+      - right_hand_thumb_servo_joint
+      - right_hand_index_solenoid_joint
+      - right_hand_index_servo_joint
+      - right_hand_middle_solenoid_joint
+      - right_hand_middle_servo_joint
+      - right_hand_ring_solenoid_joint
+      - right_hand_ring_servo_joint
+      - right_hand_pinky_solenoid_joint
+      - right_hand_pinky_servo_joint
+    gains:
+      right_hand_stepper_joint: {p: 1.0, i: 0.0, d: 1.0}
+    state_publish_rate: 50
+    command_publish_rate: 30
