@@ -1,0 +1,142 @@
+<?xml version="1.0"?>
+<robot name="bothoven" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Robot Properties -->
+  <link name="world"/>
+
+  <!-- Rails and Hands -->
+  <link name="left_rail">
+    <visual>
+      <geometry>
+        <box size="0.5 0.1 0.05"/>
+      </geometry>
+      <material name="gray">
+        <color rgba="0.5 0.5 0.5 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <link name="right_rail">
+    <visual>
+      <geometry>
+        <box size="0.5 0.1 0.05"/>
+      </geometry>
+      <material name="gray">
+        <color rgba="0.5 0.5 0.5 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Define the hands (connected to rails via joints) -->
+  <link name="left_hand">
+    <visual>
+      <geometry>
+        <box size="0.1 0.05 0.05"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0.0 0.0 1.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <link name="right_hand">
+    <visual>
+      <geometry>
+        <box size="0.1 0.05 0.05"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0.0 0.0 1.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <!-- Joints for hand movement on rails -->
+  <joint name="left_hand_to_left_rail" type="prismatic">
+    <parent link="left_rail"/>
+    <child link="left_hand"/>
+    <origin xyz="0 0 0.05"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0.0" upper="0.5" effort="5" velocity="1.0"/>
+  </joint>
+
+  <joint name="right_hand_to_right_rail" type="prismatic">
+    <parent link="right_rail"/>
+    <child link="right_hand"/>
+    <origin xyz="0 0 0.05"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0.0" upper="0.5" effort="5" velocity="1.0"/>
+  </joint>
+
+  <!-- Fingers -->
+  <xacro:property name="finger_length" value="0.03"/>
+  <xacro:property name="finger_thickness" value="0.01"/>
+
+  <!-- Left Hand Fingers -->
+  <xacro:macro name="finger" params="name parent_link">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <box size="${finger_length} ${finger_thickness} ${finger_thickness}"/>
+        </geometry>
+        <material name="red">
+          <color rgba="1.0 0.0 0.0 1.0"/>
+        </material>
+      </visual>
+    </link>
+    <joint name="${name}_joint" type="revolute">
+      <parent link="${parent_link}"/>
+      <child link="${name}"/>
+      <origin xyz="0 0 -0.05"/>
+      <axis xyz="0 1 0"/>
+      <limit lower="0" upper="1.57" effort="1" velocity="1.0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:finger name="left_hand_finger1" parent_link="left_hand"/>
+  <xacro:finger name="left_hand_finger2" parent_link="left_hand"/>
+  <xacro:finger name="left_hand_finger3" parent_link="left_hand"/>
+  <xacro:finger name="left_hand_finger4" parent_link="left_hand"/>
+  <xacro:finger name="left_hand_finger5" parent_link="left_hand"/>
+
+  <!-- Right Hand Fingers -->
+  <xacro:finger name="right_hand_finger1" parent_link="right_hand"/>
+  <xacro:finger name="right_hand_finger2" parent_link="right_hand"/>
+  <xacro:finger name="right_hand_finger3" parent_link="right_hand"/>
+  <xacro:finger name="right_hand_finger4" parent_link="right_hand"/>
+  <xacro:finger name="right_hand_finger5" parent_link="right_hand"/>
+
+  <!-- Solenoids for Finger Press -->
+  <xacro:macro name="solenoid" params="name parent_link">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <cylinder radius="0.01" length="0.02"/>
+        </geometry>
+        <material name="green">
+          <color rgba="0.0 1.0 0.0 1.0"/>
+        </material>
+      </visual>
+    </link>
+    <joint name="${name}_joint" type="prismatic">
+      <parent link="${parent_link}"/>
+      <child link="${name}"/>
+      <origin xyz="0 0 -0.01"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="0" upper="0.01" effort="1" velocity="1.0"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- Solenoids attached to each finger for key press -->
+  <xacro:solenoid name="left_hand_finger1_solenoid" parent_link="left_hand_finger1"/>
+  <xacro:solenoid name="left_hand_finger2_solenoid" parent_link="left_hand_finger2"/>
+  <xacro:solenoid name="left_hand_finger3_solenoid" parent_link="left_hand_finger3"/>
+  <xacro:solenoid name="left_hand_finger4_solenoid" parent_link="left_hand_finger4"/>
+  <xacro:solenoid name="left_hand_finger5_solenoid" parent_link="left_hand_finger5"/>
+
+  <xacro:solenoid name="right_hand_finger1_solenoid" parent_link="right_hand_finger1"/>
+  <xacro:solenoid name="right_hand_finger2_solenoid" parent_link="right_hand_finger2"/>
+  <xacro:solenoid name="right_hand_finger3_solenoid" parent_link="right_hand_finger3"/>
+  <xacro:solenoid name="right_hand_finger4_solenoid" parent_link="right_hand_finger4"/>
+  <xacro:solenoid name="right_hand_finger5_solenoid" parent_link="right_hand_finger5"/>
+
+</robot>

@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'hand_control'
+package_name = 'bothoven_description'
 
 setup(
     name=package_name,
@@ -8,8 +8,9 @@ setup(
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
-        ('share/' + package_name + '/launch', [f'launch/{package_name}.launch.py']),
         ('share/' + package_name, ['package.xml']),
+        ('share/' + package_name + '/urdf', ['urdf/bothoven.urdf']),
+        ('share/' + package_name + '/launch', ['launch/gazebo.launch.py']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -20,7 +21,6 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'hand_control_node = hand_control.hand_control_node:main'
         ],
     },
 )
