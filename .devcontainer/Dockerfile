@@ -11,7 +11,11 @@ RUN if ! id -u $USER_UID >/dev/null 2>&1; then \
     fi
 # Add sudo support for the non-root user
 RUN apt-get update && \
-    apt-get install -y sudo && \
+    apt-get install -y \ 
+    sudo \
+    ros-jazzy-ros2-control \
+    ros-jazzy-hardware-interface && \
+    rm -rf /var/lib/apt/lists/* && \
     echo "$USERNAME ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME && \
     chmod 0440 /etc/sudoers.d/$USERNAME
 

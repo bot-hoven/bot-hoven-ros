@@ -26,5 +26,26 @@ fi
 
 echo "All relevant processes have been terminated. ROS2 is now stopped."
 
-# Remove log files
-rm /bot-hoven-ros/log/launch.log
+# Define the launch file name
+LAUNCH_FILE="hardware.launch.py"
+
+echo "Stopping launch file: $LAUNCH_FILE..."
+
+# Find the process ID
+PIDS=$(ps aux | grep $LAUNCH_FILE | grep -v grep | awk '{print $2}')
+
+if [ -z "$PIDS" ]; then
+    echo "No running processes found for $LAUNCH_FILE."
+else
+    # Kill each process
+    for PID in $PIDS; do
+        kill -9 $PID
+        echo "Killed process with PID $PID"
+    done
+    echo "All processes for $LAUNCH_FILE have been stopped."
+fi
+
+# Kill the controller spawner nodes
+pkill -f "spawner left_hand_controller"
+pkill -f "spawner right_hand_controller"
+echo "All controller spawner nodes have been stopped."
