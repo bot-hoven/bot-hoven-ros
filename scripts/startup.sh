@@ -17,3 +17,6 @@ ros2 launch hand_control hand_control.launch.py > log/launch.log 2>&1 &
 
 # Launch the home_position nodes
 ros2 launch home_position home_position.launch.py > log/launch.log 2>&1 &
+
+# Launch the hardware nodes
+ros2 launch hardware hardware.launch.py > log/launch.log 2>&1 &
