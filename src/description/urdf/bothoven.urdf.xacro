@@ -144,4 +144,100 @@
   <xacro:solenoid name="right_hand_pinky_solenoid" parent_link="right_hand_pinky"/>
   <xacro:servo name="right_hand_pinky_servo" parent_link="right_hand_pinky"/>
 
+  <!-- ros2_control Configuration -->
+  <ros2_control name="BothovenHardware" type="system">
+    <hardware>
+      <plugin>ros2_control_demo_hardware/GenericSystem</plugin>
+      <param name="example_param">value</param>
+    </hardware>
+    <joint name="left_hand_stepper_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_stepper_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_thumb_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_index_finger_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_middle_finger_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_ring_finger_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_pinky_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_thumb_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_index_finger_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_middle_finger_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_ring_finger_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_pinky_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_thumb_servo_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_index_finger_servo_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_middle_finger_servo_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_ring_finger_servo_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_pinky_servo_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_thumb_servo_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_index_finger_servo_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_middle_finger_servo_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_ring_finger_servo_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_pinky_servo_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+  </ros2_control>
+
 </robot>
