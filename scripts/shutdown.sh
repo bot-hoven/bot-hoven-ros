@@ -44,3 +44,8 @@ else
     done
     echo "All processes for $LAUNCH_FILE have been stopped."
 fi
+
+# Kill the controller spawner nodes
+pkill -f "spawner left_hand_controller"
+pkill -f "spawner right_hand_controller"
+echo "All controller spawner nodes have been stopped."
