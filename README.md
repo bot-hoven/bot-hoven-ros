@@ -27,6 +27,12 @@ To build the Docker image, run the following command in the root of the project:
 docker build -t bot-hoven-ros -f .devcontainer/Dockerfile .
 ```
 
+## Building the Workspace
+```sh
+colcon build
+source install/setup.bash
+```
+
 ## Running the ROS Project
 1. To start the nodes, run the `startup.sh` script:
 ```sh
@@ -35,4 +41,10 @@ docker build -t bot-hoven-ros -f .devcontainer/Dockerfile .
 2. To stop the nodes, run the `shutdown.sh` script:
 ```sh
 ./scripts/shutdown.sh
+```
+
+## Checking the URDF
+```sh
+ros2 run xacro xacro src/description/urdf/bothoven.urdf.xacro -o <output-file>.urdf
+check_urdf <output-file>.urdf
 ```
