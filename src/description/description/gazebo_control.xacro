@@ -15,12 +15,12 @@
             <joint>left_hand_stepper_joint</joint>
             <joint>left_hand_thumb_solenoid_joint</joint>
             <joint>left_hand_thumb_servo_joint</joint>
-            <joint>left_hand_index_solenoid_joint</joint>
-            <joint>left_hand_index_servo_joint</joint>
-            <joint>left_hand_middle_solenoid_joint</joint>
-            <joint>left_hand_middle_servo_joint</joint>
-            <joint>left_hand_ring_solenoid_joint</joint>
-            <joint>left_hand_ring_servo_joint</joint>
+            <joint>left_hand_index_finger_solenoid_joint</joint>
+            <joint>left_hand_index_finger_servo_joint</joint>
+            <joint>left_hand_middle_finger_solenoid_joint</joint>
+            <joint>left_hand_middle_finger_servo_joint</joint>
+            <joint>left_hand_ring_finger_solenoid_joint</joint>
+            <joint>left_hand_ring_finger_servo_joint</joint>
             <joint>left_hand_pinky_solenoid_joint</joint>
             <joint>left_hand_pinky_servo_joint</joint>
         </plugin>
@@ -33,12 +33,12 @@
             <joint>right_hand_stepper_joint</joint>
             <joint>right_hand_thumb_solenoid_joint</joint>
             <joint>right_hand_thumb_servo_joint</joint>
-            <joint>right_hand_index_solenoid_joint</joint>
-            <joint>right_hand_index_servo_joint</joint>
-            <joint>right_hand_middle_solenoid_joint</joint>
-            <joint>right_hand_middle_servo_joint</joint>
-            <joint>right_hand_ring_solenoid_joint</joint>
-            <joint>right_hand_ring_servo_joint</joint>
+            <joint>right_hand_index_finger_solenoid_joint</joint>
+            <joint>right_hand_index_finger_servo_joint</joint>
+            <joint>right_hand_middle_finger_solenoid_joint</joint>
+            <joint>right_hand_middle_finger_servo_joint</joint>
+            <joint>right_hand_ring_finger_solenoid_joint</joint>
+            <joint>right_hand_ring_finger_servo_joint</joint>
             <joint>right_hand_pinky_solenoid_joint</joint>
             <joint>right_hand_pinky_servo_joint</joint>
         </plugin>
