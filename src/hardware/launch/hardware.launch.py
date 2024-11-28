@@ -1,74 +1,100 @@
-import os
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
+
 from launch_ros.actions import Node
-from ament_index_python.packages import get_package_share_directory
-from launch.actions import RegisterEventHandler, Shutdown
-from launch.substitutions import Command
-from launch.event_handlers import OnProcessExit
+from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
-    # Get the share directory of the 'description' package
-    description_share_dir = get_package_share_directory('description')
+    # Declare Arguments
+    declared_arguments = []
+    # declared_arguments.append(
+    #     DeclareLaunchArgument(
+    #         "use_mock_hardware",
+    #         default_value="false",
+    #         description="Start robot with mock hardware mirroring command to its states."
+    #     )
+    # )
 
-    # Path to the URDF file
-    urdf_file = os.path.join(description_share_dir, 'urdf', 'bothoven.urdf.xacro')
+    #Initialize Arguments
+    # use_mock_hardware = LaunchConfiguration("use_mock_hardware")
+    control = LaunchConfiguration("control")
 
-    controller_config = os.path.join(
-        get_package_share_directory('hardware'),
-        'config',
-        'controllers.yaml'
+    # Get URDF via xacro
+    robot_description_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]), 
+            " ",
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("hardware"),
+                    "urdf",
+                    "ros2_control.xacro",
+                ]
+            ), 
+            # " ",
+            # "use_mock_hardware:=", use_mock_hardware, 
+            # " ",
+            # "control:=", control
+        ]
     )
 
-    robot_description_config = Command(['xacro ', urdf_file])
+    robot_description = {"robot_description": robot_description_content}
 
-    # Define the robot_state_publisher node
-    robot_state_publisher_node = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        output='screen',
-        parameters=[{'robot_description': robot_description_config}]
+    robot_controllers = PathJoinSubstitution(
+        [
+            FindPackageShare("hardware"), 
+            "config", 
+            "controllers.yaml"
+        ]
     )
 
-    ros2_control_node = Node(
-        package='controller_manager',
-        executable='ros2_control_node',
-        parameters=[controller_config],
-        output='screen',
-    )
-    
-    left_hand_controller = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['left_hand_controller'],
+    control_node = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[robot_controllers],
+        output={
+            "stdout": "screen",
+            "stderr": "screen",
+        },
+        remappings=[("~/robot_description", "/robot_description"),]
     )
 
-    right_hand_controller = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['right_hand_controller'],
+    # TF tree
+    robot_state_publisher = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        output="both",
+        parameters=[robot_description],
     )
 
-    return LaunchDescription([
-        robot_state_publisher_node,
-        ros2_control_node,
-        left_hand_controller,
-        right_hand_controller,
-        RegisterEventHandler(
-            OnProcessExit(
-                target_action=ros2_control_node,
-                on_exit=[Shutdown()],
-            )
-        ),
-        RegisterEventHandler(
-            OnProcessExit(
-                target_action=left_hand_controller,
-                on_exit=[Shutdown()],
-            )
-        ),
-        RegisterEventHandler(
-            OnProcessExit(
-                target_action=right_hand_controller,
-                on_exit=[Shutdown()],
-            )
-        ),
-    ])
+    # Spawn additional nodes for control and visualization
+    joint_state_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_state_broadcaster", "-c", "/controller_manager"],
+    )
+
+    # Add spawner node for each hand controller
+    right_hand_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["right_hand_controller", "-c", "/controller_manager"],
+    )
+
+    left_hand_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["left_hand_controller", "-c", "/controller_manager"],
+    )
+
+    # List all nodes that we want to start
+    nodes = [
+        control_node,
+        robot_state_publisher,
+        joint_state_broadcaster_spawner,
+        right_hand_controller_spawner,
+        left_hand_controller_spawner
+    ]
+
+    return LaunchDescription(declared_arguments + nodes)

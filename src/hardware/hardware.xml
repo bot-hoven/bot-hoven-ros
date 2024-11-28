@@ -1,0 +1,7 @@
+<library path="hardware">
+  <class name="hardware/BothovenHardware"
+         type="hardware::BothovenHardware"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>Bothoven Hardware Interface</description>
+  </class>
+</library>
