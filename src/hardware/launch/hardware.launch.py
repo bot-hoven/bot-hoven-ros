@@ -18,7 +18,7 @@ def generate_launch_description():
 
     #Initialize Arguments
     # use_mock_hardware = LaunchConfiguration("use_mock_hardware")
-    # control = LaunchConfiguration("control")
+    control = LaunchConfiguration("control")
 
     # Get URDF via xacro
     robot_description_content = Command(
@@ -74,17 +74,27 @@ def generate_launch_description():
         executable="spawner",
         arguments=["joint_state_broadcaster", "-c", "/controller_manager"],
     )
-    # hand_controller_spawner = Node(
-    #     package="controller_manager",
-    #     executable="spawner",
-    #     arguments=[control, "-c", "/controller_manager"],
-    # )
 
-        # List all nodes that we want to start
+    # Add spawner node for each hand controller
+    right_hand_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["right_hand_controller", "-c", "/controller_manager"],
+    )
+
+    left_hand_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["left_hand_controller", "-c", "/controller_manager"],
+    )
+
+    # List all nodes that we want to start
     nodes = [
         control_node,
         robot_state_publisher,
-        joint_state_broadcaster_spawner
+        joint_state_broadcaster_spawner,
+        right_hand_controller_spawner,
+        left_hand_controller_spawner
     ]
 
     return LaunchDescription(declared_arguments + nodes)

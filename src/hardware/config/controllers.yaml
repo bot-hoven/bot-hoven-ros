@@ -19,12 +19,12 @@ left_hand_controller:
       - left_hand_stepper_joint
       - left_hand_thumb_solenoid_joint
       - left_hand_thumb_servo_joint
-      - left_hand_index_solenoid_joint
-      - left_hand_index_servo_joint
-      - left_hand_middle_solenoid_joint
-      - left_hand_middle_servo_joint
-      - left_hand_ring_solenoid_joint
-      - left_hand_ring_servo_joint
+      - left_hand_index_finger_solenoid_joint
+      - left_hand_index_finger_servo_joint
+      - left_hand_middle_finger_solenoid_joint
+      - left_hand_middle_finger_servo_joint
+      - left_hand_ring_finger_solenoid_joint
+      - left_hand_ring_finger_servo_joint
       - left_hand_pinky_solenoid_joint
       - left_hand_pinky_servo_joint
     gains:
@@ -42,12 +42,12 @@ right_hand_controller:
       - right_hand_stepper_joint
       - right_hand_thumb_solenoid_joint
       - right_hand_thumb_servo_joint
-      - right_hand_index_solenoid_joint
-      - right_hand_index_servo_joint
-      - right_hand_middle_solenoid_joint
-      - right_hand_middle_servo_joint
-      - right_hand_ring_solenoid_joint
-      - right_hand_ring_servo_joint
+      - right_hand_index_finger_solenoid_joint
+      - right_hand_index_finger_servo_joint
+      - right_hand_middle_finger_solenoid_joint
+      - right_hand_middle_finger_servo_joint
+      - right_hand_ring_finger_solenoid_joint
+      - right_hand_ring_finger_servo_joint
       - right_hand_pinky_solenoid_joint
       - right_hand_pinky_servo_joint
     gains:
