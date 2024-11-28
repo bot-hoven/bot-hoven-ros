@@ -1,8 +1,8 @@
 #include "hardware/bothoven_hardware.hpp"
 
-namespace bothoven_hardware {
+namespace hardware {
 
-hardware_interface::CallbackReturn BothovenHardware::on_init(const hardware_interface::HardwareInfo &info) {
+BothovenHardware::CallbackReturn BothovenHardware::on_init(const hardware_interface::HardwareInfo &info) {
   if (hardware_interface::SystemInterface::on_init(info) != CallbackReturn::SUCCESS) {
     return CallbackReturn::ERROR;
   }
@@ -41,4 +41,9 @@ hardware_interface::return_type BothovenHardware::write(const rclcpp::Time &time
   return hardware_interface::return_type::OK;
 }
 
-} // namespace bothoven_hardware
+void BothovenHardware::init(){}
+
+} // namespace hardware
+
+#include "pluginlib/class_list_macros.hpp"
+PLUGINLIB_EXPORT_CLASS(hardware::BothovenHardware, hardware_interface::SystemInterface)

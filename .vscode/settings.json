@@ -1,3 +1,6 @@
 {
-    "cmake.sourceDirectory": "/bot-hoven-ros/src/hardware"
+    "cmake.sourceDirectory": "/bot-hoven-ros/src/hardware",
+    "files.associations": {
+        "vector": "cpp"
+    }
 }

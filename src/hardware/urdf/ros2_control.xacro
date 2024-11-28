@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <ros2_control name="BothovenHardware" type="system">
+<robot name="bothoven" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find description)/urdf/bothoven.urdf.xacro"/>
+
+  <ros2_control name="hardware" type="system">
     <hardware>
-      <plugin>ros2_control_demo_hardware/GenericSystem</plugin>
-      <param name="example_param">value</param>
+        <plugin>hardware/BothovenHardware</plugin>
     </hardware>
     <joint name="left_hand_stepper_joint">
       <command_interface name="position"/>
       <state_interface name="position"/>
     </joint>
-    <joint name="left_hand_stepper_joint">
+    <joint name="right_hand_stepper_joint">
       <command_interface name="position"/>
       <state_interface name="position"/>
     </joint>

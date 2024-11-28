@@ -5,22 +5,40 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+set(THIS_PACKAGE_INCLUDE_DEPENDS
+  hardware_interface
+  pluginlib
+  rclcpp
+  rclcpp_lifecycle
+  controller_manager
+)
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(hardware_interface REQUIRED)
-find_package(controller_manager REQUIRED)
-find_package(rclcpp REQUIRED)
+foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
+  find_package(${Dependency} REQUIRED)
+endforeach()
 
-add_library(${PROJECT_NAME} SHARED
+add_library(
+  ${PROJECT_NAME} SHARED
   src/bothoven_hardware.cpp
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE include)
-
-ament_target_dependencies(${PROJECT_NAME}
-  hardware_interface
-  rclcpp
+target_include_directories(${PROJECT_NAME} PUBLIC
+$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+$<INSTALL_INTERFACE:include>
 )
+
+ament_target_dependencies(
+  ${PROJECT_NAME} PUBLIC
+  ${THIS_PACKAGE_INCLUDE_DEPENDS}
+)
+
+target_link_libraries(${PROJECT_NAME}
+  
+)
+
+pluginlib_export_plugin_description_file(hardware_interface hardware.xml)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -35,18 +53,32 @@ if(BUILD_TESTING)
 endif()
 
 install(
+  DIRECTORY include/
+  DESTINATION include
+)
+
+install(
+  DIRECTORY launch config urdf
+  DESTINATION share/${PROJECT_NAME}
+)
+
+install(
   TARGETS ${PROJECT_NAME}
   DESTINATION lib
 )
 
-install(
-  DIRECTORY include
-  DESTINATION include/${PROJECT_NAME}
+install(TARGETS ${PROJECT_NAME}
+  EXPORT export_${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
 install(
-  DIRECTORY launch config
+  FILES hardware.xml
   DESTINATION share/${PROJECT_NAME}
 )
 
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
+ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()
