@@ -10,6 +10,7 @@ class I2CPeripheral;
 
 class PCA9685 {
 public:
+    int frequency = 50;
 
     PCA9685() = default;
     ~PCA9685();
@@ -27,17 +28,13 @@ public:
 
     void set_device(const std::string &device_path) { device = device_path; }
     void set_address(int addr) { address = addr; }
-    void set_frequency(int freq) { frequency = freq; }
+    // void set_frequency(int freq) { frequency = freq; }
 
 private:
     std::unique_ptr<I2CPeripheral> i2c_dev;
-    
-    // Default frequency pulled from PCA9685 datasheet.
-    double frequency = 200.0;
 
-    const std::string &device = "/dev/i2c-1";
+    std::string device = "/dev/i2c-1";
     int address = 0x40;
-    int frequency = 50;
 };
 
 }  // namespace PiPCA9685

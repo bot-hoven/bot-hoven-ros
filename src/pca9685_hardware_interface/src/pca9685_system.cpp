@@ -19,7 +19,7 @@ hardware_interface::CallbackReturn Pca9685SystemHardware::on_init(
 {
   pca.set_device(info_.hardware_parameters["i2c_bus"]); 
   pca.set_address(std::stoi(info_.hardware_parameters["i2c_address"]));  
-  pca.set_frequency(std::stoi(info_.hardware_parameters["frequency_hz"])); //Not sure we need this
+  pca.frequency = std::stoi(info_.hardware_parameters["frequency_hz"]); //Not sure we need this
 
   if (
     hardware_interface::SystemInterface::on_init(info) !=
