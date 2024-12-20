@@ -18,6 +18,8 @@
 
 #include "pca9685_hardware_interface/visibility_control.h"
 #include <pca9685_hardware_interface/pca9685_comm.h>
+#include "pca9685_hardware_interface/I2CPeripheral.h"
+
 
 namespace pca9685_hardware_interface
 {
@@ -35,6 +37,14 @@ public:
 
   PCA9685_HARDWARE_INTERFACE_PUBLIC
   std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
+
+  PCA9685_HARDWARE_INTERFACE_PUBLIC
+  hardware_interface::CallbackReturn on_configure(
+    const rclcpp_lifecycle::State & previous_state) override;
+
+  PCA9685_HARDWARE_INTERFACE_PUBLIC
+  hardware_interface::CallbackReturn on_cleanup(
+    const rclcpp_lifecycle::State & previous_state) override;
 
   PCA9685_HARDWARE_INTERFACE_PUBLIC
   hardware_interface::CallbackReturn on_activate(
