@@ -54,6 +54,76 @@
       <command_interface name="position"/>
       <state_interface name="position"/>
     </joint>
+  </ros2_control>
+
+
+<ros2_control name="left_hand_mcp23017" type="system">
+    <hardware>
+      <plugin>pca9658_hardware_interface/PCA9685HardwareInterface</plugin>
+      <param name="i2c_address">32</param>  <!-- 0x20 in decimal -->
+    </hardware>
+    <joint name="left_hand_thumb_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_index_finger_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_middle_finger_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_ring_finger_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_pinky_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+  </ros2_control>
+
+
+<ros2_control name="right_hand_mcp23017" type="system">
+    <hardware>
+      <plugin>pca9658_hardware_interface/PCA9685HardwareInterface</plugin>
+      <param name="i2c_address">33</param>  <!-- 0x21 in decimal -->
+    </hardware>
+    <joint name="right_hand_thumb_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_index_finger_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_middle_finger_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_ring_finger_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_pinky_solenoid_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+    </joint>
+  </ros2_control>
+
+
+  <ros2_control name="left_hand_pca9685" type="system">
+    <hardware>
+      <plugin>pca9658_hardware_interface/PCA9685HardwareInterface</plugin>
+      <param name="i2c_bus">/dev/i2c-1</param>
+      <param name="i2c_address">64</param>  <!-- 0x40 in decimal -->
+      <param name="frequency_hz">50</param>
+      <!-- <param name="channels">
+        <channel name="joint_1" index="0" min_pulse="1000" max_pulse="2000" />
+        <channel name="joint_2" index="1" min_pulse="1000" max_pulse="2000" />
+      </param> -->
+    </hardware>
     <joint name="left_hand_thumb_servo_joint">
       <command_interface name="position"/>
       <state_interface name="position"/>
@@ -74,6 +144,20 @@
       <command_interface name="position"/>
       <state_interface name="position"/>
     </joint>
+  </ros2_control>
+
+
+  <ros2_control name="right_hand_pca9685" type="system">
+    <hardware>
+      <plugin>pca9658_hardware_interface/PCA9685HardwareInterface</plugin>
+      <param name="i2c_address">65</param>  <!-- 0x41 in decimal -->
+      <param name="frequency_hz">50</param>
+      <!-- we might want to define the parameters for these servos in this file
+      <param name="channels">
+        <channel name="joint_1" index="0" min_pulse="1000" max_pulse="2000" />
+        <channel name="joint_2" index="1" min_pulse="1000" max_pulse="2000" /> -->
+      <!-- </param> -->
+    </hardware>
     <joint name="right_hand_thumb_servo_joint">
       <command_interface name="position"/>
       <state_interface name="position"/>
@@ -95,4 +179,5 @@
       <state_interface name="position"/>
     </joint>
   </ros2_control>
+
 </robot>

@@ -17,8 +17,9 @@ namespace pca9685_hardware_interface
 hardware_interface::CallbackReturn Pca9685SystemHardware::on_init(
   const hardware_interface::HardwareInfo & info)
 {
-
-  pca.set_pwm_freq(50.0);
+  pca.set_device(info_.hardware_parameters["i2c_bus"]); 
+  pca.set_address(std::stoi(info_.hardware_parameters["i2c_address"]));  
+  pca.set_frequency(std::stoi(info_.hardware_parameters["frequency_hz"])); //Not sure we need this
 
   if (
     hardware_interface::SystemInterface::on_init(info) !=
@@ -80,6 +81,30 @@ std::vector<hardware_interface::CommandInterface> Pca9685SystemHardware::export_
   return command_interfaces;
 }
 
+hardware_interface::CallbackReturn Pca9685SystemHardware::on_configure(
+  const rclcpp_lifecycle::State & /*previous_state*/)
+{
+  RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Configuring ...please wait...");
+  pca.connect_to_bus();
+  pca.set_pwm_freq(pca.frequency);
+
+  RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Successfully configured!");
+
+  return hardware_interface::CallbackReturn::SUCCESS;
+}
+
+hardware_interface::CallbackReturn Pca9685SystemHardware::on_cleanup(
+  const rclcpp_lifecycle::State & /*previous_state*/)
+{
+  RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Cleaning up ...please wait...");
+
+  pca.disconnect();
+  
+  RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Successfully cleaned up!");
+
+  return hardware_interface::CallbackReturn::SUCCESS;
+}
+
 hardware_interface::CallbackReturn Pca9685SystemHardware::on_activate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
@@ -116,8 +141,9 @@ double Pca9685SystemHardware::command_to_duty_cycle(double command){
 
     double clamped_command = std::clamp(command, min_input, max_input);
 
-    double min_duty_cycle = 0.5;
-    double max_duty_cycle = 2.5;
+    // min/max were changed to match datasheet for servos
+    double min_duty_cycle = 1.0;
+    double max_duty_cycle = 2.0;
 
 
     double slope = (max_duty_cycle-min_duty_cycle)/(max_input-min_input);

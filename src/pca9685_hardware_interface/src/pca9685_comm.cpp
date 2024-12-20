@@ -7,7 +7,12 @@
 
 namespace PiPCA9685 {
 
-PCA9685::PCA9685(const std::string &device, int address) {
+// PCA9685::PCA9685() {
+// }
+
+// PCA9685::~PCA9685() = default;
+
+void PCA9685::connect_to_bus() {
   i2c_dev = std::make_unique<I2CPeripheral>(device, address);
   
   set_all_pwm(0,0);
@@ -20,7 +25,12 @@ PCA9685::PCA9685(const std::string &device, int address) {
   usleep(5'000);
 }
 
-PCA9685::~PCA9685() = default;
+void PCA9685::disconnect() {
+    if (i2c_dev) {
+      set_all_pwm(0, 0);
+      i2c_dev.reset();  // Releases the unique_ptr and closes the connection
+    }
+}
 
 void PCA9685::set_pwm_freq(const double freq_hz) {
   frequency = freq_hz;
