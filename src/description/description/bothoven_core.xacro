@@ -1,145 +1,249 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <!-- Robot Properties -->
-  <link name="bothoven"/>
+  <!-- Colours -->
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
 
-    <!-- Define the hands (connected to rail via joints) -->
-  <link name="left_hand">
+  <material name="orange">
+      <color rgba="1 0.3 0.1 1"/>
+  </material>
+
+  <material name="blue">
+      <color rgba="0.2 0.2 1 1"/>
+  </material>
+
+  <material name="black">
+      <color rgba="0 0 0 1"/>
+  </material>
+
+  <material name="yellow">
+    <color rgba="1.0 1.0 0.0 1.0"/>
+  </material>
+
+  <material name="green">
+    <color rgba="0.0 1.0 0.0 1.0"/>
+  </material>
+
+ <!-- Robot Properties -->
+  <link name="base_link"/>
+
+  <!-- Aluminum Rail -->
+  <link name="aluminum_rail">
+    <visual>
+      <geometry>
+        <box size="1.5 0.02 0.02"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <joint name="rail_to_base" type="fixed">
+    <parent link="base_link"/>
+    <child link="aluminum_rail"/>
+    <origin xyz="0 0 0.1"/>
+  </joint>
+
+  <!-- Stepper Motors -->
+  <xacro:macro name="stepper" params="name parent_link origin_xyz">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <cylinder radius="0.02" length="0.05"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+    </link>
+    <joint name="${name}_joint" type="fixed">
+      <parent link="${parent_link}"/>
+      <child link="${name}"/>
+      <origin xyz="${origin_xyz}"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:stepper name="left_hand_stepper" parent_link="aluminum_rail" origin_xyz="-0.75 0 0"/>
+  <xacro:stepper name="right_hand_stepper" parent_link="aluminum_rail" origin_xyz="0.75 0 0"/>
+
+  <!-- Carriages -->
+  <link name="left_carriage">
     <visual>
       <geometry>
         <box size="0.1 0.05 0.05"/>
       </geometry>
-      <material name="blue">
-        <color rgba="0.0 0.0 1.0 1.0"/>
-      </material>
+      <material name="blue"/>
+    </visual>
+  </link>
+
+  <link name="right_carriage">
+    <visual>
+      <geometry>
+        <box size="0.1 0.05 0.05"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+  </link>
+
+  <joint name="left_carriage_joint" type="prismatic">
+    <parent link="left_hand_stepper"/>
+    <child link="left_carriage"/>
+    <origin xyz="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0.1" upper="1.4" effort="10" velocity="0.5"/>
+  </joint>
+
+  <joint name="right_carriage_joint" type="prismatic">
+    <parent link="right_hand_stepper"/>
+    <child link="right_carriage"/>
+    <origin xyz="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-0.1" upper="-1.4" effort="10" velocity="0.5"/>
+  </joint>
+
+  <!-- Hands -->
+  <xacro:property name="hand_length" value="0.2"/>
+  <xacro:property name="hand_width" value="0.1"/>
+  <xacro:property name="hand_height" value="0.05"/>
+
+  <link name="left_hand">
+    <visual>
+      <geometry>
+        <box size="${hand_length} ${hand_width} ${hand_height}"/>
+      </geometry>
+      <material name="orange"/>
     </visual>
   </link>
 
   <link name="right_hand">
     <visual>
       <geometry>
-        <box size="0.1 0.05 0.05"/>
+        <box size="${hand_length} ${hand_width} ${hand_height}"/>
       </geometry>
-      <material name="blue">
-        <color rgba="0.0 0.0 1.0 1.0"/>
-      </material>
+      <material name="orange"/>
     </visual>
   </link>
 
-  <!-- Joints for hand movement on rails (using stepper motors) -->
-  <joint name="left_hand_stepper_joint" type="prismatic">
-    <parent link="bothoven"/>
+  <joint name="left_hand_joint" type="fixed">
+    <parent link="left_carriage"/>
     <child link="left_hand"/>
-    <origin xyz="0 0 0.05"/>
-    <axis xyz="1 0 0"/>
-    <limit lower="0.0" upper="0.5" effort="5" velocity="1.0"/>
+    <origin xyz="0 0.5 0"/>
   </joint>
 
-  <joint name="right_hand_stepper_joint" type="prismatic">
-    <parent link="bothoven"/>
+  <joint name="right_hand_joint" type="fixed">
+    <parent link="right_carriage"/>
     <child link="right_hand"/>
-    <origin xyz="0 0 0.05"/>
-    <axis xyz="1 0 0"/>
-    <limit lower="0.0" upper="0.5" effort="5" velocity="1.0"/>
+    <origin xyz="0 0.5 0"/>
   </joint>
-
-  <!-- Fingers -->
-  <xacro:property name="finger_length" value="0.03"/>
-  <xacro:property name="finger_thickness" value="0.01"/>
-
-  <xacro:macro name="finger" params="name parent_link">
-    <link name="${name}">
-      <visual>
-        <geometry>
-          <box size="${finger_length} ${finger_thickness} ${finger_thickness}"/>
-        </geometry>
-        <material name="red">
-          <color rgba="1.0 0.0 0.0 1.0"/>
-        </material>
-      </visual>
-    </link>
-    <joint name="${name}_joint" type="fixed">
-      <parent link="${parent_link}"/>
-      <child link="${name}"/>
-      <origin xyz="0 0 0"/>
-    </joint>
-  </xacro:macro>
-
-  <!-- Left Hand Fingers -->
-  <xacro:finger name="left_hand_thumb" parent_link="left_hand"/>
-  <xacro:finger name="left_hand_index_finger" parent_link="left_hand"/>
-  <xacro:finger name="left_hand_middle_finger" parent_link="left_hand"/>
-  <xacro:finger name="left_hand_ring_finger" parent_link="left_hand"/>
-  <xacro:finger name="left_hand_pinky" parent_link="left_hand"/>
-
-  <!-- Right Hand Fingers -->
-  <xacro:finger name="right_hand_thumb" parent_link="right_hand"/>
-  <xacro:finger name="right_hand_index_finger" parent_link="right_hand"/>
-  <xacro:finger name="right_hand_middle_finger" parent_link="right_hand"/>
-  <xacro:finger name="right_hand_ring_finger" parent_link="right_hand"/>
-  <xacro:finger name="right_hand_pinky" parent_link="right_hand"/>
 
   <!-- Solenoids for Finger Press -->
   <xacro:macro name="solenoid" params="name parent_link">
     <link name="${name}">
       <visual>
         <geometry>
-          <cylinder radius="0.01" length="0.02"/>
+          <cylinder radius="0.01" length="0.025"/>
         </geometry>
-        <material name="green">
-          <color rgba="0.0 1.0 0.0 1.0"/>
-        </material>
-      </visual>
-    </link>
-    <joint name="${name}_joint" type="prismatic">
-      <parent link="${parent_link}"/>
-      <child link="${name}"/>
-      <origin xyz="0 0 -0.01"/>
-      <axis xyz="0 0 1"/>
-      <limit lower="0" upper="0.01" effort="1" velocity="1.0"/>
-    </joint>
-  </xacro:macro>
-
-  <!-- Servos for Lateral Motion -->
-  <xacro:macro name="servo" params="name parent_link">
-    <link name="${name}">
-      <visual>
-        <geometry>
-          <box size="0.02 0.02 0.02"/>
-        </geometry>
-        <material name="yellow">
-          <color rgba="1.0 1.0 0.0 1.0"/>
-        </material>
+        <material name="green"/>
       </visual>
     </link>
     <joint name="${name}_joint" type="revolute">
       <parent link="${parent_link}"/>
       <child link="${name}"/>
       <origin xyz="0 0 0"/>
-      <axis xyz="0 1 0"/>
-      <limit lower="-1.57" upper="1.57" effort="1" velocity="1.0"/>
+      <axis xyz="1 0 0"/>
+      <limit lower="-0.2" upper="0.2" effort="1" velocity="1.0"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- Servos for Lateral Motion -->
+  <xacro:macro name="servo" params="name parent_link x_origin">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <box size="0.02 0.02 0.02"/>
+        </geometry>
+        <material name="yellow"/>
+      </visual>
+    </link>
+    <joint name="${name}_joint" type="revolute">
+      <parent link="${parent_link}"/>
+      <child link="${name}"/>
+      <origin xyz="${x_origin} -${hand_width/2} -0.01"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="-0.2" upper="0.2" effort="1" velocity="1.0"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- Fingers -->
+  <xacro:property name="finger_length" value="0.1"/>
+  <xacro:property name="finger_thickness" value="0.01"/>
+
+  <xacro:macro name="finger" params="name parent_link">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <box size="${finger_thickness} ${finger_length} ${finger_thickness}"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+    </link>
+    <joint name="${name}_joint" type="fixed">
+      <parent link="${parent_link}"/>
+      <child link="${name}"/>
+      <origin xyz="0 -0.05 0"/>
     </joint>
   </xacro:macro>
 
   <!-- Solenoids and Servos attached to each finger for key press and lateral motion -->
-  <xacro:solenoid name="left_hand_thumb_solenoid" parent_link="left_hand_thumb"/>
-  <xacro:servo name="left_hand_thumb_servo" parent_link="left_hand_thumb"/>
-  <xacro:solenoid name="left_hand_index_finger_solenoid" parent_link="left_hand_index_finger"/>
-  <xacro:servo name="left_hand_index_finger_servo" parent_link="left_hand_index_finger"/>
-  <xacro:solenoid name="left_hand_middle_finger_solenoid" parent_link="left_hand_middle_finger"/>
-  <xacro:servo name="left_hand_middle_finger_servo" parent_link="left_hand_middle_finger"/>
-  <xacro:solenoid name="left_hand_ring_finger_solenoid" parent_link="left_hand_ring_finger"/>
-  <xacro:servo name="left_hand_ring_finger_servo" parent_link="left_hand_ring_finger"/>
-  <xacro:solenoid name="left_hand_pinky_solenoid" parent_link="left_hand_pinky"/>
-  <xacro:servo name="left_hand_pinky_servo" parent_link="left_hand_pinky"/>
-  <xacro:solenoid name="right_hand_thumb_solenoid" parent_link="right_hand_thumb"/>
-  <xacro:servo name="right_hand_thumb_servo" parent_link="right_hand_thumb"/>
-  <xacro:solenoid name="right_hand_index_finger_solenoid" parent_link="right_hand_index_finger"/>
-  <xacro:servo name="right_hand_index_finger_servo" parent_link="right_hand_index_finger"/>
-  <xacro:solenoid name="right_hand_middle_finger_solenoid" parent_link="right_hand_middle_finger"/>
-  <xacro:servo name="right_hand_middle_finger_servo" parent_link="right_hand_middle_finger"/>
-  <xacro:solenoid name="right_hand_ring_finger_solenoid" parent_link="right_hand_ring_finger"/>
-  <xacro:servo name="right_hand_ring_finger_servo" parent_link="right_hand_ring_finger"/>
-  <xacro:solenoid name="right_hand_pinky_solenoid" parent_link="right_hand_pinky"/>
-  <xacro:servo name="right_hand_pinky_servo" parent_link="right_hand_pinky"/>
+  <xacro:property name="finger_spacing" value="${hand_length/6}"/>
+
+  <xacro:property name="thumb_offset" value="${-hand_length/2 + finger_spacing}"/>
+  <xacro:property name="index_offset" value="${-hand_length/2 + 2*finger_spacing}"/>
+  <xacro:property name="middle_offset" value="0"/>
+  <xacro:property name="ring_offset" value="${hand_length/2 - 2*finger_spacing}"/>
+  <xacro:property name="pinky_offset" value="${hand_length/2 - finger_spacing}"/>
+
+
+  <xacro:solenoid name="left_hand_thumb_solenoid" parent_link="left_hand_thumb_servo"/>
+  <xacro:servo name="left_hand_thumb_servo" parent_link="left_hand" x_origin="${thumb_offset}"/>
+
+  <xacro:solenoid name="left_hand_index_finger_solenoid" parent_link="left_hand_index_finger_servo"/>
+  <xacro:servo name="left_hand_index_finger_servo" parent_link="left_hand" x_origin="${index_offset}"/>
+
+  <xacro:solenoid name="left_hand_middle_finger_solenoid" parent_link="left_hand_middle_finger_servo"/>
+  <xacro:servo name="left_hand_middle_finger_servo" parent_link="left_hand" x_origin="${middle_offset}"/>
+
+  <xacro:solenoid name="left_hand_ring_finger_solenoid" parent_link="left_hand_ring_finger_servo"/>
+  <xacro:servo name="left_hand_ring_finger_servo" parent_link="left_hand" x_origin="${ring_offset}"/>
+
+  <xacro:solenoid name="left_hand_pinky_solenoid" parent_link="left_hand_pinky_servo"/>
+  <xacro:servo name="left_hand_pinky_servo" parent_link="left_hand" x_origin="${pinky_offset}"/>
+
+  <xacro:solenoid name="right_hand_thumb_solenoid" parent_link="right_hand_thumb_servo"/>
+  <xacro:servo name="right_hand_thumb_servo" parent_link="right_hand" x_origin="${-thumb_offset}"/>
+
+  <xacro:solenoid name="right_hand_index_finger_solenoid" parent_link="right_hand_index_finger_servo"/>
+  <xacro:servo name="right_hand_index_finger_servo" parent_link="right_hand" x_origin="${-index_offset}"/>
+
+  <xacro:solenoid name="right_hand_middle_finger_solenoid" parent_link="right_hand_middle_finger_servo"/>
+  <xacro:servo name="right_hand_middle_finger_servo" parent_link="right_hand" x_origin="${-middle_offset}"/>
+
+  <xacro:solenoid name="right_hand_ring_finger_solenoid" parent_link="right_hand_ring_finger_servo"/>
+  <xacro:servo name="right_hand_ring_finger_servo" parent_link="right_hand" x_origin="${-ring_offset}"/>
+
+  <xacro:solenoid name="right_hand_pinky_solenoid" parent_link="right_hand_pinky_servo"/>
+  <xacro:servo name="right_hand_pinky_servo" parent_link="right_hand" x_origin="${-pinky_offset}"/>
+
+  <!-- Left Hand Fingers -->
+  <xacro:finger name="left_hand_thumb" parent_link="left_hand_thumb_solenoid"/>
+  <xacro:finger name="left_hand_index_finger" parent_link="left_hand_index_finger_solenoid"/>
+  <xacro:finger name="left_hand_middle_finger" parent_link="left_hand_middle_finger_solenoid"/>
+  <xacro:finger name="left_hand_ring_finger" parent_link="left_hand_ring_finger_solenoid"/>
+  <xacro:finger name="left_hand_pinky" parent_link="left_hand_pinky_solenoid"/>
+
+  <!-- Right Hand Fingers -->
+  <xacro:finger name="right_hand_thumb" parent_link="right_hand_thumb_solenoid"/>
+  <xacro:finger name="right_hand_index_finger" parent_link="right_hand_index_finger_solenoid"/>
+  <xacro:finger name="right_hand_middle_finger" parent_link="right_hand_middle_finger_solenoid"/>
+  <xacro:finger name="right_hand_ring_finger" parent_link="right_hand_ring_finger_solenoid"/>
+  <xacro:finger name="right_hand_pinky" parent_link="right_hand_pinky_solenoid"/>
 </robot>
