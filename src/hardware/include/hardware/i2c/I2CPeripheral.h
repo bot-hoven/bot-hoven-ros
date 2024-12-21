@@ -1,10 +1,10 @@
-#ifndef PIPCA9685_I2CPERIPHERAL_H
-#define PIPCA9685_I2CPERIPHERAL_H
+#ifndef HARDWARE__I2C__I2CPERIPHERAL_H_
+#define HARDWARE__I2C__I2CPERIPHERAL_H_
 
 #include <cstdint>
 #include <string>
 
-namespace PiPCA9685 {
+namespace hardware {
 
 class I2CPeripheral {
 public:
@@ -23,6 +23,6 @@ private:
 
 };
 
-}  // namespace PiPCA9685
+}  // namespace hardware
 
-#endif  // PIPCA9685_I2CPERIPHERAL_H
+#endif  // HARDWARE__I2C__I2CPERIPHERAL_H_
