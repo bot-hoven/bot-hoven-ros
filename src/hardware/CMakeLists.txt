@@ -47,7 +47,7 @@ ament_target_dependencies(
 )
 
 target_link_libraries(${PROJECT_NAME}
-  ${LIBGPIOD_LIBRARIES}
+  i2c${LIBGPIOD_LIBRARIES}
 )
 
 # Export plugin
@@ -91,7 +91,8 @@ install(
   DESTINATION lib
 )
 
-install(TARGETS ${PROJECT_NAME}
+install(
+  TARGETS ${PROJECT_NAME}
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
