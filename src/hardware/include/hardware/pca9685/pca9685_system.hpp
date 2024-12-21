@@ -16,7 +16,7 @@
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
-#include "hardware/hardware_common.hpp"
+#include "hardware_common.hpp"
 #include "hardware/pca9685/visibility_control.h"
 #include <hardware/pca9685/pca9685_comm.h>
 
