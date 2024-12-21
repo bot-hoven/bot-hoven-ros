@@ -33,7 +33,6 @@ left_hand_controller:
       - position
     state_interfaces:
       - position
-      - velocity
 
 right_hand_controller:
   ros__parameters:
@@ -56,4 +55,3 @@ right_hand_controller:
       - position
     state_interfaces:
       - position
-      - velocity
