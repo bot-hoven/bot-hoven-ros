@@ -17,6 +17,7 @@ RUN apt-get update && \
     ros-jazzy-ros2-controllers \
     ros-jazzy-hardware-interface \
     ros-jazzy-gz-ros2-control \
+    ros-jazzy-joint-state-publisher-gui \
     python3-rosdoc2 && \
     rm -rf /var/lib/apt/lists/* && \
     echo "$USERNAME ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME && \
@@ -43,3 +44,10 @@ RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc
 ################################
 ## ADD ANY CUSTOM SETUP BELOW ##
 ################################
+
+# Persist Bash history across sessions
+RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
+    && sudo mkdir /commandhistory \
+    && sudo touch /commandhistory/.bash_history \
+    && sudo chown -R $USERNAME /commandhistory \
+    && echo "$SNIPPET" | sudo tee -a "/home/$USERNAME/.bashrc"
