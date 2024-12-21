@@ -1,4 +1,5 @@
-#include "hardware/hardware_common.hpp"
+#include "hardware/pca9685/pca9685_system.hpp"
+#include "hardware_common.hpp"
 
 #include <chrono>
 #include <cmath>

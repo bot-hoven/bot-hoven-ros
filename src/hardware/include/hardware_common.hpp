@@ -24,11 +24,11 @@ struct I2CConfig {
     uint8_t address;
 };
 
-inline void log_event(const std::string &component, const std::string &message) {
-    // In case we want a common log event, we might want to pass the type 
-    // as an arg (INFO, FATAL, etc.) and use a switch-case.
-    RCLCPP_INFO(rclcpp::get_logger(component), message);
-}
+// inline void log_event(const std::string &component, const std::string &message) {
+//     // In case we want a common log event, we might want to pass the type 
+//     // as an arg (INFO, FATAL, etc.) and use a switch-case.
+//     RCLCPP_INFO(rclcpp::get_logger(component), message);
+// }
 
 } // namespace Hardware
 

@@ -1,8 +1,8 @@
-#include "hardware/pca9685_comm.h"
+#include "hardware/pca9685/pca9685_comm.h"
 #include <unistd.h>
 #include <cmath>
 
-#include "hardware/hardware_common.hpp"
+#include "hardware_common.hpp"
 
 namespace PiPCA9685 {
 
