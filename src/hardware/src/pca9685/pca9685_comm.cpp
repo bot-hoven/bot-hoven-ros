@@ -1,9 +1,8 @@
-#include "pca9685_hardware_interface/pca9685_comm.h"
+#include "hardware/pca9685_comm.h"
 #include <unistd.h>
 #include <cmath>
 
-#include "pca9685_hardware_interface/Constants.h"
-#include "pca9685_hardware_interface/I2CPeripheral.h"
+#include "hardware/hardware_common.hpp"
 
 namespace PiPCA9685 {
 

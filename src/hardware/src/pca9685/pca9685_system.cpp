@@ -1,4 +1,4 @@
-#include "pca9685_hardware_interface/pca9685_system.hpp"
+#include "hardware/hardware_common.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -8,8 +8,6 @@
 #include <vector>
 
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
-#include "rclcpp/rclcpp.hpp"
-
 
 
 namespace pca9685_hardware_interface

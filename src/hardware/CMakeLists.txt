@@ -43,6 +43,7 @@ ament_target_dependencies(
 )
 
 target_link_libraries(${PROJECT_NAME}
+  PUBLIC
   i2c
 )
 
