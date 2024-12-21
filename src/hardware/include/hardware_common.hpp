@@ -8,6 +8,7 @@
 // Shared headers
 #include "hardware/i2c/I2CPeripheral.h"
 #include "hardware/common/Constants.h"
+#include "rclcpp/rclcpp.hpp"
 
 namespace Hardware {
 

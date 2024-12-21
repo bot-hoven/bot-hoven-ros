@@ -1,4 +1,4 @@
-#include "pca9685_hardware_interface/I2CPeripheral.h"
+#include "hardware/hardware_common.hpp"
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
