@@ -9,7 +9,7 @@ extern "C" {
 }
 #include <system_error>
 
-namespace PiPCA9685 {
+namespace hardware {
 
 I2CPeripheral::I2CPeripheral(const std::string& device, const uint8_t address) {
   OpenBus(device);
@@ -53,4 +53,4 @@ void I2CPeripheral::ConnectToPeripheral(const uint8_t address) {
   }
 }
 
-}  // namespace PiPCA9685
+}  // namespace hardware

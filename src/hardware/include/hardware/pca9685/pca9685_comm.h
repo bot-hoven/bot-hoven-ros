@@ -1,5 +1,5 @@
-#ifndef RPY_PWM_HAT_PCA9685_H
-#define RPY_PWM_HAT_PCA9685_H
+#ifndef HARDWARE__PCA9685__PCA9685_H
+#define HARDWARE__PCA9685__PCA9685_H
 
 #include <string>
 #include <memory>
@@ -15,7 +15,7 @@ public:
     PCA9685() = default;
     ~PCA9685();
 
-    void connect_to_bus();
+    void init();
     void disconnect();
 
     void set_pwm_freq(const double freq_hz);
@@ -31,7 +31,7 @@ public:
     // void set_frequency(int freq) { frequency = freq; }
 
 private:
-    std::unique_ptr<I2CPeripheral> i2c_dev;
+    std::shared_ptr<I2CPeripheral> i2c_dev;
 
     std::string device = "/dev/i2c-1";
     int address = 0x40;
@@ -39,4 +39,4 @@ private:
 
 }  // namespace PiPCA9685
 
-#endif //RPY_PWM_HAT_PCA9685_H
+#endif //HARDWARE__PCA9685__PCA9685_H

@@ -1,5 +1,5 @@
-#ifndef HARDWARE_COMMON_HPP
-#define HARDWARE_COMMON_HPP
+#ifndef HARDWARE_COMMON_HPP_
+#define HARDWARE_COMMON_HPP_
 
 #include <string>
 #include <vector>
@@ -7,10 +7,11 @@
 
 // Shared headers
 #include "hardware/i2c/I2CPeripheral.h"
+#include "hardware/i2c/I2CBusManager.hpp"
 #include "hardware/common/Constants.h"
 #include "rclcpp/rclcpp.hpp"
 
-namespace Hardware {
+namespace hardware {
 
 // enum class DeviceStatus {
 //     OK,
@@ -30,6 +31,6 @@ struct I2CConfig {
 //     RCLCPP_INFO(rclcpp::get_logger(component), message);
 // }
 
-} // namespace Hardware
+} // namespace hardware
 
-#endif // HARDWARE_COMMON_HPP
+#endif // HARDWARE_COMMON_HPP_
