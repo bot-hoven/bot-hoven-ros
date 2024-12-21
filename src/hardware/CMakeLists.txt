@@ -22,7 +22,15 @@ endforeach()
 add_library(
   ${PROJECT_NAME} SHARED
   src/bothoven_hardware.cpp
+  src/i2c/I2CPeripheral.cpp
+  src/pca9685/pca9685_system.cpp
+  src/pca9685/pca9685_comm.cpp
+  # src/mcp23017/mcp23017_comm.cpp
+  # src/cl42t/cl42t.cpp
+  # src/common/common.cpp
 )
+
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17) #Unsure about this
 
 target_include_directories(${PROJECT_NAME} PUBLIC
 $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -35,8 +43,12 @@ ament_target_dependencies(
 )
 
 target_link_libraries(${PROJECT_NAME}
-  
+  i2c
 )
+
+# Causes the visibility macros to use dllexport rather than dllimport,
+# which is appropriate when building the dll but not consuming it.
+# target_compile_definitions(${PROJECT_NAME} PRIVATE "PCA9685_HARDWARE_INTERFACE_BUILDING_DLL")
 
 pluginlib_export_plugin_description_file(hardware_interface hardware.xml)
 
@@ -67,7 +79,8 @@ install(
   DESTINATION lib
 )
 
-install(TARGETS ${PROJECT_NAME}
+install(
+  TARGETS ${PROJECT_NAME}
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
