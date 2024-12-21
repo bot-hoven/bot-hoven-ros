@@ -42,9 +42,37 @@ source install/setup.bash
 ```sh
 ./scripts/shutdown.sh
 ```
-
-## Checking the URDF
+## How To
+### Check the URDF
 ```sh
 ros2 run xacro xacro src/description/urdf/bothoven.urdf.xacro -o <output-file>.urdf
 check_urdf <output-file>.urdf
 ```
+
+### Simulate in RViz
+
+1. Build the workspace with symlink install:
+   ```sh
+   colcon build --symlink-install
+   ```
+   > **Note:** The `--symlink-install` option in the `colcon build` command creates symbolic links for the built packages instead of copying them, then we don’t need to rebuild every time we update the URDF. This allows for faster builds and easier debugging, as changes in the source files are immediately reflected in the built files. However, we need to rebuild whenever we add a new file.
+   
+2. Source the setup script:
+   ```sh
+   source install/setup.bash
+   ```
+3. In Terminal A, run the robot state publisher with the URDF file:
+   ```sh
+   ros2 run robot_state_publisher robot_state_publisher --ros-args -p robot_description:="$(xacro src/description/urdf/bothoven.urdf.xacro)"
+   ```
+4. In Terminal B, run the joint state publisher GUI:
+   ```sh
+   ros2 run joint_state_publisher_gui joint_state_publisher_gui
+   ```
+5. In Terminal C, start RViz:
+   ```sh
+   rviz2
+   ```
+6. Import the RViz configuration from the specified file:
+   1. In RViz, go to `File` -> `Open Config`
+   2. Choose the file `src/description/resource/rviz2_config.rviz`
