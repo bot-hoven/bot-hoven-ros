@@ -80,6 +80,11 @@
                     </geometry>
                     <material name="blue"/>
                 </visual>
+                <collision>
+                    <geometry>
+                        <box size="0.1 0.05 0.05"/>
+                    </geometry>
+                </collision>
             </link>
 
             <joint name="${name}_joint" type="prismatic">
@@ -101,6 +106,12 @@
                     </geometry>
                     <material name="orange"/>
                 </visual>
+                <collision>
+                    <geometry>
+                        <box size="${hand_length} ${hand_width} ${hand_height}"/>
+                    </geometry>
+                    <origin xyz="0 0.5 0"/>
+                </collision>
             </link>
 
             <joint name="${name}_joint" type="fixed">
@@ -157,6 +168,12 @@
                     </geometry>
                     <material name="black"/>
                 </visual>
+                <collision>
+                    <geometry>
+                        <box size="${finger_thickness} ${finger_length} ${finger_thickness}"/>
+                    </geometry>
+                    <origin xyz="0 -0.05 0"/>
+                </collision>
             </link>
             <joint name="${name}_joint" type="fixed">
                 <parent link="${parent_link}"/>
