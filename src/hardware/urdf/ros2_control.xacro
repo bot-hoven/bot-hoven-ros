@@ -79,7 +79,7 @@
 
   <ros2_control name="left_hand_pca9685" type="system">
     <hardware>
-      <plugin>pca9685_hardware_interface/Pca9685SystemHardware</plugin>
+      <plugin>PiPCA9685/Pca9685SystemHardware</plugin>
       <param name="i2c_bus">/dev/i2c-1</param>
       <param name="i2c_address">64</param>  <!-- 0x40 in decimal -->
       <param name="frequency_hz">50</param>
@@ -113,7 +113,7 @@
 
   <ros2_control name="right_hand_pca9685" type="system">
     <hardware>
-      <plugin>pca9685_hardware_interface/Pca9685SystemHardware</plugin>
+      <plugin>PiPCA9685/Pca9685SystemHardware</plugin>
       <param name="i2c_address">65</param>  <!-- 0x41 in decimal -->
       <param name="frequency_hz">50</param>
       <!-- we might want to define the parameters for these servos in this file
