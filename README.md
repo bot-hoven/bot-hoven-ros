@@ -76,3 +76,11 @@ check_urdf <output-file>.urdf
 6. Import the RViz configuration from the specified file:
    1. In RViz, go to `File` -> `Open Config`
    2. Choose the file `src/description/resource/rviz2_config.rviz`
+
+### Launch `robot_state_publisher` with sim time
+
+Launch `robot_state_publisher` with sim time using the following command:
+
+```sh
+ros2 launch description rsp.launch.py use_sim_time:=true
+```
