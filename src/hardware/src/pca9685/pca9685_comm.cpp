@@ -90,13 +90,10 @@
 
 namespace PiPCA9685 {
 
-PCA9685::PCA9685(int device_address) {
-  address = device_address;
-}
-
-PCA9685::~PCA9685() = default;
-
-void PCA9685::init() {
+PCA9685::PCA9685(const std::string &device, int address) {
+  // i2c_dev = std::make_unique<hardware::I2CPeripheral>(device, address);
+  
+  i2c_dev->ConnectToPeripheral(address);
   set_all_pwm(0,0);
   i2c_dev->WriteRegisterByte(MODE2, OUTDRV);
   i2c_dev->WriteRegisterByte(MODE1, ALLCALL);
