@@ -20,8 +20,15 @@ def generate_launch_description():
     robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
-        output='screen',
+        output='both',
         parameters=[robot_description]
+    )
+
+    joint_state_publisher_gui = Node(
+        package='joint_state_publisher_gui',
+        executable='joint_state_publisher_gui',
+        name='joint_state_publisher_gui',
+        output=['screen']
     )
 
     declared_arguments = [
@@ -38,7 +45,8 @@ def generate_launch_description():
     ]
 
     nodes = [
-        robot_state_publisher
+        robot_state_publisher,
+        joint_state_publisher_gui
     ]
 
     return LaunchDescription(declared_arguments + nodes)

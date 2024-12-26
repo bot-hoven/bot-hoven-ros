@@ -11,6 +11,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/urdf', ['urdf/bothoven.urdf.xacro']),
         ('share/' + package_name + '/launch', ['launch/gazebo.launch.py']),
+        ('share/' + package_name + '/launch', ['launch/rsp.launch.py']),
         ('share/' + package_name + '/description', ['description/bothoven_core.xacro']),
         ('share/' + package_name + '/description', ['description/gazebo_control.xacro']),
         ('share/' + package_name + '/description', ['description/common.xacro'])
