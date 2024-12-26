@@ -23,7 +23,8 @@
         "ms-python.python",
         "smilerobotics.urdf",
         "ms-vscode.cmake-tools",
-        "ms-vscode.cpptools-extension-pack"
+        "ms-vscode.cpptools-extension-pack",
+        "redhat.vscode-xml"
       ]
     }
   }
