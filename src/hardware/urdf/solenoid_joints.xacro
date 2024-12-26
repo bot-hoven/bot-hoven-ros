@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <joint name="left_hand_thumb_solenoid_joint">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_index_finger_solenoid_joint">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_middle_finger_solenoid_joint">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_ring_finger_solenoid_joint">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+    </joint>
+    <joint name="left_hand_pinky_solenoid_joint">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_thumb_solenoid_joint">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_index_finger_solenoid_joint">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_middle_finger_solenoid_joint">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_ring_finger_solenoid_joint">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+    </joint>
+    <joint name="right_hand_pinky_solenoid_joint">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+    </joint>
+</robot>
