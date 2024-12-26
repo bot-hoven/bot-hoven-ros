@@ -14,7 +14,11 @@ setup(
         ('share/' + package_name + '/launch', ['launch/rsp.launch.py']),
         ('share/' + package_name + '/description', ['description/bothoven_core.xacro']),
         ('share/' + package_name + '/description', ['description/gazebo_control.xacro']),
-        ('share/' + package_name + '/description', ['description/common.xacro'])
+        ('share/' + package_name + '/description', ['description/common.xacro']),
+        ('share/' + package_name + '/worlds', ['worlds/bothoven_world.sdf']),
+        ('share/' + package_name + '/resource', ['resource/rviz2_config.rviz']),
+        ('share/' + package_name + '/models', ['models/bothoven/model.config']),
+        ('share/' + package_name + '/models', ['models/bothoven/model.sdf']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,

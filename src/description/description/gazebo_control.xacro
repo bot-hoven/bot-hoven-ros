@@ -2,9 +2,11 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     <gazebo>
         <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="libgz_ros2_control-system.so">
-            <robotNamespace>/</robotNamespace>
-            <parameters></parameters>
-            <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
+            <parameters>$(find hardware)/config/controllers.yaml</parameters>
+            <ros>
+                <namespace>bothoven</namespace>
+                <remapping>/robot_description:=/robot_description</remapping>
+            </ros>
         </plugin>
     </gazebo>
 
@@ -18,7 +20,7 @@
     </ros2_control>
 
     <!-- Left Hand Controllers -->
-    <gazebo>
+    <!-- <gazebo>
         <plugin name="left_hand_controller" filename="libgazebo_ros_joint_trajectory_controller.so">
             <robotNamespace>/left_hand</robotNamespace>
             <joint>left_hand_stepper_joint</joint>
@@ -33,10 +35,10 @@
             <joint>left_hand_pinky_solenoid_joint</joint>
             <joint>left_hand_pinky_servo_joint</joint>
         </plugin>
-    </gazebo>
+    </gazebo> -->
 
     <!-- Right Hand Controllers -->
-    <gazebo>
+    <!-- <gazebo>
         <plugin name="right_hand_controller" filename="libgazebo_ros_joint_trajectory_controller.so">
             <robotNamespace>/right_hand</robotNamespace>
             <joint>right_hand_stepper_joint</joint>
@@ -51,5 +53,5 @@
             <joint>right_hand_pinky_solenoid_joint</joint>
             <joint>right_hand_pinky_servo_joint</joint>
         </plugin>
-    </gazebo>
+    </gazebo> -->
 </robot>

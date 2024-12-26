@@ -84,3 +84,11 @@ Launch `robot_state_publisher` with sim time using the following command:
 ```sh
 ros2 launch description rsp.launch.py use_sim_time:=true
 ```
+
+### Simulate in Gazebo
+
+Run the command below:
+
+```sh
+ros2 launch description gazebo.launch.py
+```
