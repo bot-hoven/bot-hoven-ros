@@ -90,5 +90,6 @@ ros2 launch description rsp.launch.py use_sim_time:=true
 Run the command below:
 
 ```sh
+export GZ_SIM_RESOURCE_PATH="/bot-hoven-ros"
 ros2 launch description gazebo.launch.py
 ```
