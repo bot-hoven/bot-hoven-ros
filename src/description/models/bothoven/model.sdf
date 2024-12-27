@@ -1,0 +1,1466 @@
+<sdf version='1.11'>
+  <model name='bothoven'>
+    <link name='base_link'>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>1</mass>
+        <inertia>
+          <ixx>0.10000000000000001</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.10000000000000001</iyy>
+          <iyz>0</iyz>
+          <izz>0.10000000000000001</izz>
+        </inertia>
+      </inertial>
+      <visual name='base_link_fixed_joint_lump__aluminum_rail_visual'>
+        <pose>0 0 0.10000000000000001 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>1.5 0.02 0.02</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>1 1 1 1</diffuse>
+          <ambient>1 1 1 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='left_carriage_joint' type='prismatic'>
+      <pose relative_to='base_link'>0 0 0.10000000000000001 0 0 0</pose>
+      <parent>base_link</parent>
+      <child>left_carriage</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <mimic joint='left_hand_stepper_joint'>
+          <multiplier>-0.21656050955414011</multiplier>
+          <offset>0.68000000000000005</offset>
+          <reference>0</reference>
+        </mimic>
+        <limit>
+          <lower>-0.68000000000000005</lower>
+          <upper>0.68000000000000005</upper>
+          <effort>10</effort>
+          <velocity>0.5</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_carriage'>
+      <pose relative_to='left_carriage_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0.1428571428571429 0 0 0 0</pose>
+        <mass>0.69999999999999996</mass>
+        <inertia>
+          <ixx>0.037214285714285707</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0015</iyy>
+          <iyz>0</iyz>
+          <izz>0.037214285714285707</izz>
+        </inertia>
+      </inertial>
+      <collision name='left_carriage_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.10000000000000001 0.050000000000000003 0.050000000000000003</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='left_carriage_fixed_joint_lump__left_hand_collision_1'>
+        <pose>0 1 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.20000000000000001 0.10000000000000001 0.050000000000000003</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='left_carriage_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.10000000000000001 0.050000000000000003 0.050000000000000003</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0.25 0.25 1 1</diffuse>
+          <ambient>0.25 0.25 1 1</ambient>
+        </material>
+      </visual>
+      <visual name='left_carriage_fixed_joint_lump__left_hand_visual_1'>
+        <pose>0 0.5 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.20000000000000001 0.10000000000000001 0.050000000000000003</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>1 0.37500003 0.125 1</diffuse>
+          <ambient>1 0.37500003 0.125 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='left_hand_index_finger_servo_joint' type='revolute'>
+      <pose relative_to='left_carriage'>-0.03333333333333334 0.45000000000000001 -0.01 0 0 0</pose>
+      <parent>left_carriage</parent>
+      <child>left_hand_index_finger_servo</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_hand_index_finger_servo'>
+      <pose relative_to='left_hand_index_finger_servo_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.050000000000000003</mass>
+        <inertia>
+          <ixx>2.0000000000000002e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>2.0000000000000002e-05</iyy>
+          <iyz>0</iyz>
+          <izz>2.0000000000000002e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name='left_hand_index_finger_servo_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.02 0.02</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>1 1 0 1</diffuse>
+          <ambient>1 1 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='left_hand_index_finger_solenoid_joint' type='revolute'>
+      <pose relative_to='left_hand_index_finger_servo'>0 0 0 0 0 0</pose>
+      <parent>left_hand_index_finger_servo</parent>
+      <child>left_hand_index_finger_solenoid</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_hand_index_finger_solenoid'>
+      <pose relative_to='left_hand_index_finger_solenoid_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 -0.03333333333333334 0 0 0 0</pose>
+        <mass>0.14999999999999999</mass>
+        <inertia>
+          <ixx>0.0002333333333333333</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00014999999999999999</iyy>
+          <iyz>0</iyz>
+          <izz>0.0002333333333333333</izz>
+        </inertia>
+      </inertial>
+      <collision name='left_hand_index_finger_solenoid_fixed_joint_lump__left_hand_index_finger_collision'>
+        <pose>0 -0.10000000000000001 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='left_hand_index_finger_solenoid_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.025000000000000001</length>
+            <radius>0.01</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='left_hand_index_finger_solenoid_fixed_joint_lump__left_hand_index_finger_visual_1'>
+        <pose>0 -0.050000000000000003 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='left_hand_middle_finger_servo_joint' type='revolute'>
+      <pose relative_to='left_carriage'>0 0.45000000000000001 -0.01 0 0 0</pose>
+      <parent>left_carriage</parent>
+      <child>left_hand_middle_finger_servo</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_hand_middle_finger_servo'>
+      <pose relative_to='left_hand_middle_finger_servo_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.050000000000000003</mass>
+        <inertia>
+          <ixx>2.0000000000000002e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>2.0000000000000002e-05</iyy>
+          <iyz>0</iyz>
+          <izz>2.0000000000000002e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name='left_hand_middle_finger_servo_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.02 0.02</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>1 1 0 1</diffuse>
+          <ambient>1 1 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='left_hand_middle_finger_solenoid_joint' type='revolute'>
+      <pose relative_to='left_hand_middle_finger_servo'>0 0 0 0 0 0</pose>
+      <parent>left_hand_middle_finger_servo</parent>
+      <child>left_hand_middle_finger_solenoid</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_hand_middle_finger_solenoid'>
+      <pose relative_to='left_hand_middle_finger_solenoid_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 -0.03333333333333334 0 0 0 0</pose>
+        <mass>0.14999999999999999</mass>
+        <inertia>
+          <ixx>0.0002333333333333333</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00014999999999999999</iyy>
+          <iyz>0</iyz>
+          <izz>0.0002333333333333333</izz>
+        </inertia>
+      </inertial>
+      <collision name='left_hand_middle_finger_solenoid_fixed_joint_lump__left_hand_middle_finger_collision'>
+        <pose>0 -0.10000000000000001 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='left_hand_middle_finger_solenoid_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.025000000000000001</length>
+            <radius>0.01</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='left_hand_middle_finger_solenoid_fixed_joint_lump__left_hand_middle_finger_visual_1'>
+        <pose>0 -0.050000000000000003 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='left_hand_pinky_servo_joint' type='revolute'>
+      <pose relative_to='left_carriage'>0.06666666666666668 0.45000000000000001 -0.01 0 0 0</pose>
+      <parent>left_carriage</parent>
+      <child>left_hand_pinky_servo</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_hand_pinky_servo'>
+      <pose relative_to='left_hand_pinky_servo_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.050000000000000003</mass>
+        <inertia>
+          <ixx>2.0000000000000002e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>2.0000000000000002e-05</iyy>
+          <iyz>0</iyz>
+          <izz>2.0000000000000002e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name='left_hand_pinky_servo_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.02 0.02</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>1 1 0 1</diffuse>
+          <ambient>1 1 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='left_hand_pinky_solenoid_joint' type='revolute'>
+      <pose relative_to='left_hand_pinky_servo'>0 0 0 0 0 0</pose>
+      <parent>left_hand_pinky_servo</parent>
+      <child>left_hand_pinky_solenoid</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_hand_pinky_solenoid'>
+      <pose relative_to='left_hand_pinky_solenoid_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 -0.03333333333333334 0 0 0 0</pose>
+        <mass>0.14999999999999999</mass>
+        <inertia>
+          <ixx>0.0002333333333333333</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00014999999999999999</iyy>
+          <iyz>0</iyz>
+          <izz>0.0002333333333333333</izz>
+        </inertia>
+      </inertial>
+      <collision name='left_hand_pinky_solenoid_fixed_joint_lump__left_hand_pinky_collision'>
+        <pose>0 -0.10000000000000001 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='left_hand_pinky_solenoid_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.025000000000000001</length>
+            <radius>0.01</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='left_hand_pinky_solenoid_fixed_joint_lump__left_hand_pinky_visual_1'>
+        <pose>0 -0.050000000000000003 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='left_hand_ring_finger_servo_joint' type='revolute'>
+      <pose relative_to='left_carriage'>0.03333333333333334 0.45000000000000001 -0.01 0 0 0</pose>
+      <parent>left_carriage</parent>
+      <child>left_hand_ring_finger_servo</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_hand_ring_finger_servo'>
+      <pose relative_to='left_hand_ring_finger_servo_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.050000000000000003</mass>
+        <inertia>
+          <ixx>2.0000000000000002e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>2.0000000000000002e-05</iyy>
+          <iyz>0</iyz>
+          <izz>2.0000000000000002e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name='left_hand_ring_finger_servo_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.02 0.02</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>1 1 0 1</diffuse>
+          <ambient>1 1 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='left_hand_ring_finger_solenoid_joint' type='revolute'>
+      <pose relative_to='left_hand_ring_finger_servo'>0 0 0 0 0 0</pose>
+      <parent>left_hand_ring_finger_servo</parent>
+      <child>left_hand_ring_finger_solenoid</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_hand_ring_finger_solenoid'>
+      <pose relative_to='left_hand_ring_finger_solenoid_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 -0.03333333333333334 0 0 0 0</pose>
+        <mass>0.14999999999999999</mass>
+        <inertia>
+          <ixx>0.0002333333333333333</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00014999999999999999</iyy>
+          <iyz>0</iyz>
+          <izz>0.0002333333333333333</izz>
+        </inertia>
+      </inertial>
+      <collision name='left_hand_ring_finger_solenoid_fixed_joint_lump__left_hand_ring_finger_collision'>
+        <pose>0 -0.10000000000000001 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='left_hand_ring_finger_solenoid_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.025000000000000001</length>
+            <radius>0.01</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='left_hand_ring_finger_solenoid_fixed_joint_lump__left_hand_ring_finger_visual_1'>
+        <pose>0 -0.050000000000000003 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='left_hand_thumb_servo_joint' type='revolute'>
+      <pose relative_to='left_carriage'>-0.06666666666666668 0.45000000000000001 -0.01 0 0 0</pose>
+      <parent>left_carriage</parent>
+      <child>left_hand_thumb_servo</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_hand_thumb_servo'>
+      <pose relative_to='left_hand_thumb_servo_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.050000000000000003</mass>
+        <inertia>
+          <ixx>2.0000000000000002e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>2.0000000000000002e-05</iyy>
+          <iyz>0</iyz>
+          <izz>2.0000000000000002e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name='left_hand_thumb_servo_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.02 0.02</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>1 1 0 1</diffuse>
+          <ambient>1 1 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='left_hand_thumb_solenoid_joint' type='revolute'>
+      <pose relative_to='left_hand_thumb_servo'>0 0 0 0 0 0</pose>
+      <parent>left_hand_thumb_servo</parent>
+      <child>left_hand_thumb_solenoid</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_hand_thumb_solenoid'>
+      <pose relative_to='left_hand_thumb_solenoid_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 -0.03333333333333334 0 0 0 0</pose>
+        <mass>0.14999999999999999</mass>
+        <inertia>
+          <ixx>0.0002333333333333333</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00014999999999999999</iyy>
+          <iyz>0</iyz>
+          <izz>0.0002333333333333333</izz>
+        </inertia>
+      </inertial>
+      <collision name='left_hand_thumb_solenoid_fixed_joint_lump__left_hand_thumb_collision'>
+        <pose>0 -0.10000000000000001 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='left_hand_thumb_solenoid_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.025000000000000001</length>
+            <radius>0.01</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='left_hand_thumb_solenoid_fixed_joint_lump__left_hand_thumb_visual_1'>
+        <pose>0 -0.050000000000000003 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='left_hand_stepper_joint' type='revolute'>
+      <pose relative_to='base_link'>0.75 0 0.10000000000000001 0 0 0</pose>
+      <parent>base_link</parent>
+      <child>left_hand_stepper</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>6.2800000000000002</upper>
+          <effort>5</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_hand_stepper'>
+      <pose relative_to='left_hand_stepper_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.10000000000000001</mass>
+        <inertia>
+          <ixx>0.0001</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0001</iyy>
+          <iyz>0</iyz>
+          <izz>0.0001</izz>
+        </inertia>
+      </inertial>
+      <visual name='left_hand_stepper_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.050000000000000003</length>
+            <radius>0.02</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='right_carriage_joint' type='prismatic'>
+      <pose relative_to='base_link'>0 0 0.10000000000000001 0 0 0</pose>
+      <parent>base_link</parent>
+      <child>right_carriage</child>
+      <axis>
+        <xyz>-1 0 0</xyz>
+        <mimic joint='right_hand_stepper_joint'>
+          <multiplier>-0.21656050955414011</multiplier>
+          <offset>0.68000000000000005</offset>
+          <reference>0</reference>
+        </mimic>
+        <limit>
+          <lower>-0.68000000000000005</lower>
+          <upper>0.68000000000000005</upper>
+          <effort>10</effort>
+          <velocity>0.5</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_carriage'>
+      <pose relative_to='right_carriage_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0.1428571428571429 0 0 0 0</pose>
+        <mass>0.69999999999999996</mass>
+        <inertia>
+          <ixx>0.037214285714285707</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0015</iyy>
+          <iyz>0</iyz>
+          <izz>0.037214285714285707</izz>
+        </inertia>
+      </inertial>
+      <collision name='right_carriage_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.10000000000000001 0.050000000000000003 0.050000000000000003</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='right_carriage_fixed_joint_lump__right_hand_collision_1'>
+        <pose>0 1 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.20000000000000001 0.10000000000000001 0.050000000000000003</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='right_carriage_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.10000000000000001 0.050000000000000003 0.050000000000000003</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0.25 0.25 1 1</diffuse>
+          <ambient>0.25 0.25 1 1</ambient>
+        </material>
+      </visual>
+      <visual name='right_carriage_fixed_joint_lump__right_hand_visual_1'>
+        <pose>0 0.5 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.20000000000000001 0.10000000000000001 0.050000000000000003</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>1 0.37500003 0.125 1</diffuse>
+          <ambient>1 0.37500003 0.125 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='right_hand_index_finger_servo_joint' type='revolute'>
+      <pose relative_to='right_carriage'>0.03333333333333334 0.45000000000000001 -0.01 0 0 0</pose>
+      <parent>right_carriage</parent>
+      <child>right_hand_index_finger_servo</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_hand_index_finger_servo'>
+      <pose relative_to='right_hand_index_finger_servo_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.050000000000000003</mass>
+        <inertia>
+          <ixx>2.0000000000000002e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>2.0000000000000002e-05</iyy>
+          <iyz>0</iyz>
+          <izz>2.0000000000000002e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name='right_hand_index_finger_servo_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.02 0.02</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>1 1 0 1</diffuse>
+          <ambient>1 1 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='right_hand_index_finger_solenoid_joint' type='revolute'>
+      <pose relative_to='right_hand_index_finger_servo'>0 0 0 0 0 0</pose>
+      <parent>right_hand_index_finger_servo</parent>
+      <child>right_hand_index_finger_solenoid</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_hand_index_finger_solenoid'>
+      <pose relative_to='right_hand_index_finger_solenoid_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 -0.03333333333333334 0 0 0 0</pose>
+        <mass>0.14999999999999999</mass>
+        <inertia>
+          <ixx>0.0002333333333333333</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00014999999999999999</iyy>
+          <iyz>0</iyz>
+          <izz>0.0002333333333333333</izz>
+        </inertia>
+      </inertial>
+      <collision name='right_hand_index_finger_solenoid_fixed_joint_lump__right_hand_index_finger_collision'>
+        <pose>0 -0.10000000000000001 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='right_hand_index_finger_solenoid_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.025000000000000001</length>
+            <radius>0.01</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='right_hand_index_finger_solenoid_fixed_joint_lump__right_hand_index_finger_visual_1'>
+        <pose>0 -0.050000000000000003 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='right_hand_middle_finger_servo_joint' type='revolute'>
+      <pose relative_to='right_carriage'>0 0.45000000000000001 -0.01 0 0 0</pose>
+      <parent>right_carriage</parent>
+      <child>right_hand_middle_finger_servo</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_hand_middle_finger_servo'>
+      <pose relative_to='right_hand_middle_finger_servo_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.050000000000000003</mass>
+        <inertia>
+          <ixx>2.0000000000000002e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>2.0000000000000002e-05</iyy>
+          <iyz>0</iyz>
+          <izz>2.0000000000000002e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name='right_hand_middle_finger_servo_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.02 0.02</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>1 1 0 1</diffuse>
+          <ambient>1 1 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='right_hand_middle_finger_solenoid_joint' type='revolute'>
+      <pose relative_to='right_hand_middle_finger_servo'>0 0 0 0 0 0</pose>
+      <parent>right_hand_middle_finger_servo</parent>
+      <child>right_hand_middle_finger_solenoid</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_hand_middle_finger_solenoid'>
+      <pose relative_to='right_hand_middle_finger_solenoid_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 -0.03333333333333334 0 0 0 0</pose>
+        <mass>0.14999999999999999</mass>
+        <inertia>
+          <ixx>0.0002333333333333333</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00014999999999999999</iyy>
+          <iyz>0</iyz>
+          <izz>0.0002333333333333333</izz>
+        </inertia>
+      </inertial>
+      <collision name='right_hand_middle_finger_solenoid_fixed_joint_lump__right_hand_middle_finger_collision'>
+        <pose>0 -0.10000000000000001 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='right_hand_middle_finger_solenoid_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.025000000000000001</length>
+            <radius>0.01</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='right_hand_middle_finger_solenoid_fixed_joint_lump__right_hand_middle_finger_visual_1'>
+        <pose>0 -0.050000000000000003 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='right_hand_pinky_servo_joint' type='revolute'>
+      <pose relative_to='right_carriage'>-0.06666666666666668 0.45000000000000001 -0.01 0 0 0</pose>
+      <parent>right_carriage</parent>
+      <child>right_hand_pinky_servo</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_hand_pinky_servo'>
+      <pose relative_to='right_hand_pinky_servo_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.050000000000000003</mass>
+        <inertia>
+          <ixx>2.0000000000000002e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>2.0000000000000002e-05</iyy>
+          <iyz>0</iyz>
+          <izz>2.0000000000000002e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name='right_hand_pinky_servo_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.02 0.02</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>1 1 0 1</diffuse>
+          <ambient>1 1 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='right_hand_pinky_solenoid_joint' type='revolute'>
+      <pose relative_to='right_hand_pinky_servo'>0 0 0 0 0 0</pose>
+      <parent>right_hand_pinky_servo</parent>
+      <child>right_hand_pinky_solenoid</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_hand_pinky_solenoid'>
+      <pose relative_to='right_hand_pinky_solenoid_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 -0.03333333333333334 0 0 0 0</pose>
+        <mass>0.14999999999999999</mass>
+        <inertia>
+          <ixx>0.0002333333333333333</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00014999999999999999</iyy>
+          <iyz>0</iyz>
+          <izz>0.0002333333333333333</izz>
+        </inertia>
+      </inertial>
+      <collision name='right_hand_pinky_solenoid_fixed_joint_lump__right_hand_pinky_collision'>
+        <pose>0 -0.10000000000000001 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='right_hand_pinky_solenoid_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.025000000000000001</length>
+            <radius>0.01</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='right_hand_pinky_solenoid_fixed_joint_lump__right_hand_pinky_visual_1'>
+        <pose>0 -0.050000000000000003 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='right_hand_ring_finger_servo_joint' type='revolute'>
+      <pose relative_to='right_carriage'>-0.03333333333333334 0.45000000000000001 -0.01 0 0 0</pose>
+      <parent>right_carriage</parent>
+      <child>right_hand_ring_finger_servo</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_hand_ring_finger_servo'>
+      <pose relative_to='right_hand_ring_finger_servo_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.050000000000000003</mass>
+        <inertia>
+          <ixx>2.0000000000000002e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>2.0000000000000002e-05</iyy>
+          <iyz>0</iyz>
+          <izz>2.0000000000000002e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name='right_hand_ring_finger_servo_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.02 0.02</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>1 1 0 1</diffuse>
+          <ambient>1 1 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='right_hand_ring_finger_solenoid_joint' type='revolute'>
+      <pose relative_to='right_hand_ring_finger_servo'>0 0 0 0 0 0</pose>
+      <parent>right_hand_ring_finger_servo</parent>
+      <child>right_hand_ring_finger_solenoid</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_hand_ring_finger_solenoid'>
+      <pose relative_to='right_hand_ring_finger_solenoid_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 -0.03333333333333334 0 0 0 0</pose>
+        <mass>0.14999999999999999</mass>
+        <inertia>
+          <ixx>0.0002333333333333333</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00014999999999999999</iyy>
+          <iyz>0</iyz>
+          <izz>0.0002333333333333333</izz>
+        </inertia>
+      </inertial>
+      <collision name='right_hand_ring_finger_solenoid_fixed_joint_lump__right_hand_ring_finger_collision'>
+        <pose>0 -0.10000000000000001 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='right_hand_ring_finger_solenoid_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.025000000000000001</length>
+            <radius>0.01</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='right_hand_ring_finger_solenoid_fixed_joint_lump__right_hand_ring_finger_visual_1'>
+        <pose>0 -0.050000000000000003 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='right_hand_thumb_servo_joint' type='revolute'>
+      <pose relative_to='right_carriage'>0.06666666666666668 0.45000000000000001 -0.01 0 0 0</pose>
+      <parent>right_carriage</parent>
+      <child>right_hand_thumb_servo</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_hand_thumb_servo'>
+      <pose relative_to='right_hand_thumb_servo_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.050000000000000003</mass>
+        <inertia>
+          <ixx>2.0000000000000002e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>2.0000000000000002e-05</iyy>
+          <iyz>0</iyz>
+          <izz>2.0000000000000002e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name='right_hand_thumb_servo_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.02 0.02</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>1 1 0 1</diffuse>
+          <ambient>1 1 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='right_hand_thumb_solenoid_joint' type='revolute'>
+      <pose relative_to='right_hand_thumb_servo'>0 0 0 0 0 0</pose>
+      <parent>right_hand_thumb_servo</parent>
+      <child>right_hand_thumb_solenoid</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.20000000000000001</lower>
+          <upper>0.20000000000000001</upper>
+          <effort>1</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_hand_thumb_solenoid'>
+      <pose relative_to='right_hand_thumb_solenoid_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 -0.03333333333333334 0 0 0 0</pose>
+        <mass>0.14999999999999999</mass>
+        <inertia>
+          <ixx>0.0002333333333333333</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00014999999999999999</iyy>
+          <iyz>0</iyz>
+          <izz>0.0002333333333333333</izz>
+        </inertia>
+      </inertial>
+      <collision name='right_hand_thumb_solenoid_fixed_joint_lump__right_hand_thumb_collision'>
+        <pose>0 -0.10000000000000001 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='right_hand_thumb_solenoid_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.025000000000000001</length>
+            <radius>0.01</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 1 0 1</diffuse>
+          <ambient>0 1 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='right_hand_thumb_solenoid_fixed_joint_lump__right_hand_thumb_visual_1'>
+        <pose>0 -0.050000000000000003 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.10000000000000001 0.01</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='right_hand_stepper_joint' type='revolute'>
+      <pose relative_to='base_link'>-0.75 0 0.10000000000000001 0 0 0</pose>
+      <parent>base_link</parent>
+      <child>right_hand_stepper</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>6.2800000000000002</upper>
+          <effort>5</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_hand_stepper'>
+      <pose relative_to='right_hand_stepper_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.10000000000000001</mass>
+        <inertia>
+          <ixx>0.0001</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0001</iyy>
+          <iyz>0</iyz>
+          <izz>0.0001</izz>
+        </inertia>
+      </inertial>
+      <visual name='right_hand_stepper_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.050000000000000003</length>
+            <radius>0.02</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0 0 0 1</diffuse>
+          <ambient>0 0 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <frame name='rail_to_base' attached_to='base_link'>
+      <pose>0 0 0.10000000000000001 0 0 0</pose>
+    </frame>
+    <frame name='aluminum_rail' attached_to='rail_to_base'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='left_hand_joint' attached_to='left_carriage'>
+      <pose>0 0.5 0 0 0 0</pose>
+    </frame>
+    <frame name='left_hand' attached_to='left_hand_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='left_hand_index_finger_joint' attached_to='left_hand_index_finger_solenoid'>
+      <pose>0 -0.050000000000000003 0 0 0 0</pose>
+    </frame>
+    <frame name='left_hand_index_finger' attached_to='left_hand_index_finger_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='left_hand_middle_finger_joint' attached_to='left_hand_middle_finger_solenoid'>
+      <pose>0 -0.050000000000000003 0 0 0 0</pose>
+    </frame>
+    <frame name='left_hand_middle_finger' attached_to='left_hand_middle_finger_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='left_hand_pinky_joint' attached_to='left_hand_pinky_solenoid'>
+      <pose>0 -0.050000000000000003 0 0 0 0</pose>
+    </frame>
+    <frame name='left_hand_pinky' attached_to='left_hand_pinky_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='left_hand_ring_finger_joint' attached_to='left_hand_ring_finger_solenoid'>
+      <pose>0 -0.050000000000000003 0 0 0 0</pose>
+    </frame>
+    <frame name='left_hand_ring_finger' attached_to='left_hand_ring_finger_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='left_hand_thumb_joint' attached_to='left_hand_thumb_solenoid'>
+      <pose>0 -0.050000000000000003 0 0 0 0</pose>
+    </frame>
+    <frame name='left_hand_thumb' attached_to='left_hand_thumb_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='right_hand_joint' attached_to='right_carriage'>
+      <pose>0 0.5 0 0 0 0</pose>
+    </frame>
+    <frame name='right_hand' attached_to='right_hand_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='right_hand_index_finger_joint' attached_to='right_hand_index_finger_solenoid'>
+      <pose>0 -0.050000000000000003 0 0 0 0</pose>
+    </frame>
+    <frame name='right_hand_index_finger' attached_to='right_hand_index_finger_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='right_hand_middle_finger_joint' attached_to='right_hand_middle_finger_solenoid'>
+      <pose>0 -0.050000000000000003 0 0 0 0</pose>
+    </frame>
+    <frame name='right_hand_middle_finger' attached_to='right_hand_middle_finger_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='right_hand_pinky_joint' attached_to='right_hand_pinky_solenoid'>
+      <pose>0 -0.050000000000000003 0 0 0 0</pose>
+    </frame>
+    <frame name='right_hand_pinky' attached_to='right_hand_pinky_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='right_hand_ring_finger_joint' attached_to='right_hand_ring_finger_solenoid'>
+      <pose>0 -0.050000000000000003 0 0 0 0</pose>
+    </frame>
+    <frame name='right_hand_ring_finger' attached_to='right_hand_ring_finger_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='right_hand_thumb_joint' attached_to='right_hand_thumb_solenoid'>
+      <pose>0 -0.050000000000000003 0 0 0 0</pose>
+    </frame>
+    <frame name='right_hand_thumb' attached_to='right_hand_thumb_joint'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+  </model>
+</sdf>
