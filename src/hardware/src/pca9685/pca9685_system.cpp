@@ -33,7 +33,7 @@
 //     }
 
 
-//     pca = std::make_unique<PiPCA9685::PCA9685>(i2c_bus, std::stoi(info_.hardware_parameters["i2c_address"]));
+//     pca = std::make_unique<pca9685_hardware_interface::PCA9685>(i2c_bus, std::stoi(info_.hardware_parameters["i2c_address"]));
 
 //   } catch (const std::exception &e) {
 //     RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "Error initializing PCA9685: %s", e.what());
@@ -213,7 +213,7 @@
 
 
 
-namespace PiPCA9685
+namespace pca9685_hardware_interface
 {
 hardware_interface::CallbackReturn Pca9685SystemHardware::on_init(
   const hardware_interface::HardwareInfo & info)
@@ -221,20 +221,19 @@ hardware_interface::CallbackReturn Pca9685SystemHardware::on_init(
 
   try {
     // Dynamically create or fetch the shared I2C bus instance
-    // auto i2c_bus = I2CBusManager::getBus(
-    //   info_.hardware_parameters.at("i2c_bus"),
-    //   info_.hardware_parameters.at("default_i2c_device")
-    // );
+    auto i2c_bus = std::make_shared<hardware::I2CPeripheral>(
+      info_.hardware_parameters.at("i2c_bus"),
+      std::stoi(info_.hardware_parameters.at("i2c_address").c_str())
+    );
 
-    auto i2c_bus = std::make_unique<hardware::I2CPeripheral>();
+    // auto i2c_bus = std::make_unique<hardware::I2CPeripheral>();
 
     if (!i2c_bus) {
       RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to initialize I2C bus.");
       return hardware_interface::CallbackReturn::ERROR;
     }
 
-
-    pca = std::make_unique<PiPCA9685::PCA9685>(i2c_bus, std::stoi(info_.hardware_parameters["i2c_address"]));
+    pca = std::make_unique<pca9685_hardware_interface::PCA9685>(i2c_bus, std::stoi(info_.hardware_parameters["i2c_address"]));
 
   } catch (const std::exception &e) {
     RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "Error initializing PCA9685: %s", e.what());
@@ -248,7 +247,7 @@ hardware_interface::CallbackReturn Pca9685SystemHardware::on_init(
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  pca.set_pwm_freq(50.0);
+  pca->set_pwm_freq(50.0);
 
   if (
     hardware_interface::SystemInterface::on_init(info) !=
@@ -393,15 +392,15 @@ hardware_interface::return_type Pca9685SystemHardware::write(
     //     rclcpp::get_logger("Pca9685SystemHardware"),
     //     "Joint '%d' has command '%f', duty_cycle: '%f'.", i, hw_commands_[i], duty_cycle);
 
-    pca.set_pwm_ms(i, duty_cycle);
+    pca->set_pwm_ms(i, duty_cycle);
 
   }
 
   return hardware_interface::return_type::OK;
 }
 
-}  // namespace PiPCA9685
+}  // namespace pca9685_hardware_interface
 
 #include "pluginlib/class_list_macros.hpp"
 PLUGINLIB_EXPORT_CLASS(
-  PiPCA9685::Pca9685SystemHardware, hardware_interface::SystemInterface)
+  pca9685_hardware_interface::Pca9685SystemHardware, hardware_interface::SystemInterface)

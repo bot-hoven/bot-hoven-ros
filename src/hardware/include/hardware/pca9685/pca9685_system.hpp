@@ -64,7 +64,7 @@
 
 // private:
 //   std::vector<double> hw_commands_;
-//   PiPCA9685::PCA9685 pca;
+//   pca9685_hardware_interface::PCA9685 pca;
 //   double command_to_duty_cycle(double command);
 // };
 
@@ -93,7 +93,7 @@
 #include "hardware/pca9685/visibility_control.h"
 #include <hardware/pca9685/pca9685_comm.h>
 
-namespace PiPCA9685
+namespace pca9685_hardware_interface
 {
 class Pca9685SystemHardware : public hardware_interface::SystemInterface
 {
@@ -136,10 +136,10 @@ public:
 
 private:
   std::vector<double> hw_commands_;
-  PiPCA9685::PCA9685 pca;
+  std::unique_ptr<pca9685_hardware_interface::PCA9685> pca;
   double command_to_duty_cycle(double command);
 };
 
-}  // namespace PiPCA9685
+}  // namespace pca9685_hardware_interface
 
 #endif  // HARDWARE__PCA9685__PCA9685_SYSTEM_HPP_

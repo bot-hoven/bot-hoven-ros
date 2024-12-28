@@ -2,7 +2,7 @@
 // #include <unistd.h>
 // #include <cmath>
 
-// namespace PiPCA9685 {
+// namespace pca9685_hardware_interface {
 
 // // PCA9685::PCA9685(std::shared_ptr<I2CBusManager> i2c_device, int device_address)
 // //     : i2c_bus(i2c_device), address(device_address) {
@@ -78,7 +78,7 @@
 //   set_pwm(channel, 0, bits);
 // }
 
-// }  // namespace PiPCA9685
+// }  // namespace pca9685_hardware_interface
 
 
 #include "hardware/pca9685/pca9685_comm.h"
@@ -88,10 +88,11 @@
 // #include "hardware/common/Constants.h"
 // #include "hardware/i2c/I2CPeripheral.h"
 
-namespace PiPCA9685 {
+namespace pca9685_hardware_interface {
 
-PCA9685::PCA9685(const std::string &device, int address) {
-  // i2c_dev = std::make_unique<hardware::I2CPeripheral>(device, address);
+PCA9685::PCA9685(std::shared_ptr<hardware::I2CPeripheral> i2c_bus, int address) {
+  i2c_dev = i2c_bus;
+  address = address;
   
   i2c_dev->ConnectToPeripheral(address);
   set_all_pwm(0,0);
@@ -152,4 +153,4 @@ void PCA9685::set_pwm_ms(const int channel, const double ms) {
   set_pwm(channel, 0, bits);
 }
 
-}  // namespace PiPCA9685
+}  // namespace pca9685_hardware_interface
