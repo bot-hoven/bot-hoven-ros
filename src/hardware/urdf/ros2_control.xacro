@@ -3,9 +3,14 @@
   <ros2_control name="hardware" type="system">
     <hardware>
         <plugin>hardware/BothovenHardware</plugin>
+        <param name="i2c_device">/dev/i2c-1</param> 
+        <param name="left_hand_pca_i2c_address">64</param>  <!-- 0x40 in decimal -->
+        <param name="right_hand_pca_i2c_address">65</param>  <!-- 0x41 in decimal -->
+        <param name="pca9685_frequency_hz">50</param>
     </hardware>
     <xacro:include filename="$(find hardware)/urdf/stepper_joints.xacro"/>
     <xacro:include filename="$(find hardware)/urdf/solenoid_joints.xacro"/>
     <xacro:include filename="$(find hardware)/urdf/servo_joints.xacro"/>
+    <!-- <xacro:arg name="default_i2c_device" default="/dev/i2c-1"/> -->
   </ros2_control>
 </robot>
