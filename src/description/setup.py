@@ -19,6 +19,7 @@ setup(
         ('share/' + package_name + '/resource', ['resource/rviz2_config.rviz']),
         ('share/' + package_name + '/models/bothoven', ['models/bothoven/model.config']),
         ('share/' + package_name + '/models/bothoven', ['models/bothoven/model.sdf']),
+        ('share/' + package_name + '/resource', ['resource/gazebo_config.config']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
