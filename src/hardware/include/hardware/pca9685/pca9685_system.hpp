@@ -64,7 +64,7 @@
 
 // private:
 //   std::vector<double> hw_commands_;
-//   PiPCA9685::PCA9685 pca;
+//   pca9685_hardware_interface::PCA9685 pca;
 //   double command_to_duty_cycle(double command);
 // };
 
@@ -140,6 +140,6 @@ private:
   double command_to_duty_cycle(double command);
 };
 
-}  // namespace PiPCA9685
+}  // namespace pca9685_hardware_interface
 
 #endif  // HARDWARE__PCA9685__PCA9685_SYSTEM_HPP_

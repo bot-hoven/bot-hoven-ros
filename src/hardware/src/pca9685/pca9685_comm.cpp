@@ -88,10 +88,11 @@
 // #include "hardware/common/Constants.h"
 // #include "hardware/i2c/I2CPeripheral.h"
 
-namespace PiPCA9685 {
+namespace pca9685_hardware_interface {
 
-PCA9685::PCA9685(const std::string &device, int address) {
-  // i2c_dev = std::make_unique<hardware::I2CPeripheral>(device, address);
+PCA9685::PCA9685(std::shared_ptr<hardware::I2CPeripheral> i2c_bus, int address) {
+  i2c_dev = i2c_bus;
+  address = address;
   
   i2c_dev->ConnectToPeripheral(address);
   set_all_pwm(0,0);
