@@ -15,6 +15,14 @@ controller_manager:
 left_hand_controller:
   ros__parameters:
     allow_partial_joints_goal: True
+    action_monitor_rate: 20.0
+    open_loop_control: true
+    # constraints:
+    #   stopped_velocity_tolerance: 0.01
+    #   goal_time: 0.0
+    #   left_hand_stepper_joint:
+    #     trajectory: 0.05
+    #     goal: 0.03
     joints:
       - left_hand_stepper_joint
       - left_hand_thumb_solenoid_joint
@@ -37,6 +45,14 @@ left_hand_controller:
 right_hand_controller:
   ros__parameters:
     allow_partial_joints_goal: True
+    action_monitor_rate: 20.0
+    open_loop_control: true
+    # constraints:
+    #   stopped_velocity_tolerance: 0.01
+    #   goal_time: 0.0
+    #   right_hand_stepper_joint:
+    #     trajectory: 0.05
+    #     goal: 0.03
     joints:
       - right_hand_stepper_joint
       - right_hand_thumb_solenoid_joint
