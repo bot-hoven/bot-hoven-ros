@@ -5,7 +5,7 @@ from launch_ros.actions import Node
 from launch.event_handlers import OnProcessExit
 from ament_index_python.packages import get_package_share_directory
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import PathJoinSubstitution, LaunchConfiguration, Command, FindExecutable
+from launch.substitutions import PathJoinSubstitution, LaunchConfiguration, Command
 from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
@@ -146,6 +146,5 @@ def generate_launch_description():
             'use_ros2_control',
             default_value=use_ros2_control,
             description='If true, use ros2_control'
-        ),
-        rviz,
+        )
     ])
