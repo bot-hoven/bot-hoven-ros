@@ -52,6 +52,14 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+add_executable(example_jtc examples/example_jtc.cpp)
+ament_target_dependencies(example_jtc
+  rclcpp
+  rclcpp_action
+  control_msgs
+  trajectory_msgs
+)
+
 install(
   DIRECTORY include/
   DESTINATION include
@@ -72,6 +80,13 @@ install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
+)
+
+install(
+  TARGETS
+    example_jtc
+  DESTINATION
+    lib/${PROJECT_NAME}
 )
 
 install(

@@ -1,12 +1,26 @@
 import os
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, ExecuteProcess
+from launch.actions import IncludeLaunchDescription, ExecuteProcess, RegisterEventHandler, DeclareLaunchArgument
 from launch_ros.actions import Node
+from launch.event_handlers import OnProcessExit
 from ament_index_python.packages import get_package_share_directory
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import PathJoinSubstitution, LaunchConfiguration, Command
+from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     pkg_project_description = get_package_share_directory('description')
+
+    # Launch Arguments
+    use_sim_time = LaunchConfiguration('use_sim_time', default=True)
+    use_ros2_control = LaunchConfiguration('use_ros2_control', default=False)
+
+    # Get URDF via xacro
+    xacro_file = os.path.join(pkg_project_description,'urdf','bothoven.urdf.xacro')
+
+    robot_description_content = Command(['xacro ', xacro_file, ' use_ros2_control:=', use_ros2_control, ' sim_mode:=', use_sim_time])
+   
+    robot_description = {'robot_description': robot_description_content, 'use_sim_time': use_sim_time}
 
     # Generate URDF from xacro
     generate_urdf = ExecuteProcess(
@@ -22,14 +36,19 @@ def generate_launch_description():
         on_exit=[generate_urdf]
     )
 
-    rsp = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([os.path.join(
-            pkg_project_description,'launch','rsp.launch.py')]
-        ), 
-        launch_arguments={
-            'use_sim_time': 'true', 
-            'use_ros2_control': 'false'
-        }.items()
+    robot_controllers = PathJoinSubstitution(
+        [
+            FindPackageShare('hardware'),
+            'config',
+            'controllers.yaml',
+        ]
+    )
+
+    robot_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        output='screen',
+        parameters=[robot_description]
     )
 
     gazebo = IncludeLaunchDescription(
@@ -37,12 +56,38 @@ def generate_launch_description():
             get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')
         ),
         launch_arguments={
-            'gz_args': os.path.join(
-                pkg_project_description, 
-                'worlds', 
-                'bothoven_world.sdf'
-            )
+            'gz_args': ' '.join([
+                '--physics-engine gz-physics-bullet-featherstone-plugin -r -v 4',
+                '--gui-config ' + os.path.join(pkg_project_description, 'resource', 'gazebo_config.config'),
+                os.path.join(pkg_project_description, 'worlds', 'bothoven_world.sdf')
+            ])
         }.items()
+    )
+
+    joint_state_broadcaster_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['joint_state_broadcaster'],
+    )
+
+    right_hand_controller_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=[
+            'right_hand_controller',
+            '--param-file',
+            robot_controllers,
+            ],
+    )
+
+    left_hand_controller_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=[
+            'left_hand_controller',
+            '--param-file',
+            robot_controllers,
+            ],
     )
 
     rviz = Node(
@@ -55,19 +100,7 @@ def generate_launch_description():
     bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        arguments=[
-            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
-            '/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
-            '/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model',
-            '/cmd_vel@geometry_msgs/msg/Twist[gz.msgs.Twist',
-            '/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry'
-        ],
-        remappings=[
-            ('/tf', 'tf'),
-            ('/joint_states', 'joint_states'),
-            ('/cmd_vel', 'cmd_vel'),
-            ('/odom', 'odom')
-        ],
+        arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
         output='screen'
     )
 
@@ -75,16 +108,43 @@ def generate_launch_description():
     spawn_entity = Node(
         package='ros_gz_sim',
         executable='create',
-        name='spawn_bothoven',
-        parameters=[{'name': 'bothoven',
-                    'topic': '/robot_description'}],
+        arguments=['-topic', 'robot_description', '-name',
+                   'bothoven', '-allow_renaming', 'true'],
         output='screen'
     )
 
     return LaunchDescription([
         generate_model_sdf,
-        rsp,
         gazebo,
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=spawn_entity,
+                on_exit=[joint_state_broadcaster_spawner],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=joint_state_broadcaster_spawner,
+                on_exit=[right_hand_controller_spawner],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=joint_state_broadcaster_spawner,
+                on_exit=[left_hand_controller_spawner],
+            )
+        ),
         bridge,
-        rviz
+        robot_state_publisher,
+        spawn_entity,
+        DeclareLaunchArgument(
+            'use_sim_time',
+            default_value=use_sim_time,
+            description='If true, use simulated clock'
+        ),
+        DeclareLaunchArgument(
+            'use_ros2_control',
+            default_value=use_ros2_control,
+            description='If true, use ros2_control'
+        )
     ])

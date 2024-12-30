@@ -1,45 +1,45 @@
+import os
+
+from ament_index_python.packages import get_package_share_directory
+
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution
 
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
-    # Declare Arguments
-    declared_arguments = []
-    # declared_arguments.append(
-    #     DeclareLaunchArgument(
-    #         "use_mock_hardware",
-    #         default_value="false",
-    #         description="Start robot with mock hardware mirroring command to its states."
-    #     )
-    # )
-
     #Initialize Arguments
-    # use_mock_hardware = LaunchConfiguration("use_mock_hardware")
-    control = LaunchConfiguration("control")
+    use_mock_hardware = LaunchConfiguration("use_mock_hardware")
+    use_sim_time = LaunchConfiguration('use_sim_time')
+    use_ros2_control = LaunchConfiguration('use_ros2_control')
 
-    # Get URDF via xacro
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]), 
-            " ",
-            PathJoinSubstitution(
-                [
-                    FindPackageShare("hardware"),
-                    "urdf",
-                    "ros2_control.xacro",
-                ]
-            ), 
-            # " ",
-            # "use_mock_hardware:=", use_mock_hardware, 
-            # " ",
-            # "control:=", control
-        ]
+    # Declare Arguments
+    declare_use_mock_hardware = DeclareLaunchArgument(
+        "use_mock_hardware",
+        default_value="false",
+        description="Start robot with mock hardware mirroring command to its states."
     )
 
-    robot_description = {"robot_description": robot_description_content}
+    declare_use_sim_time = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='false',
+        description='Use simulation (Gazebo) clock if true'
+    )
+
+    declare_use_ros2_control = DeclareLaunchArgument(
+        'use_ros2_control',
+        default_value='true',
+        description='Use ROS 2 control if true'
+    )
+
+    # Get URDF via xacro
+    pkg_path_description = os.path.join(get_package_share_directory('description'))
+    xacro_file = os.path.join(pkg_path_description,'urdf','bothoven.urdf.xacro')
+
+    robot_description_content = Command(['xacro ', xacro_file, ' use_ros2_control:=', use_ros2_control, ' sim_mode:=', use_sim_time])
+    robot_description = {'robot_description': robot_description_content, 'use_sim_time': use_sim_time}
 
     robot_controllers = PathJoinSubstitution(
         [
@@ -87,6 +87,13 @@ def generate_launch_description():
         executable="spawner",
         arguments=["left_hand_controller", "-c", "/controller_manager"],
     )
+
+    # List all arguments that we want to declare
+    declared_arguments = [
+        # declare_use_mock_hardware,
+        declare_use_sim_time,
+        declare_use_ros2_control
+    ]
 
     # List all nodes that we want to start
     nodes = [

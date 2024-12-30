@@ -51,6 +51,15 @@
         <xacro:property name="ring_offset" value="${hand_length/2 - 2*finger_spacing}"/>
         <xacro:property name="pinky_offset" value="${hand_length/2 - finger_spacing}"/>
 
+    <!-- Servo Joint Properties -->
+        <xacro:property name="servo_min" value="-0.2"/>
+        <xacro:property name="servo_max" value="0.2"/>
+    
+    <!-- Solenoid Joint Properties -->
+        <xacro:property name="solenoid_min" value="-0.2"/>
+        <xacro:property name="solenoid_max" value="0.2"/>
+
+
   <!-- Macros -->
     <!-- Stepper Motor Macro -->
         <xacro:macro name="stepper" params="name parent_link origin_xyz">
@@ -168,7 +177,7 @@
                 <child link="${name}"/>
                 <origin xyz="0 0 0"/>
                 <axis xyz="1 0 0"/>
-                <limit lower="-0.2" upper="0.2" effort="1" velocity="1.0"/>
+                <limit lower="${solenoid_min}" upper="${solenoid_max}" effort="1" velocity="1.0"/>
             </joint>
         </xacro:macro>
 
@@ -195,7 +204,7 @@
                 <child link="${name}"/>
                 <origin xyz="${x_origin} -${hand_width/2} -0.01"/>
                 <axis xyz="0 0 1"/>
-                <limit lower="-0.2" upper="0.2" effort="1" velocity="1.0"/>
+                <limit lower="${servo_min}" upper="${servo_max}" effort="1" velocity="1.0"/>
             </joint>
         </xacro:macro>
     
