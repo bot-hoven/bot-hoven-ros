@@ -93,3 +93,9 @@ Run the command below:
 export GZ_SIM_RESOURCE_PATH="/bot-hoven-ros"
 ros2 launch description gazebo.launch.py
 ```
+
+To run a script against the simulated robot (e.g. `examples/example_jtc.cpp`):
+
+```
+ros2 run hardware example_jtc
+```
