@@ -1,6 +1,6 @@
 controller_manager:
   ros__parameters:
-    update_rate: 100  # Update rate in Hz
+    update_rate: 1000  # Update rate in Hz
     controller_manager_timeout: 5.0
 
     joint_state_broadcaster:
