@@ -8,7 +8,7 @@ namespace hardware {
 
 class I2CPeripheral {
 public:
-  I2CPeripheral(const std::string& device, const uint8_t address);
+  I2CPeripheral(const std::string& device);
   ~I2CPeripheral();
 
   void WriteRegisterByte(const uint8_t register_address, const uint8_t value);

@@ -22,21 +22,22 @@ endforeach()
 add_library(
   ${PROJECT_NAME} SHARED
   src/bothoven_hardware.cpp
+  src/I2CPeripheral.cpp
+  src/pca9685_comm.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-$<INSTALL_INTERFACE:include>
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/hardware>
+  $<INSTALL_INTERFACE:include/hardware>
 )
+
 
 ament_target_dependencies(
   ${PROJECT_NAME} PUBLIC
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
-target_link_libraries(${PROJECT_NAME}
-  
-)
+target_link_libraries(${PROJECT_NAME} PUBLIC i2c)
 
 pluginlib_export_plugin_description_file(hardware_interface hardware.xml)
 

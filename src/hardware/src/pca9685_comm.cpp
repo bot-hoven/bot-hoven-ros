@@ -2,6 +2,9 @@
 #include <unistd.h>
 #include <cmath>
 
+// #include "pca9685/Constants.h"
+// #include "i2c/I2CPeripheral.h"
+
 namespace pca9685_hardware_interface {
 
 PCA9685::PCA9685(std::shared_ptr<hardware::I2CPeripheral> i2c_bus, int address) {
@@ -14,7 +17,7 @@ PCA9685::PCA9685(std::shared_ptr<hardware::I2CPeripheral> i2c_bus, int address) 
 PCA9685::~PCA9685() = default;
 
 void PCA9685::init_i2c() {
-  set_all_pwm(0,0);
+  set_all_pwm(0,0); // Connects to peripheral in this method
   i2c_dev->WriteRegisterByte(MODE2, OUTDRV);
   i2c_dev->WriteRegisterByte(MODE1, ALLCALL);
   usleep(5'000);

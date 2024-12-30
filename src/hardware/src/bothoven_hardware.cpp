@@ -1,4 +1,4 @@
-#include "hardware/bothoven_hardware.hpp"
+#include "bothoven_hardware.hpp"
 
 
 namespace hardware {
@@ -6,9 +6,8 @@ namespace hardware {
 hardware_interface::CallbackReturn BothovenHardware::on_init(const hardware_interface::HardwareInfo &info) {
   
     auto i2c_bus = std::make_shared<hardware::I2CPeripheral>(
-      info_.hardware_parameters["i2c_bus"],
-      0 // default address of 0 for initialization
-    );
+      info_.hardware_parameters["i2c_bus"]
+      );
 
     // auto i2c_bus = std::make_unique<hardware::I2CPeripheral>();
 
@@ -98,10 +97,15 @@ std::vector<hardware_interface::CommandInterface> BothovenHardware::export_comma
 hardware_interface::CallbackReturn BothovenHardware::on_configure(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  RCLCPP_INFO(rclcpp::get_logger("BothovenHardware"), "Configuring ...please wait...");
-  left_hand_pca.init_i2c();
-  right_hand_pca.init_i2c();
-  RCLCPP_INFO(rclcpp::get_logger("BothovenHardware"), "Successfully configured!");
+  RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Configuring PCA9685 ...please wait...");
+
+  left_hand_pca->init_i2c();
+  left_hand_pca->set_pwm_freq(std::stoi(info_.hardware_parameters["pca9685_frequency_hz"]));
+
+  right_hand_pca->init_i2c();
+  right_hand_pca->set_pwm_freq(std::stoi(info_.hardware_parameters["pca9685_frequency_hz"]));
+  RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Successfully configured PCA9685!");
+
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -122,8 +126,15 @@ hardware_interface::CallbackReturn BothovenHardware::on_activate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
   RCLCPP_INFO(rclcpp::get_logger("BothovenHardware"), "Activating ...please wait...");
-  left_hand_pca.set_pwm_freq(std::stoi(info_.hardware_parameters["pca9685_frequency_hz"]));
-  right_hand_pca.set_pwm_freq(std::stoi(info_.hardware_parameters["pca9685_frequency_hz"]));
+
+  for (auto i = 0u; i < joint_commands_.size(); i++)
+  {
+    if (std::isnan(joint_commands_[i]))
+    {
+      joint_commands_[i] = 0;
+    }
+  }
+
   RCLCPP_INFO(rclcpp::get_logger("BothovenHardware"), "Successfully activated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
