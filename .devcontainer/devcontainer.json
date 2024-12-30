@@ -14,7 +14,12 @@
   "workspaceFolder": "/${localWorkspaceFolderBasename}",
   "mounts": [
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.bash_history,target=/home/ubuntu/.bash_history,type=bind",
-    "source=bothoven-devcontainer-bashhistory,target=/commandhistory,type=volume"
+    "source=bothoven-devcontainer-bashhistory,target=/commandhistory,type=volume",
+    {
+      "source": "/etc/localtime",
+      "target": "/etc/localtime",
+      "type": "bind"
+    }
   ],
   "customizations": {
     "vscode": {
