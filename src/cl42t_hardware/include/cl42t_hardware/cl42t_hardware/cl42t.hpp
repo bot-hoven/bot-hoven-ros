@@ -2,7 +2,6 @@
 #define CL42T_HPP
 
 #include <algorithm>
-#include <chrono>
 #include <cmath>
 #include <gpiod.hpp>
 #include <hardware_interface/actuator_interface.hpp>
@@ -21,7 +20,8 @@ namespace cl42t_hardware {
     constexpr uint8_t MinPulseTimeUsec = 1;
     constexpr uint8_t MinDirTimeUsec = 2;
     constexpr uint32_t MinEnaTimeUsec = 200000;
-    constexpr uint32_t SecToUsec = 1000000;
+    constexpr uint32_t UsecPerSec = 1000000;
+    constexpr uint32_t NsecPerUsec = 1000;
     constexpr float DutyCycle = 0.5;
     const std::vector<int> ValidPulsesPerRev = {200,  800,  1600, 3200, 6400, 12800, 25600, 51200,
                                                 1000, 2000, 4000, 5000, 8000, 10000, 20000, 40000};
@@ -54,7 +54,7 @@ namespace cl42t_hardware {
         void generate_pulses(gpiod::line& pul_line, int num_pulses, int cycle_period_us, float duty_cycle);
 
         // Hardware parameters
-        uint32_t pulses_per_rev_;
+        int pulses_per_rev_;
         std::string chip_name_;
         std::vector<GPIOPin> gpio_pins_;
         std::vector<gpiod::line> gpio_lines_;
@@ -64,8 +64,13 @@ namespace cl42t_hardware {
         double max_position_;
 
         // Interface variables
-        double position_;
-        double position_command_;
+        std::string position_state_interface_name_;
+        std::string position_command_interface_name_;
+
+        // Internal variables
+        int dir_;
+        double angular_resolution_;
+        int num_pulses_;
     };
 
 }  // namespace cl42t_hardware
