@@ -1,6 +1,7 @@
 #ifndef CL42T_HPP
 #define CL42T_HPP
 
+#include <gpiod.hpp>
 #include <hardware_interface/actuator_interface.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -23,10 +24,9 @@ namespace cl42t_hardware {
 
     private:
         // Hardware parameters
-        uint8_t pul_pin_;
-        uint8_t dir_pin_;
-        uint8_t ena_pin_;
         uint32_t pulses_per_rev_;
+        double min_position_;
+        double max_position_;
 
         // Interface variables
         double position_;
