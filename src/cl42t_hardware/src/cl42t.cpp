@@ -120,7 +120,8 @@ namespace cl42t_hardware {
     }
 
     hardware_interface::CallbackReturn CL42T::on_cleanup(const rclcpp_lifecycle::State& previous_state) {
-        (void)previous_state;
+        (void)previous_state;  // suppress unused parameter warning
+
         for (const auto& line : gpio_lines_) {
             line.release();
         }
@@ -136,7 +137,7 @@ namespace cl42t_hardware {
         // update the state based on the executed signal
         double new_position = get_state(position_state_interface_name_);
         double position_change = num_pulses_ * angular_resolution_;
-        new_position += (dir_ == RotateDir::CCW) ? position_change : -position_change;
+        new_position += (dir_ == RotateDir::CW) ? position_change : -position_change;
         set_state(position_state_interface_name_, new_position);
 
         // reset num_pulses_
@@ -164,7 +165,7 @@ namespace cl42t_hardware {
         // Process the command if the difference exceeds the resolution of the stepper motor
         if (std::abs(position_change) >= angular_resolution_) {
             // Determine the rotation direction and if the direction changed
-            int dir = position_change > 0 ? RotateDir::CCW : RotateDir::CW;
+            int dir = position_change > 0 ? RotateDir::CW : RotateDir::CCW;
             if (dir_ != dir) {
                 gpio_lines_[1].set_value(dir);
                 rclcpp::Rate(rclcpp::Duration(std::chrono::nanoseconds(MinDirTimeUsec * NsecPerUsec))).sleep();
