@@ -1,241 +1,249 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <!-- Colours -->
+    <!-- Colours -->
     <material name="white">
-        <color rgba="1 1 1 1"/>
+        <color rgba="1 1 1 1" />
     </material>
 
     <material name="orange">
-        <color rgba="1 0.3 0.1 1"/>
+        <color rgba="1 0.3 0.1 1" />
     </material>
 
     <material name="blue">
-        <color rgba="0.2 0.2 1 1"/>
+        <color rgba="0.2 0.2 1 1" />
     </material>
 
     <material name="black">
-        <color rgba="0 0 0 1"/>
+        <color rgba="0 0 0 1" />
     </material>
 
     <material name="yellow">
-        <color rgba="1.0 1.0 0.0 1.0"/>
+        <color rgba="1.0 1.0 0.0 1.0" />
     </material>
 
     <material name="green">
-        <color rgba="0.0 1.0 0.0 1.0"/>
+        <color rgba="0.0 1.0 0.0 1.0" />
     </material>
 
-  <!-- Properties -->
+    <!-- Properties -->
     <!-- Stepper Motor Properties -->
-        <xacro:property name="stepper_min_angle" value="0"/>
-        <xacro:property name="stepper_max_angle" value="6.28"/>
+    <xacro:property name="stepper_min_angle"
+        value="${ (carriage_min_position - carriage_stepper_offset) / carriage_stepper_multiplier}" />
+    <xacro:property name="stepper_max_angle"
+        value="${ (carriage_max_position - carriage_stepper_offset) / carriage_stepper_multiplier}" />
+    <xacro:property name="stepper_pulley_radius" value="0.02" />
 
     <!-- Carriage Properties -->
-        <xacro:property name="carriage_min_position" value="-0.68"/>
-        <xacro:property name="carriage_max_position" value="0.68"/>
-        <xacro:property name="carriage_stepper_offset" value="${carriage_max_position}"/> <!-- Assuming a min angle of 0 rad for the stepper -->
-        <xacro:property name="carriage_stepper_multiplier" value="${(carriage_min_position - carriage_stepper_offset) / stepper_max_angle}"/>
-        
+    <xacro:property name="carriage_min_position" value="-0.6095" />
+    <xacro:property name="carriage_max_position" value="0.6095" />
+    <xacro:property name="carriage_stepper_offset"
+        value="${carriage_min_position}" />
+    <xacro:property name="carriage_stepper_multiplier"
+        value="${stepper_pulley_radius}" />
+
     <!-- Hand Properties -->
-        <xacro:property name="hand_length" value="0.2"/>
-        <xacro:property name="hand_width" value="0.1"/>
-        <xacro:property name="hand_height" value="0.05"/>
+    <xacro:property name="hand_length" value="0.2" />
+    <xacro:property name="hand_width" value="0.1" />
+    <xacro:property name="hand_height" value="0.05" />
 
     <!-- Finger Properties -->
-        <xacro:property name="finger_length" value="0.1"/>
-        <xacro:property name="finger_thickness" value="0.01"/>
-        <xacro:property name="finger_spacing" value="${hand_length/6}"/>
-        <xacro:property name="thumb_offset" value="${-hand_length/2 + finger_spacing}"/>
-        <xacro:property name="index_offset" value="${-hand_length/2 + 2*finger_spacing}"/>
-        <xacro:property name="middle_offset" value="0"/>
-        <xacro:property name="ring_offset" value="${hand_length/2 - 2*finger_spacing}"/>
-        <xacro:property name="pinky_offset" value="${hand_length/2 - finger_spacing}"/>
+    <xacro:property name="finger_length" value="0.1" />
+    <xacro:property name="finger_thickness" value="0.01" />
+    <xacro:property name="finger_spacing" value="${hand_length/6}" />
+    <xacro:property name="thumb_offset" value="${-hand_length/2 + finger_spacing}" />
+    <xacro:property name="index_offset" value="${-hand_length/2 + 2*finger_spacing}" />
+    <xacro:property name="middle_offset" value="0" />
+    <xacro:property name="ring_offset" value="${hand_length/2 - 2*finger_spacing}" />
+    <xacro:property name="pinky_offset" value="${hand_length/2 - finger_spacing}" />
 
     <!-- Servo Joint Properties -->
-        <xacro:property name="servo_min" value="-0.2"/>
-        <xacro:property name="servo_max" value="0.2"/>
-    
+    <xacro:property name="servo_min" value="-0.2" />
+    <xacro:property name="servo_max" value="0.2" />
+
     <!-- Solenoid Joint Properties -->
-        <xacro:property name="solenoid_min" value="-0.2"/>
-        <xacro:property name="solenoid_max" value="0.2"/>
+    <xacro:property name="solenoid_min" value="-0.2" />
+    <xacro:property name="solenoid_max" value="0.2" />
 
 
-  <!-- Macros -->
+    <!-- Macros -->
     <!-- Stepper Motor Macro -->
-        <xacro:macro name="stepper" params="name parent_link origin_xyz">
-            <link name="${name}">
-                <visual>
-                    <geometry>
-                        <cylinder radius="0.02" length="0.05"/>
-                    </geometry>
-                    <material name="black"/>
-                </visual>
-                <inertial>
-                    <mass value="0.1"/>
-                    <origin xyz="0 0 0"/>
-                    <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
-                </inertial>
-                <gazebo>
-                    <material>Gazebo/Black</material>
-                </gazebo>
-            </link>
-            <joint name="${name}_joint" type="revolute">
-                <parent link="${parent_link}"/>
-                <child link="${name}"/>
-                <origin xyz="${origin_xyz}" rpy="0 0 0"/>
-                <axis xyz="0 0 1"/>
-                <limit lower="${stepper_min_angle}" upper="${stepper_max_angle}" effort="5" velocity="1.0"/>
-            </joint>
-        </xacro:macro>
+    <xacro:macro name="stepper" params="name parent_link origin_xyz">
+        <link name="${name}">
+            <visual>
+                <geometry>
+                    <cylinder radius="0.02" length="0.05" />
+                </geometry>
+                <material name="black" />
+            </visual>
+            <inertial>
+                <mass value="0.1" />
+                <origin xyz="0 0 0" />
+                <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001" />
+            </inertial>
+            <gazebo>
+                <material>Gazebo/Black</material>
+            </gazebo>
+        </link>
+        <joint name="${name}_joint" type="revolute">
+            <parent link="${parent_link}" />
+            <child link="${name}" />
+            <origin xyz="${origin_xyz}" rpy="0 0 0" />
+            <axis xyz="0 0 1" />
+            <limit lower="${stepper_min_angle}" upper="${stepper_max_angle}" effort="5"
+                velocity="1.0" />
+        </joint>
+    </xacro:macro>
 
     <!-- Carriage Macro -->
-        <xacro:macro name="carriage" params="name parent_link axis_x mimic">
-            <link name="${name}">
-                <visual>
-                    <geometry>
-                        <box size="0.1 0.05 0.05"/>
-                    </geometry>
-                    <material name="blue"/>
-                </visual>
-                <collision>
-                    <geometry>
-                        <box size="0.1 0.05 0.05"/>
-                    </geometry>
-                </collision>
-                <inertial>
-                    <mass value="0.5"/>
-                    <origin xyz="0 0 0"/>
-                    <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-                </inertial>
-                <gazebo>
-                    <material>Gazebo/Blue</material>
-                </gazebo>
-            </link>
+    <xacro:macro name="carriage" params="name parent_link axis_x mimic">
+        <link name="${name}">
+            <visual>
+                <geometry>
+                    <box size="0.1 0.05 0.05" />
+                </geometry>
+                <material name="blue" />
+            </visual>
+            <collision>
+                <geometry>
+                    <box size="0.1 0.05 0.05" />
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="0.5" />
+                <origin xyz="0 0 0" />
+                <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001" />
+            </inertial>
+            <gazebo>
+                <material>Gazebo/Blue</material>
+            </gazebo>
+        </link>
 
-            <joint name="${name}_joint" type="prismatic">
-                <parent link="${parent_link}"/>
-                <child link="${name}"/>
-                <origin xyz="0 0 0"/>
-                <axis xyz="${axis_x} 0 0"/>
-                <limit lower="${carriage_min_position}" upper="${carriage_max_position}" effort="10" velocity="0.5"/>
-                <mimic joint="${mimic}" multiplier="${carriage_stepper_multiplier}" offset="${carriage_stepper_offset}"/>
-            </joint>
-        </xacro:macro>
+        <joint name="${name}_joint" type="prismatic">
+            <parent link="${parent_link}" />
+            <child link="${name}" />
+            <origin xyz="0 0 0" />
+            <axis xyz="${axis_x} 0 0" />
+            <limit lower="${carriage_min_position}" upper="${carriage_max_position}" effort="10"
+                velocity="0.5" />
+            <mimic joint="${mimic}" multiplier="${carriage_stepper_multiplier}"
+                offset="${carriage_stepper_offset}" />
+        </joint>
+    </xacro:macro>
 
     <!-- Hand Macro -->
-        <xacro:macro name="hand" params="name parent_link">
-            <link name="${name}">
-                <visual>
-                    <geometry>
-                        <box size="${hand_length} ${hand_width} ${hand_height}"/>
-                    </geometry>
-                    <material name="orange"/>
-                </visual>
-                <collision>
-                    <geometry>
-                        <box size="${hand_length} ${hand_width} ${hand_height}"/>
-                    </geometry>
-                    <origin xyz="0 0.5 0"/>
-                </collision>
-                <inertial>
-                    <mass value="0.2"/>
-                    <origin xyz="0 0 0"/>
-                    <inertia ixx="0.0005" ixy="0.0" ixz="0.0" iyy="0.0005" iyz="0.0" izz="0.0005"/>
-                </inertial>
-                <gazebo>
-                    <material>Gazebo/Orange</material>
-                </gazebo>
-            </link>
+    <xacro:macro name="hand" params="name parent_link">
+        <link name="${name}">
+            <visual>
+                <geometry>
+                    <box size="${hand_length} ${hand_width} ${hand_height}" />
+                </geometry>
+                <material name="orange" />
+            </visual>
+            <collision>
+                <geometry>
+                    <box size="${hand_length} ${hand_width} ${hand_height}" />
+                </geometry>
+                <origin xyz="0 0.5 0" />
+            </collision>
+            <inertial>
+                <mass value="0.2" />
+                <origin xyz="0 0 0" />
+                <inertia ixx="0.0005" ixy="0.0" ixz="0.0" iyy="0.0005" iyz="0.0" izz="0.0005" />
+            </inertial>
+            <gazebo>
+                <material>Gazebo/Orange</material>
+            </gazebo>
+        </link>
 
-            <joint name="${name}_joint" type="fixed">
-                <parent link="${parent_link}"/>
-                <child link="${name}"/>
-                <origin xyz="0 0.5 0"/>
-            </joint>
-        </xacro:macro>
+        <joint name="${name}_joint" type="fixed">
+            <parent link="${parent_link}" />
+            <child link="${name}" />
+            <origin xyz="0 0.5 0" />
+        </joint>
+    </xacro:macro>
 
     <!-- Solenoid Macro -->
-        <xacro:macro name="solenoid" params="name parent_link">
-            <link name="${name}">
-                <visual>
-                    <geometry>
-                        <cylinder radius="0.01" length="0.025"/>
-                    </geometry>
-                    <material name="green"/>
-                </visual>
-                <inertial>
-                    <mass value="0.05"/>
-                    <origin xyz="0 0 0"/>
-                    <inertia ixx="0.00005" ixy="0.0" ixz="0.0" iyy="0.00005" iyz="0.0" izz="0.00005"/>
-                </inertial>
-                <gazebo>
-                    <material>Gazebo/Green</material>
-                </gazebo>
-            </link>
-            <joint name="${name}_joint" type="revolute">
-                <parent link="${parent_link}"/>
-                <child link="${name}"/>
-                <origin xyz="0 0 0"/>
-                <axis xyz="1 0 0"/>
-                <limit lower="${solenoid_min}" upper="${solenoid_max}" effort="1" velocity="1.0"/>
-            </joint>
-        </xacro:macro>
+    <xacro:macro name="solenoid" params="name parent_link">
+        <link name="${name}">
+            <visual>
+                <geometry>
+                    <cylinder radius="0.01" length="0.025" />
+                </geometry>
+                <material name="green" />
+            </visual>
+            <inertial>
+                <mass value="0.05" />
+                <origin xyz="0 0 0" />
+                <inertia ixx="0.00005" ixy="0.0" ixz="0.0" iyy="0.00005" iyz="0.0" izz="0.00005" />
+            </inertial>
+            <gazebo>
+                <material>Gazebo/Green</material>
+            </gazebo>
+        </link>
+        <joint name="${name}_joint" type="revolute">
+            <parent link="${parent_link}" />
+            <child link="${name}" />
+            <origin xyz="0 0 0" />
+            <axis xyz="1 0 0" />
+            <limit lower="${solenoid_min}" upper="${solenoid_max}" effort="1" velocity="1.0" />
+        </joint>
+    </xacro:macro>
 
     <!-- Servo Macro -->
-        <xacro:macro name="servo" params="name parent_link x_origin">
-            <link name="${name}">
-                <visual>
-                    <geometry>
-                        <box size="0.02 0.02 0.02"/>
-                    </geometry>
-                    <material name="yellow"/>
-                </visual>
-                <inertial>
-                    <mass value="0.05"/>
-                    <origin xyz="0 0 0"/>
-                    <inertia ixx="0.00002" ixy="0.0" ixz="0.0" iyy="0.00002" iyz="0.0" izz="0.00002"/>
-                </inertial>
-                <gazebo>
-                    <material>Gazebo/Yellow</material>
-                </gazebo>
-            </link>
-            <joint name="${name}_joint" type="revolute">
-                <parent link="${parent_link}"/>
-                <child link="${name}"/>
-                <origin xyz="${x_origin} -${hand_width/2} -0.01"/>
-                <axis xyz="0 0 1"/>
-                <limit lower="${servo_min}" upper="${servo_max}" effort="1" velocity="1.0"/>
-            </joint>
-        </xacro:macro>
-    
+    <xacro:macro name="servo" params="name parent_link x_origin">
+        <link name="${name}">
+            <visual>
+                <geometry>
+                    <box size="0.02 0.02 0.02" />
+                </geometry>
+                <material name="yellow" />
+            </visual>
+            <inertial>
+                <mass value="0.05" />
+                <origin xyz="0 0 0" />
+                <inertia ixx="0.00002" ixy="0.0" ixz="0.0" iyy="0.00002" iyz="0.0" izz="0.00002" />
+            </inertial>
+            <gazebo>
+                <material>Gazebo/Yellow</material>
+            </gazebo>
+        </link>
+        <joint name="${name}_joint" type="revolute">
+            <parent link="${parent_link}" />
+            <child link="${name}" />
+            <origin xyz="${x_origin} -${hand_width/2} -0.01" />
+            <axis xyz="0 0 1" />
+            <limit lower="${servo_min}" upper="${servo_max}" effort="1" velocity="1.0" />
+        </joint>
+    </xacro:macro>
+
     <!-- Finger Macro -->
-        <xacro:macro name="finger" params="name parent_link">
-            <link name="${name}">
-                <visual>
-                    <geometry>
-                        <box size="${finger_thickness} ${finger_length} ${finger_thickness}"/>
-                    </geometry>
-                    <material name="black"/>
-                </visual>
-                <collision>
-                    <geometry>
-                        <box size="${finger_thickness} ${finger_length} ${finger_thickness}"/>
-                    </geometry>
-                    <origin xyz="0 -0.05 0"/>
-                </collision>
-                <inertial>
-                    <mass value="0.1"/>
-                    <origin xyz="0 0 0"/>
-                    <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
-                </inertial>
-                <gazebo>
-                    <material>Gazebo/Black</material>
-                </gazebo>
-            </link>
-            <joint name="${name}_joint" type="fixed">
-                <parent link="${parent_link}"/>
-                <child link="${name}"/>
-                <origin xyz="0 -0.05 0"/>
-            </joint>
-        </xacro:macro>
+    <xacro:macro name="finger" params="name parent_link">
+        <link name="${name}">
+            <visual>
+                <geometry>
+                    <box size="${finger_thickness} ${finger_length} ${finger_thickness}" />
+                </geometry>
+                <material name="black" />
+            </visual>
+            <collision>
+                <geometry>
+                    <box size="${finger_thickness} ${finger_length} ${finger_thickness}" />
+                </geometry>
+                <origin xyz="0 -0.05 0" />
+            </collision>
+            <inertial>
+                <mass value="0.1" />
+                <origin xyz="0 0 0" />
+                <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001" />
+            </inertial>
+            <gazebo>
+                <material>Gazebo/Black</material>
+            </gazebo>
+        </link>
+        <joint name="${name}_joint" type="fixed">
+            <parent link="${parent_link}" />
+            <child link="${name}" />
+            <origin xyz="0 -0.05 0" />
+        </joint>
+    </xacro:macro>
 </robot>
