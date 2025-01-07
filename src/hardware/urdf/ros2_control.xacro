@@ -48,14 +48,34 @@
     </gpio>
   </ros2_control>
 
+  <ros2_control name="LeftServoJoints" type="system">
+    <hardware>
+      <plugin>hardware/CL42T</plugin>
+      <param name="i2c_device">/dev/i2c-1</param> 
+      <param name="frequency_hz">50</param>
+      <param name="i2c_address">64</param>  <!-- 0x40 in decimal -->
+    </hardware>
+
+    <xacro:include filename="$(find hardware)/urdf/left_servo_joints.xacro" />
+  </ros2_control>
+
+  <ros2_control name="RightServoJoints" type="system">
+    <hardware>
+      <plugin>hardware/CL42T</plugin>
+      <param name="i2c_device">/dev/i2c-1</param> 
+      <param name="frequency_hz">50</param>
+      <param name="i2c_address">65</param>  <!-- 0x41 in decimal -->
+    </hardware>
+
+    <xacro:include filename="$(find hardware)/urdf/right_servo_joints.xacro" />
+  </ros2_control>
+
   <ros2_control name="hardware" type="system">
     <hardware>
       <plugin>hardware/BothovenHardware</plugin>
     </hardware>
     <xacro:include filename="$(find hardware)/urdf/left_solenoid_joints.xacro" />
-    <xacro:include filename="$(find hardware)/urdf/left_servo_joints.xacro" />
     <xacro:include filename="$(find hardware)/urdf/right_solenoid_joints.xacro" />
-    <xacro:include filename="$(find hardware)/urdf/right_servo_joints.xacro" />
   </ros2_control>
 
 </robot>

@@ -19,7 +19,8 @@ RUN apt-get update && \
     ros-jazzy-gz-ros2-control \
     ros-jazzy-joint-state-publisher-gui \
     ros-jazzy-xacro \
-    libgpiod-dev && \
+    libgpiod-dev \ 
+    libi2c-dev && \
     rm -rf /var/lib/apt/lists/* && \
     echo "$USERNAME ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME && \
     chmod 0440 /etc/sudoers.d/$USERNAME

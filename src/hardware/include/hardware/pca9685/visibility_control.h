@@ -1,5 +1,5 @@
-#ifndef HARDWARE__PCA9685__VISIBILITY_CONTROL_H_
-#define HARDWARE__PCA9685__VISIBILITY_CONTROL_H_
+#ifndef HARDWARE__PCA9685__VISIBILITY_CONTROL_H
+#define HARDWARE__PCA9685__VISIBILITY_CONTROL_H
 
 // This logic was borrowed (then namespaced) from the examples on the gcc wiki:
 //     https://gcc.gnu.org/wiki/Visibility
@@ -32,4 +32,4 @@
 #define PCA9685_HARDWARE_INTERFACE_PUBLIC_TYPE
 #endif
 
-#endif  // HARDWARE__PCA9685__VISIBILITY_CONTROL_H_
+#endif  // HARDWARE__PCA9685__VISIBILITY_CONTROL_H
