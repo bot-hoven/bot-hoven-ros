@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.8)
 project(hardware)
 
+# Add compile options
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
+  add_link_options(-lgpiod -lgpiodcxx)
 endif()
 
+# Set Core dependencies
 set(THIS_PACKAGE_INCLUDE_DEPENDS
   hardware_interface
   pluginlib
@@ -13,33 +16,40 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   controller_manager
 )
 
-# find dependencies
+# Find dependencies
 find_package(ament_cmake REQUIRED)
 foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
+# Add a library to the project using the specified source files
 add_library(
   ${PROJECT_NAME} SHARED
   src/bothoven_hardware.cpp
+  src/cl42t.cpp
 )
 
+# Include directories
 target_include_directories(${PROJECT_NAME} PUBLIC
 $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>
 )
 
+# Link dependencies
 ament_target_dependencies(
   ${PROJECT_NAME} PUBLIC
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
+# Specify libraries or flags to use when linking a given target
 target_link_libraries(${PROJECT_NAME}
   
 )
 
+# Export plugin
 pluginlib_export_plugin_description_file(hardware_interface hardware.xml)
 
+# Linting
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
@@ -52,6 +62,7 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+# Add an executable to the project using the specified source files
 add_executable(example_jtc examples/example_jtc.cpp)
 ament_target_dependencies(example_jtc
   rclcpp
@@ -60,6 +71,7 @@ ament_target_dependencies(example_jtc
   trajectory_msgs
 )
 
+# Specify rules to run at install time
 install(
   DIRECTORY include/
   DESTINATION include
@@ -99,6 +111,9 @@ install(
   DESTINATION share/${PROJECT_NAME}/urdf
 )
 
+# Export dependencies and targets
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
+
+# Mark the package for export
 ament_package()
