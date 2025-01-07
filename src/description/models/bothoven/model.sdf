@@ -31,15 +31,15 @@
       <parent>base_link</parent>
       <child>left_carriage</child>
       <axis>
-        <xyz>-1 0 0</xyz>
+        <xyz>1 0 0</xyz>
         <mimic joint='left_hand_stepper_joint'>
-          <multiplier>0.02</multiplier>
-          <offset>-0.60950000000000004</offset>
+          <multiplier>-0.21656050955414011</multiplier>
+          <offset>0.68000000000000005</offset>
           <reference>0</reference>
         </mimic>
         <limit>
-          <lower>-0.60950000000000004</lower>
-          <upper>0.60950000000000004</upper>
+          <lower>-0.68000000000000005</lower>
+          <upper>0.68000000000000005</upper>
           <effort>10</effort>
           <velocity>0.5</velocity>
         </limit>
@@ -667,7 +667,7 @@
         <xyz>0 0 1</xyz>
         <limit>
           <lower>0</lower>
-          <upper>60.950000000000003</upper>
+          <upper>6.2800000000000002</upper>
           <effort>5</effort>
           <velocity>1</velocity>
         </limit>
@@ -710,15 +710,15 @@
       <parent>base_link</parent>
       <child>right_carriage</child>
       <axis>
-        <xyz>1 0 0</xyz>
+        <xyz>-1 0 0</xyz>
         <mimic joint='right_hand_stepper_joint'>
-          <multiplier>0.02</multiplier>
-          <offset>-0.60950000000000004</offset>
+          <multiplier>-0.21656050955414011</multiplier>
+          <offset>0.68000000000000005</offset>
           <reference>0</reference>
         </mimic>
         <limit>
-          <lower>-0.60950000000000004</lower>
-          <upper>0.60950000000000004</upper>
+          <lower>-0.68000000000000005</lower>
+          <upper>0.68000000000000005</upper>
           <effort>10</effort>
           <velocity>0.5</velocity>
         </limit>
@@ -1346,7 +1346,7 @@
         <xyz>0 0 1</xyz>
         <limit>
           <lower>0</lower>
-          <upper>60.950000000000003</upper>
+          <upper>6.2800000000000002</upper>
           <effort>5</effort>
           <velocity>1</velocity>
         </limit>

@@ -1,16 +1,7 @@
 <library path="hardware">
-  <class
-    name="hardware/BothovenHardware"
-    type="hardware::BothovenHardware"
-    base_class_type="hardware_interface::SystemInterface">
+  <class name="hardware/BothovenHardware"
+         type="hardware::BothovenHardware"
+         base_class_type="hardware_interface::SystemInterface">
     <description>Bothoven Hardware Interface</description>
-  </class>
-  <class
-    name="hardware/CL42T"
-    type="hardware::CL42T"
-    base_class_type="hardware_interface::ActuatorInterface">
-    <description>
-      ROS2 control hardware interface for the CL42TV4.1 stepper motor driver
-    </description>
   </class>
 </library>
