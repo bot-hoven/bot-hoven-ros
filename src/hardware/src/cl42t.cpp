@@ -28,11 +28,9 @@ namespace cl42t_hardware {
 
         // Try parse the GPIO parameters
         try {
-            // TODO: refactor struct to specify chip each pin corresponds to, so this is not a hardware_param
-            chip_name_ = info.hardware_parameters.at("chip_name");
-
             for (const hardware_interface::ComponentInfo& gpio_component : info.gpios) {
                 GPIOPin pin;
+                pin.chip_name = gpio_component.parameters.at("chip_name");
                 pin.pin_number = std::stoi(gpio_component.parameters.at("pin_number"));
                 pin.descriptor = gpio_component.parameters.at("descriptor");
                 pin.direction = gpio_component.parameters.at("direction");
@@ -44,7 +42,26 @@ namespace cl42t_hardware {
             return CallbackReturn::ERROR;
         }
 
-        // TODO: Add validations for the number and order of GPIOs
+        // Validate GPIO paramaters
+        for (size_t i = 0; i < gpio_pins_.size(); i++) {
+            // Validate GPIO pin descriptor corresponds to a valid setting
+            if (std::find(ValidPinDescriptors.begin(), ValidPinDescriptors.end(), gpio_pins_[i].descriptor) ==
+                ValidPinDescriptors.end()) {
+                RCLCPP_FATAL(get_logger(),
+                             "Unsupported Descriptor \" %s \" specified. Consult the README.md for supported values.",
+                             gpio_pins_[i].descriptor.c_str());
+                return CallbackReturn::ERROR;
+            }
+            // Validate GPIO pin ordering
+            if (gpio_pins_[i].descriptor.compare(ValidPinDescriptors[i]) != 0) {
+                RCLCPP_FATAL(get_logger(),
+                             "The %zuth pin descriptor is \" %s \". \" %s \" expected. Consult the README.md for "
+                             "expected ordering ",
+                             i, gpio_pins_[i].descriptor.c_str(), ValidPinDescriptors[i].c_str());
+                ;
+                return CallbackReturn::ERROR;
+            }
+        }
 
         // Parse the joint associated with the interface
         const hardware_interface::ComponentInfo& joint = info.joints[0];
@@ -87,7 +104,7 @@ namespace cl42t_hardware {
 
         // Validate position bounds
         if (min_position_ > max_position_) {
-            RCLCPP_FATAL(get_logger(), "Invalid Position bounds.");
+            RCLCPP_FATAL(get_logger(), "Invalid Position bounds specified.");
             return CallbackReturn::ERROR;
         }
 
@@ -105,14 +122,13 @@ namespace cl42t_hardware {
 
         // Try request each GPIO pin with the corresponding initial value and descriptor
         try {
-            gpiod::chip chip(chip_name_);
-
-            for (size_t i = 0; i < gpio_pins_.size(); i++) {
-                gpiod::line line = chip.get_line(gpio_pins_[i].pin_number);
-                int request_dir = gpio_pins_[i].direction.compare("output") == 0 ? gpiod::line_request::DIRECTION_OUTPUT
-                                                                                 : gpiod::line_request::DIRECTION_INPUT;
-                gpiod::line_request config = {gpio_pins_[i].descriptor, request_dir, 0};
-                line.request(config, gpio_pins_[i].init_value);
+            for (const GPIOPin& pin : gpio_pins_) {
+                gpiod::chip chip(pin.chip_name);
+                gpiod::line line = chip.get_line(pin.pin_number);
+                int request_dir = pin.direction.compare("output") == 0 ? gpiod::line_request::DIRECTION_OUTPUT
+                                                                       : gpiod::line_request::DIRECTION_INPUT;
+                gpiod::line_request config = {pin.descriptor, request_dir, 0};
+                line.request(config, pin.init_value);
                 gpio_lines_.push_back(std::move(line));
             }
         } catch (const std::exception& e) {
@@ -215,7 +231,7 @@ namespace cl42t_hardware {
     /**
      * Generate num_pulses at the specified duty cycle, each lasting cycle_period_us.
      */
-    void generate_pulses(gpiod::line& pul_line, int num_pulses, int cycle_period_us, float duty_cycle) {
+    void CL42T::generate_pulses(gpiod::line& pul_line, int num_pulses, int cycle_period_us, float duty_cycle) {
         // Ensure duty cycle is between 0 and 1
         if (duty_cycle <= 0.0 || duty_cycle > 1.0) {
             throw std::invalid_argument("Invalid Duty cycle. Ensure the Duty cycle is in (0, 1].");

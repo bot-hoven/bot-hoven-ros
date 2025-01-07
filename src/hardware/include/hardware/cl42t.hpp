@@ -13,8 +13,7 @@
 
 namespace cl42t_hardware {
 
-    // CL42T-V4.1 interface constants, see documentation for further details:
-    // https://www.omc-stepperonline.com/index.php?route=product/product/get_file&file=3272/CL42T-V41%20Manual.pdf
+    // CL42T-V4.1 constants
     constexpr uint8_t LogicalHigh = 1;
     constexpr uint8_t LogicalLow = 0;
     constexpr uint8_t MinPulseTimeUsec = 1;
@@ -25,14 +24,16 @@ namespace cl42t_hardware {
     constexpr float DutyCycle = 0.5;
     const std::vector<int> ValidPulsesPerRev = {200,  800,  1600, 3200, 6400, 12800, 25600, 51200,
                                                 1000, 2000, 4000, 5000, 8000, 10000, 20000, 40000};
+    const std::vector<std::string> ValidPinDescriptors = {"PUL+", "DIR+", "ENA+", "ALM"};
 
     enum RotateDir { CW = 0, CCW = 1 };
 
     struct GPIOPin {
-        uint8_t pin_number;      // GPIO pin number
-        std::string descriptor;  // Pin description
-        std::string direction;   // Input or output
-        int init_value;          // Initial value to set (only relevant for output pins)
+        std::string chip_name;
+        int pin_number;
+        std::string descriptor;
+        std::string direction;
+        int init_value;
     };
 
     class CL42T : public hardware_interface::ActuatorInterface {
@@ -57,7 +58,6 @@ namespace cl42t_hardware {
         int pulses_per_rev_;
 
         // GPIO parameters
-        std::string chip_name_;
         std::vector<GPIOPin> gpio_pins_;
         std::vector<gpiod::line> gpio_lines_;
 
