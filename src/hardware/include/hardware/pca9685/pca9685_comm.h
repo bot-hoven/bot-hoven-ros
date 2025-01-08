@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 
-#include "hardware/common/Constants.h"
+#include "hardware/pca9685/pca9685_constants.h"
 #include "hardware/i2c/I2CPeripheral.h"
 
 namespace pca9685_hardware_interface {

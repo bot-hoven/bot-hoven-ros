@@ -1,5 +1,5 @@
-#ifndef HARDWARE__BOTHOVEN_HARDWARE_HPP_
-#define HARDWARE__BOTHOVEN_HARDWARE_HPP_
+#ifndef HARDWARE__BOTHOVEN_HARDWARE_HPP
+#define HARDWARE__BOTHOVEN_HARDWARE_HPP
 
 #include <hardware_interface/system_interface.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
@@ -49,4 +49,4 @@ private:
 
 } // namespace hardware
 
-#endif // HARDWARE__BOTHOVEN_HARDWARE_HPP_
+#endif // HARDWARE__BOTHOVEN_HARDWARE_HPP
