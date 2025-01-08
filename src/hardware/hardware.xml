@@ -21,4 +21,12 @@
       ROS2 control hardware interface for the PCA9685 PWM driver
     </description>
   </class>
+  <class
+    name="hardware/Mcp23017SystemHardware"
+    type="hardware::Mcp23017SystemHardware"
+    base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ROS2 control hardware interface for the MCP23017 IO Expander driver
+    </description>
+  </class>
 </library>

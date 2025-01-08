@@ -14,8 +14,6 @@ public:
     PCA9685(std::shared_ptr<hardware::I2CPeripheral> i2c_device, int address);
     ~PCA9685();
 
-    // void connect_to_i2c(const int address);
-
     void set_pwm_freq(const double freq_hz);
 
     void set_pwm(const int channel, const uint16_t on, const uint16_t off);
