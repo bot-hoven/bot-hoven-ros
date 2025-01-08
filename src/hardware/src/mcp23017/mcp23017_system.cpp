@@ -156,12 +156,15 @@ hardware_interface::return_type Mcp23017SystemHardware::write(
 
   for (auto i = 0u; i < hw_commands_.size(); i++)
   {
+    uint8_t bit_value = static_cast<uint8_t>(hw_commands_[i]);
 
-    solenoid_values_ |= (hw_commands_[i] << i);
+    // Should insert a check here to ensure value is either a 0 or 1?
+
+    solenoid_values_ |= (bit_value << i);
 
     RCLCPP_INFO(
         rclcpp::get_logger("Mcp23017SystemHardware"),
-        "Joint '%d' has command '%f', duty_cycle: '%f'.", i, hw_commands_[i], duty_cycle);
+        "Joint '%d' has command '%d'.", i, bit_value);
 
   }
 

@@ -16,7 +16,7 @@
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
-// #include "hardware/mcp23017/visibility_control.h"
+#include "hardware/mcp23017/visibility_control.h"
 #include <hardware/mcp23017/mcp23017_comm.h>
 
 namespace mcp23017_hardware_interface
