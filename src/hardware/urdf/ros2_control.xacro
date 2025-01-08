@@ -63,7 +63,7 @@
     <hardware>
       <plugin>hardware/CL42T</plugin>
       <param name="i2c_device">/dev/i2c-1</param> 
-      <param name="frequency_hz">50</param>
+      <param name="frequency_hz">50</param> 
       <param name="i2c_address">65</param>  <!-- 0x41 in decimal -->
     </hardware>
 

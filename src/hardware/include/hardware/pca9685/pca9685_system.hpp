@@ -62,6 +62,7 @@ public:
 
 private:
   std::vector<double> hw_commands_;
+  std::shared_ptr<hardware::I2CPeripheral> i2c_bus;
   std::unique_ptr<pca9685_hardware_interface::PCA9685> pca;
   double command_to_duty_cycle(double command);
 };

@@ -11,7 +11,7 @@ extern "C" {
 
 namespace hardware {
 
-I2CPeripheral::I2CPeripheral(const std::string& device = "dev/i2c-1", const uint8_t address = 0x00) {
+I2CPeripheral::I2CPeripheral(const std::string& device) {
   OpenBus(device);
   // ConnectToPeripheral(address);
 }
