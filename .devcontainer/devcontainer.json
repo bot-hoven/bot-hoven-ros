@@ -1,6 +1,16 @@
 {
   "name": "Bot-Hoven",
   "dockerFile": "Dockerfile",
+  "build": {
+    "args": {
+      // This build argument specifies the base image for the Docker container.
+      // For development, use "osrf/ros:jazzy-desktop-full".
+      // For production (Raspberry Pi 5), use "arm64v8/ros:jazzy-ros-base-noble".
+      "BOTHOVEN_BASE_IMAGE": "arm64v8/ros:jazzy-ros-base-noble",
+      // Specify the environment: "production" or "development"
+      "BOTHOVEN_ENVIRONMENT": "production"
+    }
+  },
   "runArgs": [
     "--privileged",
     "--network=host",

@@ -12,6 +12,39 @@
 ## ROS Version
 This project uses **[ROS Jazzy](https://docs.ros.org/en/jazzy/Releases/Release-Jazzy-Jalisco.html)** and **[Gazebo Harmonic](https://gazebosim.org/docs/harmonic/getstarted/)**.
 
+## Production and Development Environments
+
+The `devcontainer.json` file allows you to specify different build arguments for production and development environments.
+
+### Build Arguments
+
+- `BOTHOVEN_ENVIRONMENT`: Specifies the environment, either "production" or "development".
+- `BOTHOVEN_BASE_IMAGE`: Specifies the base image for the Docker container.
+
+### Changing the Build Arguments
+
+To change the build arguments, modify the `devcontainer.json` file located in the `.devcontainer` directory.
+
+For development, set the build arguments as follows:
+```json
+"build": {
+  "args": {
+    "BOTHOVEN_BASE_IMAGE": "osrf/ros:jazzy-desktop-full",
+    "BOTHOVEN_ENVIRONMENT": "development"
+  }
+}
+```
+
+For production, set the build arguments as follows:
+```json
+"build": {
+  "args": {
+    "BOTHOVEN_BASE_IMAGE": "arm64v8/ros:jazzy-ros-base-noble",
+    "BOTHOVEN_ENVIRONMENT": "production"
+  }
+}
+```
+
 ## Development Setup
 1. Open the project in VSCode.
 2. When prompted by the Dev Containers extension, reopen the project in the container.
