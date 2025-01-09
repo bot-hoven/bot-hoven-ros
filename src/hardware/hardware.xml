@@ -6,8 +6,8 @@
     <description>Bothoven Hardware Interface</description>
   </class>
   <class
-    name="hardware/CL42T"
-    type="hardware::CL42T"
+    name="cl42t_hardware/CL42T"
+    type="cl42t_hardware::CL42T"
     base_class_type="hardware_interface::ActuatorInterface">
     <description>
       ROS2 control hardware interface for the CL42TV4.1 stepper motor driver

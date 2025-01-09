@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
   <ros2_control name="left_stepper_driver" type="actuator">
     <hardware>
-      <plugin>hardware/CL42T</plugin>
+      <plugin>cl42t_hardware/CL42T</plugin>
       <param name="pulses_per_rev">1600</param>
     </hardware>
 
@@ -26,7 +26,7 @@
 
   <ros2_control name="right_stepper_driver" type="actuator">
     <hardware>
-      <plugin>hardware/CL42T</plugin>
+      <plugin>cl42t_hardware/CL42T</plugin>
       <param name="pulses_per_rev">1600</param>
     </hardware>
 

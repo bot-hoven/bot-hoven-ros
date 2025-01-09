@@ -43,6 +43,11 @@ namespace cl42t_hardware {
         }
 
         // Validate GPIO paramaters
+        // TODO: update this validation with ValidPinDescriptors.size() once remaining pin functionality is implemented
+        if (info_.gpios.size() != 2) {
+            RCLCPP_FATAL(get_logger(), "Interface has '%ld' GPIO components. '%d' expected.", info_.gpios.size(), 2);
+            return hardware_interface::CallbackReturn::ERROR;
+        }
         for (size_t i = 0; i < gpio_pins_.size(); i++) {
             // Validate GPIO pin descriptor corresponds to a valid setting
             if (std::find(ValidPinDescriptors.begin(), ValidPinDescriptors.end(), gpio_pins_[i].descriptor) ==
@@ -58,7 +63,6 @@ namespace cl42t_hardware {
                              "The %zuth pin descriptor is \" %s \". \" %s \" expected. Consult the README.md for "
                              "expected ordering ",
                              i, gpio_pins_[i].descriptor.c_str(), ValidPinDescriptors[i].c_str());
-                ;
                 return CallbackReturn::ERROR;
             }
         }
@@ -140,6 +144,24 @@ namespace cl42t_hardware {
         set_state(position_state_interface_name_, 0.0);
 
         RCLCPP_INFO(get_logger(), "Successfully configured GPIO communication.");
+        return hardware_interface::CallbackReturn::SUCCESS;
+    }
+
+    hardware_interface::CallbackReturn CL42T::on_activate(const rclcpp_lifecycle::State& previous_state) {
+        (void)previous_state;  // suppress unused parameter warning
+
+        // Set the direction pin and wait the minimum setup time.
+        gpio_lines_[1].set_value(dir_);
+        rclcpp::Rate(rclcpp::Duration(std::chrono::nanoseconds(MinDirTimeUsec * NsecPerUsec))).sleep();
+
+        RCLCPP_INFO(get_logger(), "Successfully Activated.");
+        return hardware_interface::CallbackReturn::SUCCESS;
+    }
+
+    hardware_interface::CallbackReturn CL42T::on_deactivate(const rclcpp_lifecycle::State& previous_state) {
+        (void)previous_state;  // suppress unused parameter warning
+
+        RCLCPP_INFO(get_logger(), "Successfully Deactivated.");
         return hardware_interface::CallbackReturn::SUCCESS;
     }
 
