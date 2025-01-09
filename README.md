@@ -14,36 +14,14 @@ This project uses **[ROS Jazzy](https://docs.ros.org/en/jazzy/Releases/Release-J
 
 ## Production and Development Environments
 
-The `devcontainer.json` file allows you to specify different build arguments for production and development environments.
+The `.devcontainer` directory contains separate folders for production and development environments. Each folder has its own `devcontainer.json` and `dockerfile` files.
 
-### Build Arguments
+### Selecting the Environment
 
-- `BOTHOVEN_ENVIRONMENT`: Specifies the environment, either "production" or "development".
-- `BOTHOVEN_BASE_IMAGE`: Specifies the base image for the Docker container.
+To select the relevant environment, choose the appropriate `devcontainer.json` file when running the container:
 
-### Changing the Build Arguments
-
-To change the build arguments, modify the `devcontainer.json` file located in the `.devcontainer` directory.
-
-For development, set the build arguments as follows:
-```json
-"build": {
-  "args": {
-    "BOTHOVEN_BASE_IMAGE": "osrf/ros:jazzy-desktop-full",
-    "BOTHOVEN_ENVIRONMENT": "development"
-  }
-}
-```
-
-For production, set the build arguments as follows:
-```json
-"build": {
-  "args": {
-    "BOTHOVEN_BASE_IMAGE": "arm64v8/ros:jazzy-ros-base-noble",
-    "BOTHOVEN_ENVIRONMENT": "production"
-  }
-}
-```
+- For development, use the `devcontainer.json` file located in the `.devcontainer/dev` directory.
+- For production, use the `devcontainer.json` file located in the `.devcontainer/prod` directory.
 
 ## Development Setup
 1. Open the project in VSCode.
