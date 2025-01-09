@@ -18,8 +18,9 @@
     "DISPLAY=${localEnv:DISPLAY}",
     "-v",
     "/tmp/.X11-unix:/tmp/.X11-unix",
-    "--gpus=all"
   ],
+  "overrideCommand": false,
+  "initializeCommand": "bash -c 'if command -v nvidia-smi &>/dev/null; then echo \"--gpus=all\"; fi'",
   "workspaceMount": "source=${localWorkspaceFolder},target=/${localWorkspaceFolderBasename},type=bind",
   "workspaceFolder": "/${localWorkspaceFolderBasename}",
   "mounts": [
