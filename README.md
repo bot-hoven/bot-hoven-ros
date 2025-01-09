@@ -12,6 +12,17 @@
 ## ROS Version
 This project uses **[ROS Jazzy](https://docs.ros.org/en/jazzy/Releases/Release-Jazzy-Jalisco.html)** and **[Gazebo Harmonic](https://gazebosim.org/docs/harmonic/getstarted/)**.
 
+## Production and Development Environments
+
+The `.devcontainer` directory contains separate folders for production and development environments. Each folder has its own `devcontainer.json` and `dockerfile` files.
+
+### Selecting the Environment
+
+To select the relevant environment, choose the appropriate `devcontainer.json` file when running the container:
+
+- For development, use the `devcontainer.json` file located in the `.devcontainer/dev` directory.
+- For production, use the `devcontainer.json` file located in the `.devcontainer/prod` directory.
+
 ## Development Setup
 1. Open the project in VSCode.
 2. When prompted by the Dev Containers extension, reopen the project in the container.

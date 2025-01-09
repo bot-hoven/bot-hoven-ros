@@ -29,7 +29,8 @@
         "smilerobotics.urdf",
         "ms-vscode.cmake-tools",
         "ms-vscode.cpptools-extension-pack",
-        "redhat.vscode-xml"
+        "redhat.vscode-xml",
+        "GitHub.copilot"
       ]
     }
   }

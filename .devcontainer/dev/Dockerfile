@@ -18,7 +18,7 @@ RUN apt-get update && \
     ros-jazzy-hardware-interface \
     ros-jazzy-gz-ros2-control \
     ros-jazzy-joint-state-publisher-gui \
-    python3-rosdoc2 && \
+    ros-jazzy-xacro && \
     rm -rf /var/lib/apt/lists/* && \
     echo "$USERNAME ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME && \
     chmod 0440 /etc/sudoers.d/$USERNAME
