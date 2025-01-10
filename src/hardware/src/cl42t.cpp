@@ -186,6 +186,8 @@ namespace cl42t_hardware {
         new_position += (dir_ == RotateDir::CW) ? position_change : -position_change;
         set_state(position_state_interface_name_, new_position);
 
+        // RCLCPP_INFO(get_logger(), "state: %f", get_state(position_state_interface_name_));
+
         // reset num_pulses_
         num_pulses_ = 0;
 
@@ -197,6 +199,8 @@ namespace cl42t_hardware {
         (void)period;  // suppress unused parameter warning
 
         double desired_position = get_command(position_command_interface_name_);
+
+        // RCLCPP_INFO(get_logger(), "command: %f", get_command(position_command_interface_name_));
 
         // Ensure the desired positon is within range
         if (desired_position < min_position_ || desired_position > max_position_) {
