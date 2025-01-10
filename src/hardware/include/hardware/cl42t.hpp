@@ -56,7 +56,7 @@ namespace cl42t_hardware {
 
     private:
         // Auxiliary function prototypes
-        void generate_pulses(gpiod::line& pul_line, int num_pulses, int cycle_period_us, float duty_cycle);
+        void generate_pulses(gpiod::line& pul_line, int num_pulses, int cycle_period_us);
 
         // Hardware parameters
         int pulses_per_rev_;
@@ -70,6 +70,7 @@ namespace cl42t_hardware {
         double max_position_;
         std::string position_state_interface_name_;
         std::string position_command_interface_name_;
+        std::string hardware_name_;
 
         // Internal variables
         int dir_;

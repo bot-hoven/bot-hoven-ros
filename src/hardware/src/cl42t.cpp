@@ -101,6 +101,7 @@ namespace cl42t_hardware {
             max_position_ = std::stod(joint.command_interfaces[0].max);
             position_state_interface_name_ = joint_state_interfaces_.begin()->first;
             position_command_interface_name_ = joint_command_interfaces_.begin()->first;
+            hardware_name_ = info.name;
         } catch (const std::exception& e) {
             RCLCPP_FATAL(get_logger(), "Failed to parse interface parameters: %s", e.what());
             return CallbackReturn::ERROR;
@@ -117,7 +118,7 @@ namespace cl42t_hardware {
         angular_resolution_ = 2 * M_PI / pulses_per_rev_;  // angle in radians per pulse;
         num_pulses_ = 0;
 
-        RCLCPP_INFO(get_logger(), "Successfully Initialized %s.", info.name.c_str());
+        RCLCPP_INFO(get_logger(), "Successfully Initialized %s.", hardware_name_.c_str());
         return hardware_interface::CallbackReturn::SUCCESS;
     }
 
@@ -152,7 +153,7 @@ namespace cl42t_hardware {
 
         // Set the direction pin and wait the minimum setup time.
         gpio_lines_[1].set_value(dir_);
-        rclcpp::Rate(rclcpp::Duration(std::chrono::nanoseconds(MinDirTimeUsec * NsecPerUsec))).sleep();
+        rclcpp::sleep_for(std::chrono::nanoseconds(MinDirTimeUsec * NsecPerUsec));
 
         RCLCPP_INFO(get_logger(), "Successfully Activated.");
         return hardware_interface::CallbackReturn::SUCCESS;
@@ -214,7 +215,7 @@ namespace cl42t_hardware {
             int dir = position_change > 0 ? RotateDir::CW : RotateDir::CCW;
             if (dir_ != dir) {
                 gpio_lines_[1].set_value(dir);
-                rclcpp::Rate(rclcpp::Duration(std::chrono::nanoseconds(MinDirTimeUsec * NsecPerUsec))).sleep();
+                rclcpp::sleep_for(std::chrono::nanoseconds(MinDirTimeUsec * NsecPerUsec));
                 dir_ = dir;
             }
 
@@ -239,52 +240,36 @@ namespace cl42t_hardware {
             int cycle_period_us = static_cast<int>(period.nanoseconds() / (NsecPerUsec * num_pulses_));
 
             // Generate pulses
-            try {
-                generate_pulses(gpio_lines_[0], num_pulses_, cycle_period_us, DutyCycle);
-            } catch (const std::exception& e) {
-                RCLCPP_FATAL(get_logger(), "Failed to generate pulses: %s", e.what());
-                return hardware_interface::return_type::ERROR;
-            }
+            generate_pulses(gpio_lines_[0], num_pulses_, cycle_period_us);
         }
 
         return hardware_interface::return_type::OK;
     }
 
     /**
-     * Generate num_pulses at the specified duty cycle, each lasting cycle_period_us.
+     * Generate num_pulses at the recommended duty cycle of 50%, each lasting cycle_period_us.
      */
-    void CL42T::generate_pulses(gpiod::line& pul_line, int num_pulses, int cycle_period_us, float duty_cycle) {
-        // Ensure duty cycle is between 0 and 1
-        if (duty_cycle <= 0.0 || duty_cycle > 1.0) {
-            throw std::invalid_argument("Invalid Duty cycle. Ensure the Duty cycle is in (0, 1].");
+    void CL42T::generate_pulses(gpiod::line& pul_line, int num_pulses, int cycle_period_us) {
+        // Determine the pulse width from the cycle period
+        int pulse_width_us = static_cast<int>(cycle_period_us * DutyCycle);
+
+        // Ensure the pulse width satisfies the driver constraints, operate with the closest specifications if invalid
+        if (pulse_width_us < MinPulseTimeUsec) {
+            RCLCPP_WARN(rclcpp::get_logger(hardware_name_),
+                        "Desired pulse width of %d usec does not satisfy driver time constraints. Resorting to the "
+                        "driver minimum allowable pulse width.",
+                        pulse_width_us);
+            pulse_width_us = MinPulseTimeUsec;
         }
 
-        // Determine the high and low times based on the duty cycle
-        int high_time_us = static_cast<int>(cycle_period_us * duty_cycle);
-        int low_time_us = cycle_period_us - high_time_us;
-
-        // Ensure high & low times satisfy the driver constraints, operate with the closest specifications if invalid
-        if (high_time_us < MinPulseTimeUsec) {
-            RCLCPP_WARN(rclcpp::get_logger("cl42t_hardware"),
-                        "Desired high time of %d usec does not satisfy driver time constraints. Resorting to minimum "
-                        "allowable high time.",
-                        high_time_us);
-            high_time_us = MinPulseTimeUsec;
-        }
-        if (low_time_us < MinPulseTimeUsec) {
-            RCLCPP_WARN(rclcpp::get_logger("cl42t_hardware"),
-                        "Desired low time of %d usec does not satisfy driver time constraints. Resorting to minimum "
-                        "allowable low time.",
-                        low_time_us);
-            low_time_us = MinPulseTimeUsec;
-        }
-
-        // Generate pulses at the duty cycle
+        // Generate pulses at the recommended duty cycle
+        rclcpp::Rate toggle_rate =
+            rclcpp::Rate(rclcpp::Duration(std::chrono::nanoseconds(pulse_width_us * NsecPerUsec)));
         for (int i = 0; i < num_pulses; i++) {
             pul_line.set_value(LogicalHigh);
-            rclcpp::Rate(rclcpp::Duration(std::chrono::nanoseconds(high_time_us * NsecPerUsec))).sleep();
+            toggle_rate.sleep();
             pul_line.set_value(LogicalLow);
-            rclcpp::Rate(rclcpp::Duration(std::chrono::nanoseconds(low_time_us * NsecPerUsec))).sleep();
+            toggle_rate.sleep();
         }
     }
 
