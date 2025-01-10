@@ -70,7 +70,6 @@ namespace cl42t_hardware {
         double max_position_;
         std::string position_state_interface_name_;
         std::string position_command_interface_name_;
-        std::string hardware_name_;
 
         // Internal variables
         int dir_;

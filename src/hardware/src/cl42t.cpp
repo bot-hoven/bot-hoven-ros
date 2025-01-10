@@ -101,7 +101,6 @@ namespace cl42t_hardware {
             max_position_ = std::stod(joint.command_interfaces[0].max);
             position_state_interface_name_ = joint_state_interfaces_.begin()->first;
             position_command_interface_name_ = joint_command_interfaces_.begin()->first;
-            hardware_name_ = info.name;
         } catch (const std::exception& e) {
             RCLCPP_FATAL(get_logger(), "Failed to parse interface parameters: %s", e.what());
             return CallbackReturn::ERROR;
@@ -118,7 +117,7 @@ namespace cl42t_hardware {
         angular_resolution_ = 2 * M_PI / pulses_per_rev_;  // angle in radians per pulse;
         num_pulses_ = 0;
 
-        RCLCPP_INFO(get_logger(), "Successfully Initialized %s.", hardware_name_.c_str());
+        RCLCPP_INFO(get_logger(), "Successfully Initialized %s.", info.name.c_str());
         return hardware_interface::CallbackReturn::SUCCESS;
     }
 
@@ -255,7 +254,7 @@ namespace cl42t_hardware {
 
         // Ensure the pulse width satisfies the driver constraints, operate with the closest specifications if invalid
         if (pulse_width_us < MinPulseTimeUsec) {
-            RCLCPP_WARN(rclcpp::get_logger(hardware_name_),
+            RCLCPP_WARN(get_logger(),
                         "Desired pulse width of %d usec does not satisfy driver time constraints. Resorting to the "
                         "driver minimum allowable pulse width.",
                         pulse_width_us);
