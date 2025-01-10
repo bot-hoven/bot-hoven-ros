@@ -7,7 +7,11 @@
     "-e",
     "DISPLAY=${localEnv:DISPLAY}",
     "-v",
-    "/tmp/.X11-unix:/tmp/.X11-unix"
+    "/tmp/.X11-unix:/tmp/.X11-unix",
+    "-v", 
+    "/sys/class/gpio:/sys/class/gpio",
+    "-v",
+    "/dev:/dev"
   ],
   "workspaceMount": "source=${localWorkspaceFolder},target=/${localWorkspaceFolderBasename},type=bind",
   "workspaceFolder": "/${localWorkspaceFolderBasename}",
