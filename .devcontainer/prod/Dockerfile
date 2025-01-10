@@ -16,7 +16,8 @@ RUN apt-get update && \
     ros-jazzy-ros2-control \
     ros-jazzy-ros2-controllers \
     ros-jazzy-hardware-interface \
-    ros-jazzy-xacro && \
+    ros-jazzy-xacro \
+    libgpiod-dev && \
     rm -rf /var/lib/apt/lists/* && \
     echo "$USERNAME ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME && \
     chmod 0440 /etc/sudoers.d/$USERNAME

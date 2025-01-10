@@ -9,14 +9,14 @@
     <xacro:include filename="$(find hardware)/urdf/left_stepper_joint.xacro" />
 
     <gpio name="left_stepper_pul">
-      <param name="chip_name">/dev/gpiochip4/</param>
+      <param name="chip_name">/dev/gpiochip4</param>
       <param name="pin_number">22</param>
       <param name="descriptor">PUL+</param>
       <param name="direction">output</param>
       <param name="init_value">0</param>
     </gpio>
     <gpio name="left_stepper_dir">
-      <param name="chip_name">/dev/gpiochip4/</param>
+      <param name="chip_name">/dev/gpiochip4</param>
       <param name="pin_number">23</param>
       <param name="descriptor">DIR+</param>
       <param name="direction">output</param>
@@ -33,14 +33,14 @@
     <xacro:include filename="$(find hardware)/urdf/right_stepper_joint.xacro" />
 
     <gpio name="right_stepper_pul">
-      <param name="chip_name">/dev/gpiochip4/</param>
+      <param name="chip_name">/dev/gpiochip4</param>
       <param name="pin_number">5</param>
       <param name="descriptor">PUL+</param>
       <param name="direction">output</param>
       <param name="init_value">0</param>
     </gpio>
     <gpio name="right_stepper_dir">
-      <param name="chip_name">/dev/gpiochip4/</param>
+      <param name="chip_name">/dev/gpiochip4</param>
       <param name="pin_number">6</param>
       <param name="descriptor">DIR+</param>
       <param name="direction">output</param>

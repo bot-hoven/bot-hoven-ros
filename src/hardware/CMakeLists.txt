@@ -4,7 +4,6 @@ project(hardware)
 # Add compile options
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
-  add_link_options(-lgpiod -lgpiodcxx)
 endif()
 
 # Set Core dependencies
@@ -22,6 +21,11 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
+# Find libgpiod
+find_package(PkgConfig REQUIRED) # Required for system libraries
+pkg_check_modules(LIBGPIOD REQUIRED IMPORTED_TARGET libgpiodcxx) # Finds libgpiod
+include_directories(${LIBGPIOD_INCLUDE_DIRS}) # Adds libgpiod headers to include path
+
 # Add a library to the project using the specified source files
 add_library(
   ${PROJECT_NAME} SHARED
@@ -31,19 +35,19 @@ add_library(
 
 # Include directories
 target_include_directories(${PROJECT_NAME} PUBLIC
-$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-$<INSTALL_INTERFACE:include>
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${LIBGPIOD_INCLUDE_DIRS}
 )
 
 # Link dependencies
 ament_target_dependencies(
-  ${PROJECT_NAME} PUBLIC
+  ${PROJECT_NAME}
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
-# Specify libraries or flags to use when linking a given target
 target_link_libraries(${PROJECT_NAME}
-  
+  ${LIBGPIOD_LIBRARIES}
 )
 
 # Export plugin
