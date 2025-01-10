@@ -23,6 +23,19 @@ To select the relevant environment, choose the appropriate `devcontainer.json` f
 - For development, use the `devcontainer.json` file located in the `.devcontainer/dev` directory.
 - For production, use the `devcontainer.json` file located in the `.devcontainer/prod` directory.
 
+### Adding the Pi user to the GPIO group
+
+This step is only required when setting up a new Pi to run the production image for the first time.
+
+1. Add the `pi` user to the `gpio` group:
+   ```sh
+   sudo usermod -aG gpio pi
+   ```
+2. Reboot the Raspberry Pi to apply the changes:
+   ```sh
+   sudo reboot
+   ```
+
 ## Development Setup
 1. Open the project in VSCode.
 2. When prompted by the Dev Containers extension, reopen the project in the container.
