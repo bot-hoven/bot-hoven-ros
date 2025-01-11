@@ -10,186 +10,152 @@
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-namespace pca9685_hardware_interface
-{
-hardware_interface::CallbackReturn Pca9685SystemHardware::on_init(
-  const hardware_interface::HardwareInfo & info)
-{
+namespace pca9685_hardware_interface {
+    hardware_interface::CallbackReturn Pca9685SystemHardware::on_init(const hardware_interface::HardwareInfo &info) {
+        try {
+            // Dynamically create or fetch the shared I2C bus instance
+            auto i2c_bus = std::make_shared<hardware::I2CPeripheral>(info_.hardware_parameters.at("i2c_device"));
 
-  try {
-    // Dynamically create or fetch the shared I2C bus instance
-    auto i2c_bus = std::make_shared<hardware::I2CPeripheral>(info_.hardware_parameters.at("i2c_device"));
+        } catch (const std::exception &e) {
+            RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"), "Error initializing I2C Bus: %s", e.what());
+            return hardware_interface::CallbackReturn::ERROR;
+        }
 
-  } catch (const std::exception &e) {
-    RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"), "Error initializing I2C Bus: %s", e.what());
-    return hardware_interface::CallbackReturn::ERROR;
-  }
+        if (!i2c_bus) {
+            RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to initialize I2C bus.");
+            return hardware_interface::CallbackReturn::ERROR;
+        }
 
-  if (!i2c_bus) {
-    RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to initialize I2C bus.");
-    return hardware_interface::CallbackReturn::ERROR;
-  }
+        // Setup and initialize the PCA object
+        try {
+            pca = std::make_unique<pca9685_hardware_interface::PCA9685>(
+                i2c_bus, std::stoi(info_.hardware_parameters["i2c_address"]));
+            pca->set_pwm_freq(std::stoi(info_.hardware_parameters["frequency_hz"]));
 
-  // Setup and initialize the PCA object
-  try {
+        } catch (const std::exception &e) {
+            RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"), "Error initializing PCA9685: %s", e.what());
+            return hardware_interface::CallbackReturn::ERROR;
+        }
 
-    pca = std::make_unique<pca9685_hardware_interface::PCA9685>(i2c_bus, std::stoi(info_.hardware_parameters["i2c_address"]));
-    pca->set_pwm_freq(std::stoi(info_.hardware_parameters["frequency_hz"]));
+        if (hardware_interface::SystemInterface::on_init(info) != hardware_interface::CallbackReturn::SUCCESS) {
+            return hardware_interface::CallbackReturn::ERROR;
+        }
 
-  } catch (const std::exception &e) {
-    RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"), "Error initializing PCA9685: %s", e.what());
-    return hardware_interface::CallbackReturn::ERROR;
-  }
+        hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
-  if (
-    hardware_interface::SystemInterface::on_init(info) !=
-    hardware_interface::CallbackReturn::SUCCESS)
-  {
-    return hardware_interface::CallbackReturn::ERROR;
-  }
+        for (const hardware_interface::ComponentInfo &joint : info_.joints) {
+            // Pca9685System has one command interface on each output
+            if (joint.command_interfaces.size() != 1) {
+                RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"),
+                             "Joint '%s' has %zu command interfaces found. 1 expected.", joint.name.c_str(),
+                             joint.command_interfaces.size());
+                return hardware_interface::CallbackReturn::ERROR;
+            }
 
-  hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+            if (joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION) {
+                RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"),
+                             "Joint '%s' have %s command interfaces found. '%s' expected.", joint.name.c_str(),
+                             joint.command_interfaces[0].name.c_str(), hardware_interface::HW_IF_POSITION);
+                return hardware_interface::CallbackReturn::ERROR;
+            }
+        }
 
-  for (const hardware_interface::ComponentInfo & joint : info_.joints)
-  {
-    // Pca9685System has one command interface on each output
-    if (joint.command_interfaces.size() != 1)
-    {
-      RCLCPP_FATAL(
-        rclcpp::get_logger("Pca9685SystemHardware"),
-        "Joint '%s' has %zu command interfaces found. 1 expected.", joint.name.c_str(),
-        joint.command_interfaces.size());
-      return hardware_interface::CallbackReturn::ERROR;
+        return hardware_interface::CallbackReturn::SUCCESS;
     }
 
-    if (joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION)
-    {
-      RCLCPP_FATAL(
-        rclcpp::get_logger("Pca9685SystemHardware"),
-        "Joint '%s' have %s command interfaces found. '%s' expected.", joint.name.c_str(),
-        joint.command_interfaces[0].name.c_str(), hardware_interface::HW_IF_POSITION);
-      return hardware_interface::CallbackReturn::ERROR;
+    std::vector<hardware_interface::StateInterface> Pca9685SystemHardware::export_state_interfaces() {
+        std::vector<hardware_interface::StateInterface> state_interfaces;
+
+        for (auto i = 0u; i < info_.joints.size(); i++) {
+            state_interfaces.emplace_back(hardware_interface::StateInterface(
+                info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_commands_[i]));
+        }
+
+        return state_interfaces;
     }
-  }
 
-  return hardware_interface::CallbackReturn::SUCCESS;
-}
+    std::vector<hardware_interface::CommandInterface> Pca9685SystemHardware::export_command_interfaces() {
+        std::vector<hardware_interface::CommandInterface> command_interfaces;
+        for (auto i = 0u; i < info_.joints.size(); i++) {
+            command_interfaces.emplace_back(hardware_interface::CommandInterface(
+                info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_commands_[i]));
+        }
 
-
-std::vector<hardware_interface::StateInterface> Pca9685SystemHardware::export_state_interfaces()
-{
-  std::vector<hardware_interface::StateInterface> state_interfaces;
-  
-  for (auto i = 0u; i < info_.joints.size(); i++)
-  {
-    state_interfaces.emplace_back(hardware_interface::StateInterface(
-      info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_commands_[i]));
-  }
-
-  return state_interfaces;
-}
-
-std::vector<hardware_interface::CommandInterface> Pca9685SystemHardware::export_command_interfaces()
-{
-  std::vector<hardware_interface::CommandInterface> command_interfaces;
-  for (auto i = 0u; i < info_.joints.size(); i++)
-  {
-    command_interfaces.emplace_back(hardware_interface::CommandInterface(
-      info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_commands_[i]));
-  }
-
-  return command_interfaces;
-}
-
-hardware_interface::CallbackReturn Pca9685SystemHardware::on_configure(
-  const rclcpp_lifecycle::State & /*previous_state*/)
-{
-  RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Configuring ...please wait...");
-  
-  RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Successfully configured!");
-
-  return hardware_interface::CallbackReturn::SUCCESS;
-}
-
-hardware_interface::CallbackReturn Pca9685SystemHardware::on_cleanup(
-  const rclcpp_lifecycle::State & /*previous_state*/)
-{
-  RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Cleaning up ...please wait...");
-  
-  RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Successfully cleaned up!");
-
-  return hardware_interface::CallbackReturn::SUCCESS;
-}
-
-hardware_interface::CallbackReturn Pca9685SystemHardware::on_activate(
-  const rclcpp_lifecycle::State & /*previous_state*/)
-{
-  for (auto i = 0u; i < hw_commands_.size(); i++)
-  {
-    if (std::isnan(hw_commands_[i]))
-    {
-      hw_commands_[i] = 0;
+        return command_interfaces;
     }
-  }
 
-  RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Successfully activated!");
-  return hardware_interface::CallbackReturn::SUCCESS;
-}
+    hardware_interface::CallbackReturn Pca9685SystemHardware::on_configure(
+        const rclcpp_lifecycle::State & /*previous_state*/) {
+        RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Configuring ...please wait...");
 
-hardware_interface::CallbackReturn Pca9685SystemHardware::on_deactivate(
-  const rclcpp_lifecycle::State & /*previous_state*/)
-{
-  RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Successfully deactivated!");
-  return hardware_interface::CallbackReturn::SUCCESS;
-}
+        RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Successfully configured!");
 
-hardware_interface::return_type Pca9685SystemHardware::read(
-  const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
-{
+        return hardware_interface::CallbackReturn::SUCCESS;
+    }
 
-  return hardware_interface::return_type::OK;
-}
+    hardware_interface::CallbackReturn Pca9685SystemHardware::on_cleanup(
+        const rclcpp_lifecycle::State & /*previous_state*/) {
+        RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Cleaning up ...please wait...");
 
-double Pca9685SystemHardware::command_to_duty_cycle(double command){
+        RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Successfully cleaned up!");
 
-    double min_input = -1.0;
-    double max_input = 1.0;
+        return hardware_interface::CallbackReturn::SUCCESS;
+    }
 
-    double clamped_command = std::clamp(command, min_input, max_input);
+    hardware_interface::CallbackReturn Pca9685SystemHardware::on_activate(
+        const rclcpp_lifecycle::State & /*previous_state*/) {
+        for (auto i = 0u; i < hw_commands_.size(); i++) {
+            if (std::isnan(hw_commands_[i])) {
+                hw_commands_[i] = 0;
+            }
+        }
 
-    // Duty cycle limits from  1ms to 2ms as per the datasheet
-    double min_duty_cycle = 1.0; 
-    double max_duty_cycle = 2.0;
+        RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Successfully activated!");
+        return hardware_interface::CallbackReturn::SUCCESS;
+    }
 
+    hardware_interface::CallbackReturn Pca9685SystemHardware::on_deactivate(
+        const rclcpp_lifecycle::State & /*previous_state*/) {
+        RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Successfully deactivated!");
+        return hardware_interface::CallbackReturn::SUCCESS;
+    }
 
-    double slope = (max_duty_cycle-min_duty_cycle)/(max_input-min_input);
-    double offset = (max_duty_cycle+min_duty_cycle)/2;
+    hardware_interface::return_type Pca9685SystemHardware::read(const rclcpp::Time & /*time*/,
+                                                                const rclcpp::Duration & /*period*/) {
+        return hardware_interface::return_type::OK;
+    }
 
-    return slope * clamped_command + offset;
+    double Pca9685SystemHardware::command_to_duty_cycle(double command) {
+        double min_input = -1.0;
+        double max_input = 1.0;
 
-}
+        double clamped_command = std::clamp(command, min_input, max_input);
 
-hardware_interface::return_type Pca9685SystemHardware::write(
-  const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
-{
+        // Duty cycle limits from  1ms to 2ms as per the datasheet
+        double min_duty_cycle = 1.0;
+        double max_duty_cycle = 2.0;
 
-  for (auto i = 0u; i < hw_commands_.size(); i++)
-  {
-    double duty_cycle = command_to_duty_cycle(hw_commands_[i]);
+        double slope = (max_duty_cycle - min_duty_cycle) / (max_input - min_input);
+        double offset = (max_duty_cycle + min_duty_cycle) / 2;
 
-    RCLCPP_INFO(
-        rclcpp::get_logger("Pca9685SystemHardware"),
-        "Joint '%d' has command '%f', duty_cycle: '%f'.", i, hw_commands_[i], duty_cycle);
+        return slope * clamped_command + offset;
+    }
 
-    pca->set_pwm_ms(i, duty_cycle);
+    hardware_interface::return_type Pca9685SystemHardware::write(const rclcpp::Time & /*time*/,
+                                                                 const rclcpp::Duration & /*period*/) {
+        for (auto i = 0u; i < hw_commands_.size(); i++) {
+            double duty_cycle = command_to_duty_cycle(hw_commands_[i]);
 
-  }
+            RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Joint '%d' has command '%f', duty_cycle: '%f'.",
+                        i, hw_commands_[i], duty_cycle);
 
-  return hardware_interface::return_type::OK;
-}
+            pca->set_pwm_ms(i, duty_cycle);
+        }
+
+        return hardware_interface::return_type::OK;
+    }
 
 }  // namespace pca9685_hardware_interface
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(
-  pca9685_hardware_interface::Pca9685SystemHardware, hardware_interface::SystemInterface)
+PLUGINLIB_EXPORT_CLASS(pca9685_hardware_interface::Pca9685SystemHardware, hardware_interface::SystemInterface)

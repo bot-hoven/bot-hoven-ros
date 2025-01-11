@@ -6,23 +6,22 @@
 
 namespace hardware {
 
-class I2CPeripheral {
-public:
-  I2CPeripheral(const std::string& device);
-  ~I2CPeripheral();
+    class I2CPeripheral {
+    public:
+        I2CPeripheral(const std::string& device);
+        ~I2CPeripheral();
 
-  void WriteRegisterByte(const uint8_t register_address, const uint8_t value);
+        void WriteRegisterByte(const uint8_t register_address, const uint8_t value);
 
-  uint8_t ReadRegisterByte(const uint8_t register_address);
+        uint8_t ReadRegisterByte(const uint8_t register_address);
 
-  void ConnectToPeripheral(const uint8_t address);
+        void ConnectToPeripheral(const uint8_t address);
 
-private:
-  int bus_fd;
+    private:
+        int bus_fd;
 
-  void OpenBus(const std::string& device);
-
-};
+        void OpenBus(const std::string& device);
+    };
 
 }  // namespace hardware
 
