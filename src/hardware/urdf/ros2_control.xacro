@@ -48,7 +48,7 @@
     </gpio>
   </ros2_control>
 
-  <ros2_control name="LeftServoJoints" type="system">
+  <ros2_control name="left_servo_driver" type="system">
     <hardware>
       <plugin>hardware/Pca9685SystemHardware</plugin>
       <param name="i2c_device">/dev/i2c-1</param> 
@@ -59,7 +59,7 @@
     <xacro:include filename="$(find hardware)/urdf/left_servo_joints.xacro" />
   </ros2_control>
 
-  <ros2_control name="RightServoJoints" type="system">
+  <ros2_control name="right_servo_driver" type="system">
     <hardware>
       <plugin>hardware/Pca9685SystemHardware</plugin>
       <param name="i2c_device">/dev/i2c-1</param> 
@@ -70,7 +70,7 @@
     <xacro:include filename="$(find hardware)/urdf/right_servo_joints.xacro" />
   </ros2_control>
 
-  <ros2_control name="LeftSolenoidJoints" type="system">
+  <ros2_control name="left_solenoid_driver" type="system">
     <hardware>
       <plugin>hardware/Mcp23017SystemHardware</plugin>
       <param name="i2c_device">/dev/i2c-1</param> 
@@ -80,7 +80,7 @@
     <xacro:include filename="$(find hardware)/urdf/left_solenoid_joints.xacro" />
   </ros2_control>
 
-  <ros2_control name="RightSolenoidJoints" type="system">
+  <ros2_control name="right_solenoid_driver" type="system">
     <hardware>
       <plugin>hardware/Mcp23017SystemHardware</plugin>
       <param name="i2c_device">/dev/i2c-1</param> 

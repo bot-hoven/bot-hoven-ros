@@ -1,5 +1,5 @@
 {
-    "cmake.sourceDirectory": "/bot-hoven-ros/src/hardware",
+    "cmake.sourceDirectory": "/home/monchoon/Desktop/bot-hoven-ros/src/hardware",
     "files.associations": {
         "vector": "cpp",
         "xstring": "cpp",
