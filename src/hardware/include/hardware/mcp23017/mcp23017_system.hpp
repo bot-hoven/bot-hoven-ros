@@ -20,6 +20,12 @@
 #include "rclcpp_lifecycle/state.hpp"
 
 namespace mcp23017_hardware_interface {
+
+    struct Config {
+        std::string bus_name;
+        int i2c_address;
+    };
+
     class Mcp23017SystemHardware : public hardware_interface::SystemInterface {
     public:
         RCLCPP_SHARED_PTR_DEFINITIONS(Mcp23017SystemHardware);
@@ -52,9 +58,17 @@ namespace mcp23017_hardware_interface {
         hardware_interface::return_type write(const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
     private:
+        // I2C parameters
+        std::shared_ptr<hardware::I2CPeripheral> i2c_bus_;
+
+        // Device parameters
+        Config cfg_; 
+        mcp23017_hardware_interface::MCP23017> mcp_;
+
+        // Interface parameters
+        double min_position_;
+        double max_position_;
         std::vector<double> hw_commands_;
-        std::shared_ptr<hardware::I2CPeripheral> i2c_bus;
-        std::unique_ptr<mcp23017_hardware_interface::MCP23017> mcp;
     };
 
 }  // namespace mcp23017_hardware_interface

@@ -12,33 +12,13 @@
 
 namespace mcp23017_hardware_interface {
     hardware_interface::CallbackReturn Mcp23017SystemHardware::on_init(const hardware_interface::HardwareInfo &info) {
-        try {
-            // Dynamically create or fetch the shared I2C bus instance
-            auto i2c_bus = std::make_shared<hardware::I2CPeripheral>(info_.hardware_parameters.at("i2c_device"));
-
-        } catch (const std::exception &e) {
-            RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Error initializing I2C Bus: %s", e.what());
-            return hardware_interface::CallbackReturn::ERROR;
-        }
-
-        if (!i2c_bus) {
-            RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Failed to initialize I2C bus.");
-            return hardware_interface::CallbackReturn::ERROR;
-        }
-
-        // Setup and initialize the PCA object
-        try {
-            mcp = std::make_unique<mcp23017_hardware_interface::MCP23017>(
-                i2c_bus, std::stoi(info_.hardware_parameters["i2c_address"]));
-
-        } catch (const std::exception &e) {
-            RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Error initializing MCP23017: %s", e.what());
-            return hardware_interface::CallbackReturn::ERROR;
-        }
-
         if (hardware_interface::SystemInterface::on_init(info) != hardware_interface::CallbackReturn::SUCCESS) {
             return hardware_interface::CallbackReturn::ERROR;
         }
+
+        // Parse the MCP23017 parameters
+        cfg_.bus_name = info_.hardware_parameters.at("i2c_device");
+        cfg_.i2c_address = info_.hardware_parameters.at("i2c_address")
 
         hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
@@ -86,6 +66,29 @@ namespace mcp23017_hardware_interface {
     hardware_interface::CallbackReturn Mcp23017SystemHardware::on_configure(
         const rclcpp_lifecycle::State & /*previous_state*/) {
         RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Configuring ...please wait...");
+
+        try {
+            // Create or fetch the shared I2C bus instance
+            auto i2c_bus = std::make_shared<hardware::I2CPeripheral>(info_.hardware_parameters.at("i2c_device"));
+
+        } catch (const std::exception &e) {
+            RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Error initializing I2C Bus: %s", e.what());
+            return hardware_interface::CallbackReturn::ERROR;
+        }
+
+        if (!i2c_bus) {
+            RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Failed to initialize I2C bus.");
+            return hardware_interface::CallbackReturn::ERROR;
+        }
+
+        // Setup and initialize the PCA object
+        try {
+            mcp_ = mcp23017_hardware_interface::MCP23017>(i2c_bus, std::stoi(info_.hardware_parameters["i2c_address"]));
+
+        } catch (const std::exception &e) {
+            RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Error initializing MCP23017: %s", e.what());
+            return hardware_interface::CallbackReturn::ERROR;
+        }
 
         RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Successfully configured!");
 

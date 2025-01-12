@@ -51,7 +51,7 @@
   <ros2_control name="left_servo_driver" type="system">
     <hardware>
       <plugin>hardware/Pca9685SystemHardware</plugin>
-      <param name="i2c_device">/dev/i2c-1</param> 
+      <param name="bus_name">/dev/i2c-1</param> 
       <param name="frequency_hz">50</param>
       <param name="i2c_address">64</param>  <!-- 0x40 in decimal -->
     </hardware>
@@ -62,7 +62,7 @@
   <ros2_control name="right_servo_driver" type="system">
     <hardware>
       <plugin>hardware/Pca9685SystemHardware</plugin>
-      <param name="i2c_device">/dev/i2c-1</param> 
+      <param name="bus_name">/dev/i2c-1</param> 
       <param name="frequency_hz">50</param> 
       <param name="i2c_address">65</param>  <!-- 0x41 in decimal -->
     </hardware>
@@ -73,7 +73,7 @@
   <ros2_control name="left_solenoid_driver" type="system">
     <hardware>
       <plugin>hardware/Mcp23017SystemHardware</plugin>
-      <param name="i2c_device">/dev/i2c-1</param> 
+      <param name="bus_name">/dev/i2c-1</param> 
       <param name="i2c_address">32</param>  <!-- 0x20 in decimal -->
     </hardware>
 
@@ -83,7 +83,7 @@
   <ros2_control name="right_solenoid_driver" type="system">
     <hardware>
       <plugin>hardware/Mcp23017SystemHardware</plugin>
-      <param name="i2c_device">/dev/i2c-1</param> 
+      <param name="bus_name">/dev/i2c-1</param> 
       <param name="i2c_address">33</param>  <!-- 0x21 in decimal -->
     </hardware>
 

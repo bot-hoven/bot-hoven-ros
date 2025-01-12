@@ -11,12 +11,23 @@ namespace mcp23017_hardware_interface {
 
     class MCP23017 {
     public:
-        MCP23017(std::shared_ptr<hardware::I2CPeripheral> i2c_device, int address);
+        MCP23017() = default;
         ~MCP23017();
+
+        void setup(std::shared_ptr<hardware::I2CPeripheral> i2c_bus, const int i2c_address);
+
+        void connect();
+
+        void disconnect();
+
+        bool connected() const;
+
+        void init();
 
         void set_gpio_state(uint8_t gpio_value_);
 
     private:
+        bool is_connected = false;
         std::shared_ptr<hardware::I2CPeripheral> i2c_dev;
         int address = 0x20;
     };
