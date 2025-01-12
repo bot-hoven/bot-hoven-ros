@@ -1,11 +1,60 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <ros2_control name="left_stepper_driver" type="actuator" is_async="true">
+    <hardware>
+      <plugin>cl42t_hardware/CL42T</plugin>
+      <param name="pulses_per_rev">1600</param>
+    </hardware>
+
+    <xacro:include filename="$(find hardware)/urdf/left_stepper_joint.xacro" />
+
+    <gpio name="left_stepper_pul">
+      <param name="chip_name">/dev/gpiochip4</param>
+      <param name="pin_number">22</param>
+      <param name="descriptor">PUL+</param>
+      <param name="direction">output</param>
+      <param name="init_value">0</param>
+    </gpio>
+    <gpio name="left_stepper_dir">
+      <param name="chip_name">/dev/gpiochip4</param>
+      <param name="pin_number">23</param>
+      <param name="descriptor">DIR+</param>
+      <param name="direction">output</param>
+      <param name="init_value">0</param>
+    </gpio>
+  </ros2_control>
+
+  <ros2_control name="right_stepper_driver" type="actuator" is_async="true">
+    <hardware>
+      <plugin>cl42t_hardware/CL42T</plugin>
+      <param name="pulses_per_rev">1600</param>
+    </hardware>
+
+    <xacro:include filename="$(find hardware)/urdf/right_stepper_joint.xacro" />
+
+    <gpio name="right_stepper_pul">
+      <param name="chip_name">/dev/gpiochip4</param>
+      <param name="pin_number">5</param>
+      <param name="descriptor">PUL+</param>
+      <param name="direction">output</param>
+      <param name="init_value">0</param>
+    </gpio>
+    <gpio name="right_stepper_dir">
+      <param name="chip_name">/dev/gpiochip4</param>
+      <param name="pin_number">6</param>
+      <param name="descriptor">DIR+</param>
+      <param name="direction">output</param>
+      <param name="init_value">0</param>
+    </gpio>
+  </ros2_control>
+
   <ros2_control name="hardware" type="system">
     <hardware>
-        <plugin>hardware/BothovenHardware</plugin>
+      <plugin>hardware/BothovenHardware</plugin>
     </hardware>
-    <xacro:include filename="$(find hardware)/urdf/stepper_joints.xacro"/>
-    <xacro:include filename="$(find hardware)/urdf/solenoid_joints.xacro"/>
-    <xacro:include filename="$(find hardware)/urdf/servo_joints.xacro"/>
+    <xacro:include filename="$(find hardware)/urdf/left_solenoid_joints.xacro" />
+    <xacro:include filename="$(find hardware)/urdf/left_servo_joints.xacro" />
+    <xacro:include filename="$(find hardware)/urdf/right_solenoid_joints.xacro" />
+    <xacro:include filename="$(find hardware)/urdf/right_servo_joints.xacro" />
   </ros2_control>
 </robot>

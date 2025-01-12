@@ -23,6 +23,19 @@ To select the relevant environment, choose the appropriate `devcontainer.json` f
 - For development, use the `devcontainer.json` file located in the `.devcontainer/dev` directory.
 - For production, use the `devcontainer.json` file located in the `.devcontainer/prod` directory.
 
+### Adding the Pi user to the GPIO group
+
+This step is only required when setting up a new Pi to run the production image for the first time.
+
+1. Add the `pi` user to the `gpio` group:
+   ```sh
+   sudo usermod -aG gpio pi
+   ```
+2. Reboot the Raspberry Pi to apply the changes:
+   ```sh
+   sudo reboot
+   ```
+
 ## Development Setup
 1. Open the project in VSCode.
 2. When prompted by the Dev Containers extension, reopen the project in the container.
@@ -109,4 +122,16 @@ To run a script against the simulated robot (e.g. `examples/example_jtc.cpp`):
 
 ```
 ros2 run hardware example_jtc
+```
+
+### Send Commands to the Action Server
+To send a position command to the `<joint_name>`, controlled by `<controller_name>` run the following command and specify the desired position of `<position_value>` radians and time value from the command reception of `<time_value>` seconds.
+
+```sh
+ros2 action send_goal /<controller_name>/follow_joint_trajectory control_msgs/action/FollowJointTrajectory "{trajectory: {joint_names: ['<joint_name>'], points: [{positions: [<position_value>], time_from_start: {sec: <time_value>}}]}}"
+```
+
+For example:
+```sh
+ros2 action send_goal /left_hand_controller/follow_joint_trajectory control_msgs/action/FollowJointTrajectory "{trajectory: {joint_names: ['left_hand_stepper_joint'], points: [{positions: [65.0], time_from_start: {sec: 1}}]}}"
 ```

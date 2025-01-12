@@ -8,7 +8,9 @@ ARG USER_GID=$USER_UID
 RUN if ! id -u $USER_UID >/dev/null 2>&1; then \
         groupadd --gid $USER_GID $USERNAME && \
         useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME; \
-    fi
+    fi && \
+    groupadd --gid 993 gpio && \
+    usermod -aG gpio $USERNAME
 # Add sudo support for the non-root user
 RUN apt-get update && \
     apt-get install -y \ 
@@ -16,7 +18,8 @@ RUN apt-get update && \
     ros-jazzy-ros2-control \
     ros-jazzy-ros2-controllers \
     ros-jazzy-hardware-interface \
-    ros-jazzy-xacro && \
+    ros-jazzy-xacro \
+    libgpiod-dev && \
     rm -rf /var/lib/apt/lists/* && \
     echo "$USERNAME ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME && \
     chmod 0440 /etc/sudoers.d/$USERNAME
