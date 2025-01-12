@@ -37,15 +37,16 @@
     <xacro:property name="stepper_pulley_radius" value="0.02" />
 
     <!-- Carriage Properties -->
-    <xacro:property name="carriage_min_position" value="${-(piano_length / 2)}" />
-    <xacro:property name="carriage_max_position" value="${(piano_length / 2) - hand_length}" />
+    <xacro:property name="carriage_min_position" value="${-(piano_length - hand_length / 2) / 2}" />
+    <xacro:property name="carriage_max_position"
+        value="${(( piano_length - hand_length / 2) / 2) - hand_length}" />
     <xacro:property name="carriage_stepper_offset"
         value="${carriage_min_position}" />
     <xacro:property name="carriage_stepper_multiplier"
         value="${stepper_pulley_radius}" />
 
     <!-- Hand Properties -->
-    <xacro:property name="hand_length" value="0.2" />
+    <xacro:property name="hand_length" value="0.129" />
     <xacro:property name="hand_width" value="0.1" />
     <xacro:property name="hand_height" value="0.05" />
 
@@ -108,7 +109,7 @@
             </visual>
             <collision>
                 <geometry>
-                    <box size="0.1 0.05 0.05" />
+                    <box size="0.129 0.05 0.05" />
                 </geometry>
             </collision>
             <inertial>
