@@ -17,10 +17,14 @@ namespace hardware {
 
         void ConnectToPeripheral(const uint8_t address);
 
+        int GetCurrentI2CAddress();
+
     private:
         int bus_fd;
+        int current_i2c_address;
 
         void OpenBus(const std::string& device);
+        void CloseBus();
     };
 
 }  // namespace hardware

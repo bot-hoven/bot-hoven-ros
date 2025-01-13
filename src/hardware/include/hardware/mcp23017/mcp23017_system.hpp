@@ -66,8 +66,8 @@ namespace mcp23017_hardware_interface {
         mcp23017_hardware_interface::MCP23017 mcp_;
 
         // Interface parameters
-        double min_position_;
-        double max_position_;
+        std::vector<double> min_positions_;
+        std::vector<double> max_positions_;
         std::vector<double> hw_commands_;
     };
 

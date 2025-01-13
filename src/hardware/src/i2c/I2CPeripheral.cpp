@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
+#include <iostream>
 extern "C" {
 #include <i2c/smbus.h>
 #include <linux/i2c-dev.h>
@@ -17,7 +18,13 @@ namespace hardware {
         // ConnectToPeripheral(address);
     }
 
-    I2CPeripheral::~I2CPeripheral() { close(bus_fd); }
+    I2CPeripheral::~I2CPeripheral() {
+        try {
+            CloseBus();
+        } catch (const std::exception& e) {
+            std::cerr << "Error while closing I2C bus: " << e.what() << std::endl;
+        }
+    }
 
     void I2CPeripheral::WriteRegisterByte(const uint8_t register_address, const uint8_t value) {
         i2c_smbus_data data;
@@ -47,10 +54,25 @@ namespace hardware {
         }
     }
 
+    void I2CPeripheral::CloseBus() {
+        if (bus_fd >= 0) {
+            if (close(bus_fd) < 0) {
+                throw std::system_error(errno, std::system_category(), "Could not close i2c bus.");
+            }
+            bus_fd = -1; // Reset bus_fd to indicate it's closed
+        }
+    }
+
+
     void I2CPeripheral::ConnectToPeripheral(const uint8_t address) {
         if (ioctl(bus_fd, I2C_SLAVE, address) < 0) {
             throw std::system_error(errno, std::system_category(), "Could not set peripheral address.");
         }
+        current_i2c_address = address;
+    }
+
+    int I2CPeripheral::GetCurrentI2CAddress() {
+        return current_i2c_address;
     }
 
 }  // namespace hardware
