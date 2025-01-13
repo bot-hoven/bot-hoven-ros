@@ -6,24 +6,24 @@
     <description>Bothoven Hardware Interface</description>
   </class>
   <class
-    name="hardware/CL42T"
-    type="hardware::CL42T"
+    name="cl42t_hardare/CL42T"
+    type="cl42t_hardare::CL42T"
     base_class_type="hardware_interface::ActuatorInterface">
     <description>
       ROS2 control hardware interface for the CL42TV4.1 stepper motor driver
     </description>
   </class>
   <class
-    name="hardware/Pca9685SystemHardware"
-    type="hardware::Pca9685SystemHardware"
+    name="pca9685_hardware_interface/Pca9685SystemHardware"
+    type="pca9685_hardware_interface::Pca9685SystemHardware"
     base_class_type="hardware_interface::SystemInterface">
     <description>
       ROS2 control hardware interface for the PCA9685 PWM driver
     </description>
   </class>
   <class
-    name="hardware/Mcp23017SystemHardware"
-    type="hardware::Mcp23017SystemHardware"
+    name="mcp23017_hardware_interface/Mcp23017SystemHardware"
+    type="mcp23017_hardware_interface::Mcp23017SystemHardware"
     base_class_type="hardware_interface::SystemInterface">
     <description>
       ROS2 control hardware interface for the MCP23017 IO Expander driver
