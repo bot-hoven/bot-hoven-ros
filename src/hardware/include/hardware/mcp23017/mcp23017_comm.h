@@ -18,16 +18,11 @@ namespace mcp23017_hardware_interface {
 
         void connect();
 
-        void disconnect();
-
-        bool connected() const;
-
         void init();
 
         void set_gpio_state(uint8_t gpio_value_);
 
     private:
-        bool is_connected = false;
         std::shared_ptr<hardware::I2CPeripheral> i2c_dev;
         int address = 0x20;
     };

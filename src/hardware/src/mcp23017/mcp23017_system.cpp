@@ -21,6 +21,8 @@ namespace mcp23017_hardware_interface {
         cfg_.i2c_address = std::stoi(info_.hardware_parameters.at("i2c_address"));
 
         hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+        // min_positions_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+        // max_positions_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
         // Validate the command interface
         for (const hardware_interface::ComponentInfo &joint : info_.joints) {
@@ -45,17 +47,20 @@ namespace mcp23017_hardware_interface {
             for (const hardware_interface::ComponentInfo &joint : info_.joints) {
                 min_positions_.push_back(std::stod(joint.command_interfaces[0].min));
                 max_positions_.push_back(std::stod(joint.command_interfaces[0].max));
-                // position_state_interface_name_ = joint_state_interfaces_.begin()->first;
-                // position_command_interface_name_ = joint_command_interfaces_.begin()->first;
+                // position_command_interface_names_ = joint_command_interfaces_.begin()->first;
+                // position_state_interface_names_ = joint_state_interfaces_.begin()->first;
+            }
         } catch (const std::exception& e) {
             RCLCPP_FATAL(get_logger(), "Failed to parse interface parameters: %s", e.what());
             return CallbackReturn::ERROR;
         }
 
         // Validate position bounds
-        if (min_position_ > max_position_) {
-            RCLCPP_FATAL(get_logger(), "Invalid Position bounds specified.");
-            return CallbackReturn::ERROR;
+        for (auto i = 0u; i < info_.joints.size(); i++) {
+            if (min_positions_[i] > max_positions_[i]) {
+                RCLCPP_FATAL(get_logger(), "Invalid Position bounds specified.");
+                return CallbackReturn::ERROR;
+            }
         }
 
         return hardware_interface::CallbackReturn::SUCCESS;
@@ -86,26 +91,34 @@ namespace mcp23017_hardware_interface {
         const rclcpp_lifecycle::State & /*previous_state*/) {
         RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Configuring ...please wait...");
 
-        try {
-            // Create or fetch the shared I2C bus instance
-            i2c_bus_ = std::make_shared<hardware::I2CPeripheral>(cfg_.bus_name);
+        // try {
+        //     // Create or fetch the shared I2C bus instance
+        //     i2c_bus_ = std::make_shared<hardware::I2CPeripheral>(cfg_.bus_name);
 
+        // } catch (const std::exception &e) {
+        //     RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Error initializing I2C Bus: %s", e.what());
+        //     return hardware_interface::CallbackReturn::ERROR;
+        // }
+
+        try {
+            // Get the shared pointer for the I2C bus
+            i2c_bus_ = hardware::I2CPeripheral::getInstance(cfg_.bus_name);
         } catch (const std::exception &e) {
             RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Error initializing I2C Bus: %s", e.what());
             return hardware_interface::CallbackReturn::ERROR;
         }
 
+        // Not sure if I need this second check
         if (!i2c_bus_) {
             RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Failed to initialize I2C bus.");
             return hardware_interface::CallbackReturn::ERROR;
         }
 
-        // Setup and initialize the PCA object
+        // Setup the MCP23017 object
         try {
             mcp_.setup(i2c_bus_, cfg_.i2c_address);
-
         } catch (const std::exception &e) {
-            RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Error initializing MCP23017: %s", e.what());
+            RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Error setting initial state of MCP23017: %s", e.what());
             return hardware_interface::CallbackReturn::ERROR;
         }
 
@@ -118,6 +131,10 @@ namespace mcp23017_hardware_interface {
         const rclcpp_lifecycle::State & /*previous_state*/) {
         RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Cleaning up ...please wait...");
 
+        // Release the shared pointer (this will automatically close the I2C bus once the 
+        // last shared pointer instance is destroyed via the I2CPeripheral destructor)
+        i2c_bus_.reset();
+
         RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Successfully cleaned up!");
 
         return hardware_interface::CallbackReturn::SUCCESS;
@@ -129,6 +146,15 @@ namespace mcp23017_hardware_interface {
             if (std::isnan(hw_commands_[i])) {
                 hw_commands_[i] = 0;
             }
+        }
+
+        // Initialize the MCP23017 object
+        try {
+            mcp_.connect();
+            mcp_.init();
+        } catch (const std::exception &e) {
+            RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Error initializing MCP23017: %s", e.what());
+            return hardware_interface::CallbackReturn::ERROR;
         }
 
         RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Successfully activated!");
@@ -148,18 +174,23 @@ namespace mcp23017_hardware_interface {
 
     hardware_interface::return_type Mcp23017SystemHardware::write(const rclcpp::Time & /*time*/,
                                                                   const rclcpp::Duration & /*period*/) {
-        uint8_t solenoid_values_;
+        uint8_t solenoid_values_ = 0;
 
         for (auto i = 0u; i < hw_commands_.size(); i++) {
-            uint8_t bit_value = static_cast<uint8_t>(hw_commands_[i]);
+            // Round the value to the nearest integer (0 or 1)
+            uint8_t bit_value = static_cast<uint8_t>(std::round(hw_commands_[i]));
 
-            // TODO: Should insert a check here to ensure value is either a 0 or 1?
+            // Ensure the value is clamped to 0 or 1
+            bit_value = std::min<uint8_t>(1, bit_value);
 
             solenoid_values_ |= (bit_value << i);
 
-            RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Joint '%d' has command '%d'.", i, bit_value);
+            RCLCPP_INFO(
+                rclcpp::get_logger("Mcp23017SystemHardware"),
+                "Joint '%d' has command '%f', rounded to '%d'.", i, hw_commands_[i], bit_value);
         }
 
+        mcp_.connect();
         mcp_.set_gpio_state(solenoid_values_);
 
         return hardware_interface::return_type::OK;

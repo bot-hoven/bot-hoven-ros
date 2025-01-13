@@ -69,6 +69,8 @@ namespace mcp23017_hardware_interface {
         std::vector<double> min_positions_;
         std::vector<double> max_positions_;
         std::vector<double> hw_commands_;
+        // std::vector<std::string> position_state_interface_names_;
+        // std::vector<std::string> position_command_interface_names_;
     };
 
 }  // namespace mcp23017_hardware_interface

@@ -11,8 +11,14 @@ namespace pca9685_hardware_interface {
 
     class PCA9685 {
     public:
-        PCA9685(std::shared_ptr<hardware::I2CPeripheral> i2c_device, int address);
+        PCA9685() = default;
         ~PCA9685();
+
+        void setup(std::shared_ptr<hardware::I2CPeripheral> i2c_bus, const int i2c_address);
+
+        void connect();
+
+        void init();
 
         void set_pwm_freq(const double freq_hz);
 

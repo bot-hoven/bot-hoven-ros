@@ -20,9 +20,16 @@
 #include "rclcpp_lifecycle/state.hpp"
 
 namespace pca9685_hardware_interface {
+
+    struct Config {
+        std::string bus_name;
+        int i2c_address;
+        double freq_hz;
+    };
+
     class Pca9685SystemHardware : public hardware_interface::SystemInterface {
     public:
-        RCLCPP_SHARED_PTR_DEFINITIONS(Pca9685SystemHardware);
+        RCLCPP_SHARED_PTR_DEFINITIONS(Pca9685SystemHardware)
 
         PCA9685_HARDWARE_INTERFACE_PUBLIC
         hardware_interface::CallbackReturn on_init(const hardware_interface::HardwareInfo& info) override;
@@ -52,10 +59,25 @@ namespace pca9685_hardware_interface {
         hardware_interface::return_type write(const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
     private:
+        // Auxiliary function prototypes
+        double command_to_duty_cycle(double command, double min_input, double max_input, double min_duty_cycle,
+                                     double max_duty_cycle);
+
+        // I2C parameters
+        std::shared_ptr<hardware::I2CPeripheral> i2c_bus_;
+
+        // Device parameters
+        Config cfg_;
+        pca9685_hardware_interface::PCA9685 pca_;
+
+        // Interface parameters
+        std::vector<double> min_positions_;
+        std::vector<double> max_positions_;
+        std::vector<double> min_duty_cycles_;
+        std::vector<double> max_duty_cycles_;
         std::vector<double> hw_commands_;
-        std::shared_ptr<hardware::I2CPeripheral> i2c_bus;
-        std::unique_ptr<pca9685_hardware_interface::PCA9685> pca;
-        double command_to_duty_cycle(double command);
+        // std::vector<std::string> position_state_interface_names_;
+        // std::vector<std::string> position_command_interface_names_;
     };
 
 }  // namespace pca9685_hardware_interface

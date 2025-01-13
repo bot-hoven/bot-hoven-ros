@@ -2,13 +2,16 @@
 #define HARDWARE__I2C__I2CPERIPHERAL_H
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 namespace hardware {
 
     class I2CPeripheral {
     public:
-        I2CPeripheral(const std::string& device);
+        static std::shared_ptr<I2CPeripheral> getInstance(const std::string& device);
+
+        // I2CPeripheral(const std::string& device);
         ~I2CPeripheral();
 
         void WriteRegisterByte(const uint8_t register_address, const uint8_t value);
@@ -21,9 +24,13 @@ namespace hardware {
 
     private:
         int bus_fd;
+        static std::shared_ptr<I2CPeripheral> instance_;
         int current_i2c_address;
 
+        explicit I2CPeripheral(const std::string& device);
+
         void OpenBus(const std::string& device);
+        
         void CloseBus();
     };
 

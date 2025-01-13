@@ -12,6 +12,14 @@ extern "C" {
 #include <system_error>
 
 namespace hardware {
+    std::shared_ptr<I2CPeripheral> I2CPeripheral::instance_ = nullptr;
+
+    std::shared_ptr<I2CPeripheral> I2CPeripheral::getInstance(const std::string& device) {
+        if (!instance_) {
+            instance_ = std::shared_ptr<I2CPeripheral>(new I2CPeripheral(device));
+        }
+        return instance_;
+    }
 
     I2CPeripheral::I2CPeripheral(const std::string& device) {
         OpenBus(device);
