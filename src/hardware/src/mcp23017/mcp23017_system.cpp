@@ -18,7 +18,7 @@ namespace mcp23017_hardware_interface {
 
         // Parse the MCP23017 parameters
         cfg_.bus_name = info_.hardware_parameters.at("i2c_device");
-        cfg_.i2c_address = info_.hardware_parameters.at("i2c_address")
+        cfg_.i2c_address = std::stoi(info_.hardware_parameters.at("i2c_address"));
 
         hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
@@ -69,21 +69,21 @@ namespace mcp23017_hardware_interface {
 
         try {
             // Create or fetch the shared I2C bus instance
-            auto i2c_bus = std::make_shared<hardware::I2CPeripheral>(info_.hardware_parameters.at("i2c_device"));
+            i2c_bus_ = std::make_shared<hardware::I2CPeripheral>(cfg_.bus_name);
 
         } catch (const std::exception &e) {
             RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Error initializing I2C Bus: %s", e.what());
             return hardware_interface::CallbackReturn::ERROR;
         }
 
-        if (!i2c_bus) {
+        if (!i2c_bus_) {
             RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Failed to initialize I2C bus.");
             return hardware_interface::CallbackReturn::ERROR;
         }
 
         // Setup and initialize the PCA object
         try {
-            mcp_ = mcp23017_hardware_interface::MCP23017>(i2c_bus, std::stoi(info_.hardware_parameters["i2c_address"]));
+            mcp_.setup(i2c_bus_, cfg_.i2c_address);
 
         } catch (const std::exception &e) {
             RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Error initializing MCP23017: %s", e.what());
@@ -141,7 +141,7 @@ namespace mcp23017_hardware_interface {
             RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Joint '%d' has command '%d'.", i, bit_value);
         }
 
-        mcp->set_gpio_state(solenoid_values_);
+        mcp_.set_gpio_state(solenoid_values_);
 
         return hardware_interface::return_type::OK;
     }

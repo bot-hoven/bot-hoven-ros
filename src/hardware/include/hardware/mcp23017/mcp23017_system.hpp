@@ -28,7 +28,7 @@ namespace mcp23017_hardware_interface {
 
     class Mcp23017SystemHardware : public hardware_interface::SystemInterface {
     public:
-        RCLCPP_SHARED_PTR_DEFINITIONS(Mcp23017SystemHardware);
+        RCLCPP_SHARED_PTR_DEFINITIONS(Mcp23017SystemHardware)
 
         MCP23017_HARDWARE_INTERFACE_PUBLIC
         hardware_interface::CallbackReturn on_init(const hardware_interface::HardwareInfo& info) override;
@@ -63,7 +63,7 @@ namespace mcp23017_hardware_interface {
 
         // Device parameters
         Config cfg_; 
-        mcp23017_hardware_interface::MCP23017> mcp_;
+        mcp23017_hardware_interface::MCP23017 mcp_;
 
         // Interface parameters
         double min_position_;
