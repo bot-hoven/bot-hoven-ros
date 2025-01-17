@@ -13,6 +13,7 @@
     "-v",
     "/dev:/dev"
   ],
+  "postCreateCommand": "/bin/bash -c 'sudo chown :i2c /dev/i2c-1 && sudo chown :i2c /dev/i2c-13 && sudo chown :i2c /dev/i2c-14 && sudo chmod g+rw /dev/i2c-1 && sudo chmod g+rw /dev/i2c-13 && sudo chmod g+rw /dev/i2c-14'",
   "workspaceMount": "source=${localWorkspaceFolder},target=/${localWorkspaceFolderBasename},type=bind",
   "workspaceFolder": "/${localWorkspaceFolderBasename}",
   "mounts": [
