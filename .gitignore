@@ -2,6 +2,7 @@
 build/
 install/
 log/
+core
 
 # ROS2 workspace files
 .colcon/
