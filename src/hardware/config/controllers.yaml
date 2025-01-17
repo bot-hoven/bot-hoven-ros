@@ -38,7 +38,6 @@ left_hand_controller:
     gains:
       left_hand_stepper_joint: {p: 1.0, i: 0.0, d: 1.0}
     command_interfaces:
-      - velocity
       - position
     state_interfaces:
       - position
