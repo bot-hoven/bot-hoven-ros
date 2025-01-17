@@ -22,7 +22,7 @@
 namespace pca9685_hardware_interface {
 
     struct Config {
-        std::string bus_name;
+        std::string i2c_device;
         int i2c_address;
         double freq_hz;
     };
@@ -64,7 +64,7 @@ namespace pca9685_hardware_interface {
                                      double max_duty_cycle);
 
         // I2C parameters
-        std::shared_ptr<hardware::I2CPeripheral> i2c_bus_;
+        std::shared_ptr<hardware::I2CPeripheral> i2c_bus_ = nullptr;
 
         // Device parameters
         Config cfg_;

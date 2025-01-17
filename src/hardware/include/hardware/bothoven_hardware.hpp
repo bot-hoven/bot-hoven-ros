@@ -12,7 +12,7 @@ namespace hardware {
     public:
         using return_type = hardware_interface::return_type;
 
-        RCLCPP_SHARED_PTR_DEFINITIONS(BothovenHardware)
+        RCLCPP_SHARED_PTR_DEFINITIONS(SystemInterface)
 
         hardware_interface::CallbackReturn on_init(const hardware_interface::HardwareInfo &info) override;
 

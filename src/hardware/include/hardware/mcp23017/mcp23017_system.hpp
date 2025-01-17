@@ -22,7 +22,7 @@
 namespace mcp23017_hardware_interface {
 
     struct Config {
-        std::string bus_name;
+        std::string i2c_device;
         int i2c_address;
     };
 
@@ -59,7 +59,7 @@ namespace mcp23017_hardware_interface {
 
     private:
         // I2C parameters
-        std::shared_ptr<hardware::I2CPeripheral> i2c_bus_;
+        std::shared_ptr<hardware::I2CPeripheral> i2c_bus_ = nullptr;
 
         // Device parameters
         Config cfg_; 

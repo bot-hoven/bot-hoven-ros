@@ -51,9 +51,9 @@
   <ros2_control name="left_servo_driver" type="system">
     <hardware>
       <plugin>pca9685_hardware_interface/Pca9685SystemHardware</plugin>
-      <param name="bus_name">/dev/i2c-1</param> 
+      <param name="i2c_device">/dev/i2c-1</param> 
       <param name="frequency_hz">50</param>
-      <param name="i2c_address">64</param>  <!-- 0x40 in decimal -->
+      <param name="i2c_address">64</param>  
     </hardware>
 
     <xacro:include filename="$(find hardware)/urdf/left_servo_joints.xacro" />
@@ -62,9 +62,9 @@
   <ros2_control name="right_servo_driver" type="system">
     <hardware>
       <plugin>pca9685_hardware_interface/Pca9685SystemHardware</plugin>
-      <param name="bus_name">/dev/i2c-1</param> 
+      <param name="i2c_device">/dev/i2c-1</param> 
       <param name="frequency_hz">50</param> 
-      <param name="i2c_address">65</param>  <!-- 0x41 in decimal -->
+      <param name="i2c_address">65</param> 
     </hardware>
 
     <xacro:include filename="$(find hardware)/urdf/right_servo_joints.xacro" />
@@ -73,8 +73,8 @@
   <ros2_control name="left_solenoid_driver" type="system">
     <hardware>
       <plugin>mcp23017_hardware_interface/Mcp23017SystemHardware</plugin>
-      <param name="bus_name">/dev/i2c-1</param> 
-      <param name="i2c_address">32</param>  <!-- 0x20 in decimal -->
+      <param name="i2c_device">/dev/i2c-1</param> 
+      <param name="i2c_address">32</param>  
     </hardware>
 
     <xacro:include filename="$(find hardware)/urdf/left_solenoid_joints.xacro" />
@@ -83,8 +83,8 @@
   <ros2_control name="right_solenoid_driver" type="system">
     <hardware>
       <plugin>mcp23017_hardware_interface/Mcp23017SystemHardware</plugin>
-      <param name="bus_name">/dev/i2c-1</param> 
-      <param name="i2c_address">33</param>  <!-- 0x21 in decimal -->
+      <param name="i2c_device">/dev/i2c-1</param> 
+      <param name="i2c_address">33</param>  
     </hardware>
 
     <xacro:include filename="$(find hardware)/urdf/right_solenoid_joints.xacro" />

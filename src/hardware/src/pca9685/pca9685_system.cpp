@@ -17,7 +17,7 @@ namespace pca9685_hardware_interface {
         }
 
         // Parse the MCP23017 parameters
-        cfg_.bus_name = info_.hardware_parameters.at("i2c_device");
+        cfg_.i2c_device = info_.hardware_parameters.at("i2c_device");
         cfg_.i2c_address = std::stoi(info_.hardware_parameters.at("i2c_address"));
         cfg_.freq_hz = std::stod(info_.hardware_parameters.at("frequency_hz"));
 
@@ -98,7 +98,7 @@ namespace pca9685_hardware_interface {
         RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Configuring ...please wait...");
         try {
             // Get the shared pointer for the I2C bus
-            i2c_bus_ = hardware::I2CPeripheral::getInstance(cfg_.bus_name);
+            i2c_bus_ = hardware::I2CPeripheral::getInstance(cfg_.i2c_device);
         } catch (const std::exception &e) {
             RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"), "Error initializing I2C Bus: %s", e.what());
             return hardware_interface::CallbackReturn::ERROR;
