@@ -1,11 +1,5 @@
 <library path="hardware">
   <class
-    name="hardware/BothovenHardware"
-    type="hardware::BothovenHardware"
-    base_class_type="hardware_interface::SystemInterface">
-    <description>Bothoven Hardware Interface</description>
-  </class>
-  <class
     name="cl42t_hardware/CL42T"
     type="cl42t_hardware::CL42T"
     base_class_type="hardware_interface::ActuatorInterface">

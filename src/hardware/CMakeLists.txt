@@ -29,7 +29,6 @@ include_directories(${LIBGPIOD_INCLUDE_DIRS}) # Adds libgpiod headers to include
 # Add a library to the project using the specified source files
 add_library(
   ${PROJECT_NAME} SHARED
-  src/bothoven_hardware.cpp
   src/cl42t.cpp
   src/i2c/I2CPeripheral.cpp
   src/pca9685/pca9685_comm.cpp
