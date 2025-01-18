@@ -43,6 +43,17 @@ This step is only required when setting up a new Pi to run the production image 
 ```sh
 xhost +local:docker
 ```
+4. (Optional) This option is useful when running GPU-accelerated applications that require access to a dedicated GPU. In the [devcontainer.json](.devcontainer/dev/devcontainer.json), add the following line to the `runArgs`:
+```json
+{
+  ...
+  "runArgs": [
+   ...
+    "--gpus=all"
+  ],
+  ...
+}
+```
 
 ## Building the Docker Image
 To build the Docker image, run the following command in the root of the project:
