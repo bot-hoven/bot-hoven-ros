@@ -48,10 +48,24 @@ namespace pca9685_hardware_interface {
         // Try parse the interface parameters
         try {
             for (const hardware_interface::ComponentInfo &joint : info_.joints) {
+                for (const auto &param : joint.parameters) {
+                    RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"),
+                                "Joint [%s] Parameter: [%s] = [%s]",
+                                joint.name.c_str(), param.first.c_str(), param.second.c_str());
+                }
+
                 min_positions_.push_back(std::stod(joint.command_interfaces[0].min));
                 max_positions_.push_back(std::stod(joint.command_interfaces[0].max));
-                min_duty_cycles_.push_back(std::stod(joint.parameters.at("min_duty_cycle")));
-                max_duty_cycles_.push_back(std::stod(joint.parameters.at("max_duty_cycle")));
+                min_duty_cycles_.push_back(1.0);
+                max_duty_cycles_.push_back(2.0);            
+                // try {
+                //     double min_duty_cycle = std::stod(joint.command_interfaces[0].parameters.at("min_duty_cycle_ms"));
+                //     RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "min_duty_cycle: %s", std::to_string(min_duty_cycle));
+                // } catch (const std::exception &e) {
+                //     RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to get parameter with error: %s", e.what());
+                // }
+                // min_duty_cycles_.push_back(std::stod(joint.parameters.at("min_duty_cycle_ms")));
+                // max_duty_cycles_.push_back(std::stod(joint.parameters.at("max_duty_cycle_ms")));
                 // position_command_interface_names_ = joint_command_interfaces_.begin()->first;
                 // position_state_interface_names_ = joint_state_interfaces_.begin()->first;
             }
@@ -62,12 +76,12 @@ namespace pca9685_hardware_interface {
         }
 
         // Validate position bounds
-        for (auto i = 0u; i < info_.joints.size(); i++) {
-            if (min_positions_[i] > max_positions_[i]) {
-                RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"), "Invalid Position bounds specified.");
-                return CallbackReturn::ERROR;
-            }
-        }
+        // for (auto i = 0u; i < info_.joints.size(); i++) {
+        //     if (min_positions_[i] > max_positions_[i]) {
+        //         RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"), "Invalid Position bounds specified.");
+        //         return CallbackReturn::ERROR;
+        //     }
+        // }
 
         return hardware_interface::CallbackReturn::SUCCESS;
     }
@@ -182,14 +196,16 @@ namespace pca9685_hardware_interface {
 
     hardware_interface::return_type Pca9685SystemHardware::write(const rclcpp::Time & /*time*/,
                                                                  const rclcpp::Duration & /*period*/) {
+        // Connect to the I2C bus (if this fails, no point in continuing)
+        pca_.connect(); 
+
         for (auto i = 0u; i < hw_commands_.size(); i++) {
             double duty_cycle = command_to_duty_cycle(hw_commands_[i], min_positions_[i], max_positions_[i],
                                                       min_duty_cycles_[i], max_duty_cycles_[i]);
 
-            RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Joint '%d' has command '%f', duty_cycle: '%f'.",
-                        i, hw_commands_[i], duty_cycle);
+            // RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Joint '%d' has command '%f', duty_cycle: '%f'.",
+            //             i, hw_commands_[i], duty_cycle);
 
-            pca_.connect();
             pca_.set_pwm_ms(i, duty_cycle);
         }
 

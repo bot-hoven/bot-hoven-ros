@@ -13,20 +13,28 @@ extern "C" {
 
 namespace hardware {
     std::shared_ptr<I2CPeripheral> I2CPeripheral::instance_ = nullptr;
+    std::mutex I2CPeripheral::instance_mutex_;
 
     std::shared_ptr<I2CPeripheral> I2CPeripheral::getInstance(const std::string& device) {
         if (!instance_) {
-            instance_ = std::shared_ptr<I2CPeripheral>(new I2CPeripheral(device));
+            instance_ = createInstance(device);
+            // instance_ = std::make_shared<I2CPeripheral>(device);
         }
         return instance_;
     }
 
+    std::shared_ptr<I2CPeripheral> I2CPeripheral::createInstance(const std::string& device) {
+        return std::shared_ptr<I2CPeripheral>(new I2CPeripheral(device));
+    }
+
     I2CPeripheral::I2CPeripheral(const std::string& device) {
         OpenBus(device);
-        // ConnectToPeripheral(address);
     }
 
     I2CPeripheral::~I2CPeripheral() {
+        // Acquire a lock to make the following operations atomic (ie. thread-safe)
+        std::lock_guard<std::mutex> lock(instance_mutex_); 
+        instance_.reset(); // Reset the shared pointer to indicate that the instance is destroyed
         try {
             CloseBus();
         } catch (const std::exception& e) {

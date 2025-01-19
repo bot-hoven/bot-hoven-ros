@@ -185,9 +185,9 @@ namespace mcp23017_hardware_interface {
 
             solenoid_values_ |= (bit_value << i);
 
-            RCLCPP_INFO(
-                rclcpp::get_logger("Mcp23017SystemHardware"),
-                "Joint '%d' has command '%f', rounded to '%d'.", i, hw_commands_[i], bit_value);
+            // RCLCPP_INFO(
+            //     rclcpp::get_logger("Mcp23017SystemHardware"),
+            //     "Joint '%d' has command '%f', rounded to '%d'.", i, hw_commands_[i], bit_value);
         }
 
         mcp_.connect();

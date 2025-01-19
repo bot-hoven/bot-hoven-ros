@@ -1,7 +1,7 @@
 #include "hardware/pca9685/pca9685_comm.h"
 
 #include <unistd.h>
-
+#include <system_error>
 #include <cmath>
 
 namespace pca9685_hardware_interface {
@@ -14,8 +14,15 @@ namespace pca9685_hardware_interface {
     }
 
     void PCA9685::connect(){
-        if (i2c_dev->GetCurrentI2CAddress() != address) {
-        i2c_dev->ConnectToPeripheral(address);
+        try {
+            if (i2c_dev->GetCurrentI2CAddress() != address) {
+                i2c_dev->ConnectToPeripheral(address);
+            }
+        } catch (const std::exception& e) {
+            throw std::runtime_error(
+                "Error: PCA9685 with I2C address " + std::to_string(address) + 
+                " failed to connect to the I2C bus: " + std::string(e.what())
+            );
         }
     }
 
