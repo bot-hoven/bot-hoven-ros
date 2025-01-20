@@ -174,7 +174,7 @@ namespace mcp23017_hardware_interface {
 
     hardware_interface::return_type Mcp23017SystemHardware::write(const rclcpp::Time & /*time*/,
                                                                   const rclcpp::Duration & /*period*/) {
-        uint8_t solenoid_values_ = 0;
+        uint8_t new_solenoid_values_ = 0;
 
         for (auto i = 0u; i < hw_commands_.size(); i++) {
             // Round the value to the nearest integer (0 or 1)
@@ -183,15 +183,26 @@ namespace mcp23017_hardware_interface {
             // Ensure the value is clamped to 0 or 1
             bit_value = std::min<uint8_t>(1, bit_value);
 
-            solenoid_values_ |= (bit_value << i);
+            new_solenoid_values_ |= (bit_value << i);
 
             // RCLCPP_INFO(
             //     rclcpp::get_logger("Mcp23017SystemHardware"),
             //     "Joint '%d' has command '%f', rounded to '%d'.", i, hw_commands_[i], bit_value);
         }
 
-        mcp_.connect();
-        mcp_.set_gpio_state(solenoid_values_);
+        // Only perform the write if the new state is different from the current state
+        if (new_solenoid_values_ != current_solenoid_values_) {
+            mcp_.connect();
+            mcp_.set_gpio_state(new_solenoid_values_);
+            current_solenoid_values_ = new_solenoid_values_;
+
+            for (int i = 0; i < 5; ++i) {
+                uint8_t bit_value = (current_solenoid_values_ >> i) & 0x01;
+                RCLCPP_INFO(
+                    rclcpp::get_logger("Mcp23017SystemHardware"),
+                    "Bit %d: %d", i, bit_value);
+            }
+        }
 
         return hardware_interface::return_type::OK;
     }
