@@ -4,8 +4,6 @@
         <command_interface name="position">
             <param name="min">${servo_min}</param>
             <param name="max">${servo_max}</param>
-            <param name="min_duty_cycle">1.0</param>
-            <param name="max_duty_cycle">2.0</param>
         </command_interface>
         <state_interface name="position" />
     </joint>
@@ -13,8 +11,6 @@
         <command_interface name="position">
             <param name="min">${servo_min}</param>
             <param name="max">${servo_max}</param>
-            <param name="min_duty_cycle">1.0</param>
-            <param name="max_duty_cycle">2.0</param>
         </command_interface>
         <state_interface name="position" />
     </joint>
@@ -22,8 +18,6 @@
         <command_interface name="position">
             <param name="min">${servo_min}</param>
             <param name="max">${servo_max}</param>
-            <param name="min_duty_cycle">1.0</param>
-            <param name="max_duty_cycle">2.0</param>
         </command_interface>
         <state_interface name="position" />
     </joint>
@@ -31,8 +25,6 @@
         <command_interface name="position">
             <param name="min">${servo_min}</param>
             <param name="max">${servo_max}</param>
-            <param name="min_duty_cycle">1.0</param>
-            <param name="max_duty_cycle">2.0</param>
         </command_interface>
         <state_interface name="position" />
     </joint>
@@ -40,8 +32,6 @@
         <command_interface name="position">
             <param name="min">${servo_min}</param>
             <param name="max">${servo_max}</param>
-            <param name="min_duty_cycle">1.0</param>
-            <param name="max_duty_cycle">2.0</param>
         </command_interface>
         <state_interface name="position" />
     </joint>

@@ -25,6 +25,8 @@ namespace pca9685_hardware_interface {
         std::string i2c_device;
         int i2c_address;
         double freq_hz;
+        double min_duty_cycle;
+        double max_duty_cycle; 
     };
 
     class Pca9685SystemHardware : public hardware_interface::SystemInterface {
@@ -73,11 +75,11 @@ namespace pca9685_hardware_interface {
         // Interface parameters
         std::vector<double> min_positions_;
         std::vector<double> max_positions_;
-        std::vector<double> min_duty_cycles_;
-        std::vector<double> max_duty_cycles_;
         std::vector<double> hw_commands_;
-        // std::vector<std::string> position_state_interface_names_;
-        // std::vector<std::string> position_command_interface_names_;
+
+        // Internal variables
+        std::vector<double> current_pwm_values_ = {0.5, 0.5, 0.5, 0.5, 0.5};
+        std::mutex instance_mutex_;
     };
 
 }  // namespace pca9685_hardware_interface

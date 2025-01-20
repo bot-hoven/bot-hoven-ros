@@ -16,7 +16,7 @@ namespace mcp23017_hardware_interface {
 
         void setup(std::shared_ptr<hardware::I2CPeripheral> i2c_bus, const int i2c_address);
 
-        void connect();
+        int connect();
 
         void init();
 

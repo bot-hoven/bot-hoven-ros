@@ -140,7 +140,7 @@ ros2 action send_goal /left_hand_controller/follow_joint_trajectory control_msgs
 
 ### I2C Errors
 
-If you get the error
+If you experience the error
 ```
 [ros2_control_node-1] [FATAL] [1736967875.343749015] [Mcp23017SystemHardware]: Error initializing I2C Bus: Could not open i2c bus.: Permission denied
 ```

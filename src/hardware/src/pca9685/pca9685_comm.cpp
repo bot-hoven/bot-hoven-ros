@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <system_error>
 #include <cmath>
+#include <thread>
+#include <chrono> 
 
 namespace pca9685_hardware_interface {
 
@@ -13,7 +15,7 @@ namespace pca9685_hardware_interface {
         address = i2c_address;
     }
 
-    void PCA9685::connect(){
+    int PCA9685::connect(){
         try {
             if (i2c_dev->GetCurrentI2CAddress() != address) {
                 i2c_dev->ConnectToPeripheral(address);
@@ -24,6 +26,8 @@ namespace pca9685_hardware_interface {
                 " failed to connect to the I2C bus: " + std::string(e.what())
             );
         }
+
+        return 1;
     }
 
     void PCA9685::init() {
@@ -51,7 +55,6 @@ namespace pca9685_hardware_interface {
 
         auto newmode = (oldmode & 0x7F) | SLEEP;
 
-        // i2c_dev->ConnectToPeripheral(address);
         i2c_dev->WriteRegisterByte(MODE1, newmode);
         i2c_dev->WriteRegisterByte(PRESCALE, prescale);
         i2c_dev->WriteRegisterByte(MODE1, oldmode);
@@ -60,16 +63,22 @@ namespace pca9685_hardware_interface {
     }
 
     void PCA9685::set_pwm(const int channel, const uint16_t on, const uint16_t off) {
+        if (channel < 0 || channel > 15) {
+            throw std::out_of_range("Channel must be between 0 and 15");
+        }
         const auto channel_offset = 4 * channel;
-        // i2c_dev->ConnectToPeripheral(address);
-        i2c_dev->WriteRegisterByte(LED0_ON_L + channel_offset, on & 0xFF);
-        i2c_dev->WriteRegisterByte(LED0_ON_H + channel_offset, on >> 8);
-        i2c_dev->WriteRegisterByte(LED0_OFF_L + channel_offset, off & 0xFF);
-        i2c_dev->WriteRegisterByte(LED0_OFF_H + channel_offset, off >> 8);
+        try {
+            i2c_dev->WriteRegisterByte(LED0_ON_L + channel_offset, on & 0xFF);
+            i2c_dev->WriteRegisterByte(LED0_ON_H + channel_offset, on >> 8);
+            i2c_dev->WriteRegisterByte(LED0_OFF_L + channel_offset, off & 0xFF);
+            i2c_dev->WriteRegisterByte(LED0_OFF_H + channel_offset, off >> 8);
+        } catch (const std::exception& e) {
+            throw std::runtime_error("Failed to write to PCA9685 channel " + std::to_string(channel) +
+                                    ": " + std::string(e.what()));
+        }
     }
 
     void PCA9685::set_all_pwm(const uint16_t on, const uint16_t off) {
-        // i2c_dev->ConnectToPeripheral(address);
         i2c_dev->WriteRegisterByte(ALL_LED_ON_L, on & 0xFF);
         i2c_dev->WriteRegisterByte(ALL_LED_ON_H, on >> 8);
         i2c_dev->WriteRegisterByte(ALL_LED_OFF_L, off & 0xFF);

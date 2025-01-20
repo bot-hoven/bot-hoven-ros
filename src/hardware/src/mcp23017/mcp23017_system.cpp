@@ -185,6 +185,7 @@ namespace mcp23017_hardware_interface {
 
             new_solenoid_values_ |= (bit_value << i);
 
+            // This causes more yap than Tony
             // RCLCPP_INFO(
             //     rclcpp::get_logger("Mcp23017SystemHardware"),
             //     "Joint '%d' has command '%f', rounded to '%d'.", i, hw_commands_[i], bit_value);
@@ -192,7 +193,11 @@ namespace mcp23017_hardware_interface {
 
         // Only perform the write if the new state is different from the current state
         if (new_solenoid_values_ != current_solenoid_values_) {
-            mcp_.connect();
+            // Connect to the I2C bus (if this fails, no point in continuing)
+            if (!mcp_.connect()) {
+                RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to connect to I2CBus during write.");
+                return hardware_interface::return_type::ERROR;
+            }
             mcp_.set_gpio_state(new_solenoid_values_);
             current_solenoid_values_ = new_solenoid_values_;
 

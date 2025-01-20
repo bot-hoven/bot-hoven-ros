@@ -13,10 +13,11 @@ namespace mcp23017_hardware_interface {
         address = i2c_address;
     }
 
-    void MCP23017::connect() {
+    int MCP23017::connect() {
         if (i2c_dev->GetCurrentI2CAddress() != address) {
-        i2c_dev->ConnectToPeripheral(address);
+            i2c_dev->ConnectToPeripheral(address);
         }
+        return 1;
     }
 
     void MCP23017::init() {
@@ -25,7 +26,6 @@ namespace mcp23017_hardware_interface {
     }
 
     void MCP23017::set_gpio_state(uint8_t gpio_value_) {
-        // i2c_dev->ConnectToPeripheral(address);
         i2c_dev->WriteRegisterByte(GPIOA, gpio_value_);
     }
 

@@ -20,12 +20,10 @@ namespace pca9685_hardware_interface {
         cfg_.i2c_device = info_.hardware_parameters.at("i2c_device");
         cfg_.i2c_address = std::stoi(info_.hardware_parameters.at("i2c_address"));
         cfg_.freq_hz = std::stod(info_.hardware_parameters.at("frequency_hz"));
+        cfg_.min_duty_cycle = std::stod(info_.hardware_parameters.at("min_duty_cycle_ms"));
+        cfg_.max_duty_cycle = std::stod(info_.hardware_parameters.at("max_duty_cycle_ms"));
 
         hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
-        // min_positions_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
-        // max_positions_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
-        // min_duty_cycles_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
-        // max_duty_cycles_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
         // Validate the command interface
         for (const hardware_interface::ComponentInfo &joint : info_.joints) {
@@ -56,18 +54,6 @@ namespace pca9685_hardware_interface {
 
                 min_positions_.push_back(std::stod(joint.command_interfaces[0].min));
                 max_positions_.push_back(std::stod(joint.command_interfaces[0].max));
-                min_duty_cycles_.push_back(1.0);
-                max_duty_cycles_.push_back(2.0);            
-                // try {
-                //     double min_duty_cycle = std::stod(joint.command_interfaces[0].parameters.at("min_duty_cycle_ms"));
-                //     RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "min_duty_cycle: %s", std::to_string(min_duty_cycle));
-                // } catch (const std::exception &e) {
-                //     RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to get parameter with error: %s", e.what());
-                // }
-                // min_duty_cycles_.push_back(std::stod(joint.parameters.at("min_duty_cycle_ms")));
-                // max_duty_cycles_.push_back(std::stod(joint.parameters.at("max_duty_cycle_ms")));
-                // position_command_interface_names_ = joint_command_interfaces_.begin()->first;
-                // position_state_interface_names_ = joint_state_interfaces_.begin()->first;
             }
         } catch (const std::exception &e) {
             RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to parse interface parameters: %s",
@@ -155,7 +141,7 @@ namespace pca9685_hardware_interface {
         const rclcpp_lifecycle::State & /*previous_state*/) {
         for (auto i = 0u; i < hw_commands_.size(); i++) {
             if (std::isnan(hw_commands_[i])) {
-                hw_commands_[i] = 0;
+                hw_commands_[i] = (min_positions_[i] + max_positions_[i]) / 2; // Initialize at mid-point
             }
         }
 
@@ -197,16 +183,18 @@ namespace pca9685_hardware_interface {
     hardware_interface::return_type Pca9685SystemHardware::write(const rclcpp::Time & /*time*/,
                                                                  const rclcpp::Duration & /*period*/) {
         // Connect to the I2C bus (if this fails, no point in continuing)
-        pca_.connect(); 
+        if (!pca_.connect()) {
+            RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to connect to I2CBus during write.");
+            return hardware_interface::return_type::ERROR;
+        }
 
         for (auto i = 0u; i < hw_commands_.size(); i++) {
-            double duty_cycle = command_to_duty_cycle(hw_commands_[i], min_positions_[i], max_positions_[i],
-                                                      min_duty_cycles_[i], max_duty_cycles_[i]);
-
-            // RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Joint '%d' has command '%f', duty_cycle: '%f'.",
-            //             i, hw_commands_[i], duty_cycle);
-
-            pca_.set_pwm_ms(i, duty_cycle);
+            if (current_pwm_values_[i] != hw_commands_[i]) {
+                double duty_cycle = command_to_duty_cycle(hw_commands_[i], min_positions_[i], max_positions_[i],
+                                                          cfg_.min_duty_cycle, cfg_.max_duty_cycle);
+                pca_.set_pwm_ms(i, duty_cycle);
+                current_pwm_values_[i] = hw_commands_[i];
+            }
         }
 
         return hardware_interface::return_type::OK;

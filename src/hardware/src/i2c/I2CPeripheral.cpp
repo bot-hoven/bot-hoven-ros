@@ -18,7 +18,6 @@ namespace hardware {
     std::shared_ptr<I2CPeripheral> I2CPeripheral::getInstance(const std::string& device) {
         if (!instance_) {
             instance_ = createInstance(device);
-            // instance_ = std::make_shared<I2CPeripheral>(device);
         }
         return instance_;
     }
@@ -28,6 +27,7 @@ namespace hardware {
     }
 
     I2CPeripheral::I2CPeripheral(const std::string& device) {
+        std::lock_guard<std::mutex> lock(instance_mutex_); 
         OpenBus(device);
     }
 
