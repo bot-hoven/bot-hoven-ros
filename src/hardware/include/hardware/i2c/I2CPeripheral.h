@@ -31,9 +31,6 @@ namespace hardware {
         // Factory method to create an instance
         static std::shared_ptr<I2CPeripheral> createInstance(const std::string& device);
 
-        // // Allow std::make_shared to access the private constructor
-        // friend std::shared_ptr<I2CPeripheral> std::make_shared<I2CPeripheral>(const std::string&);
-
         // Disable copy constructor and assignment operator
         I2CPeripheral(const I2CPeripheral&) = delete;
         I2CPeripheral& operator=(const I2CPeripheral&) = delete;
@@ -47,8 +44,9 @@ namespace hardware {
         static std::mutex instance_mutex_;
 
         // Parameters for the I2C bus
-        int bus_fd;
-        int current_i2c_address;
+        std::string device_;
+        int bus_fd_;
+        int current_i2c_address_;
     };
 
 }  // namespace hardware

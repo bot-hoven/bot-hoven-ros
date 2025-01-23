@@ -21,6 +21,10 @@
 
 namespace mcp23017_hardware_interface {
 
+    // Constants
+    constexpr int MAX_WRITE_ATTEMPTS = 3;
+    constexpr int WRITE_ATTEMP_DELAY_US = 100;
+
     struct Config {
         std::string i2c_device;
         int i2c_address;
@@ -58,6 +62,9 @@ namespace mcp23017_hardware_interface {
         hardware_interface::return_type write(const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
     private:
+        // Auxiliary function prototypes
+        void write_solenoid_states(uint8_t new_solenoid_values_)
+
         // I2C parameters
         std::shared_ptr<hardware::I2CPeripheral> i2c_bus_ = nullptr;
 
@@ -74,6 +81,8 @@ namespace mcp23017_hardware_interface {
 
         // Internal variables
         uint8_t current_solenoid_values_ = 0;
+        int num_write_attempts_ = 0;
+        bool write_success_ = false;
     };
 
 }  // namespace mcp23017_hardware_interface

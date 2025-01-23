@@ -18,6 +18,10 @@ namespace mcp23017_hardware_interface {
     constexpr uint8_t OLATA = 0x14;
     constexpr uint8_t OLATB = 0x15;
 
+    // Other Constants:
+    constexpr uint32_t NS_PER_US = 1000;
+    constexpr uint32_t I2C_REWRITE_DELAY_US = 100;
+
 }  // namespace mcp23017_hardware_interface
 
 #endif  // HARDWARE__PCA9685__PCA9685_CONSTANTS_H

@@ -26,6 +26,16 @@ namespace pca9685_hardware_interface {
     constexpr uint8_t ALLCALL = 0x01;
     constexpr uint8_t INVRT = 0x10;
     constexpr uint8_t OUTDRV = 0x04;
+    constexpr uint8_t OCH = 0x08;
+
+    // Datasheet Constants:
+    constexpr useconds_t INIT_SLEEP_DELAY_US = 5'000;
+    constexpr uint32_t OSCILLATOR_CLOCK_SPEED = 25'000'000;  // 25MHz
+    constexpr uint16_t BIT_RESOLUTION = 4'096; // 12 bit device
+
+    // Other Constants:
+    constexpr uint32_t NS_PER_US = 1000;
+    constexpr uint32_t I2C_REWRITE_DELAY_US = 100;
 
 }  // namespace pca9685_hardware_interface
 

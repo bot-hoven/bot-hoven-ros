@@ -13,18 +13,26 @@ namespace mcp23017_hardware_interface {
         address = i2c_address;
     }
 
+    /**
+     * @throw std::system_error if the I2C peripheral cannot be connected to.
+     */
     int MCP23017::connect() {
         if (i2c_dev->GetCurrentI2CAddress() != address) {
             i2c_dev->ConnectToPeripheral(address);
         }
-        return 1;
     }
 
+    /** 
+     * @throw std::system_error if an error occurs during the I2C communication.
+     */
     void MCP23017::init() {
         i2c_dev->WriteRegisterByte(IODIRA, 0x00);  // Set pins to outputs
         i2c_dev->WriteRegisterByte(OLATA, 0x00);   // Initial values of 0
     }
 
+    /** 
+     * @throw std::system_error if an error occurs during the I2C communication.
+     */
     void MCP23017::set_gpio_state(uint8_t gpio_value_) {
         i2c_dev->WriteRegisterByte(GPIOA, gpio_value_);
     }

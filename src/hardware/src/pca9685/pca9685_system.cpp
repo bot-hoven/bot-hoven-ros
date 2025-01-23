@@ -16,12 +16,18 @@ namespace pca9685_hardware_interface {
             return hardware_interface::CallbackReturn::ERROR;
         }
 
-        // Parse the MCP23017 parameters
-        cfg_.i2c_device = info_.hardware_parameters.at("i2c_device");
-        cfg_.i2c_address = std::stoi(info_.hardware_parameters.at("i2c_address"));
-        cfg_.freq_hz = std::stod(info_.hardware_parameters.at("frequency_hz"));
-        cfg_.min_duty_cycle = std::stod(info_.hardware_parameters.at("min_duty_cycle_ms"));
-        cfg_.max_duty_cycle = std::stod(info_.hardware_parameters.at("max_duty_cycle_ms"));
+        // Try to parse the PCA9685 parameters
+        try {
+            cfg_.i2c_device = info_.hardware_parameters.at("i2c_device");
+            cfg_.i2c_address = std::stoi(info_.hardware_parameters.at("i2c_address"));
+            cfg_.freq_hz = std::stod(info_.hardware_parameters.at("frequency_hz"));
+            cfg_.min_duty_cycle = std::stod(info_.hardware_parameters.at("min_duty_cycle_ms"));
+            cfg_.max_duty_cycle = std::stod(info_.hardware_parameters.at("max_duty_cycle_ms"));
+        } catch (const std::exception &e) {
+            RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to parse PCA9685 parameters: %s",
+                         e.what());
+            return hardware_interface::CallbackReturn::ERROR;
+        }
 
         hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
@@ -47,8 +53,7 @@ namespace pca9685_hardware_interface {
         try {
             for (const hardware_interface::ComponentInfo &joint : info_.joints) {
                 for (const auto &param : joint.parameters) {
-                    RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"),
-                                "Joint [%s] Parameter: [%s] = [%s]",
+                    RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Joint [%s] Parameter: [%s] = [%s]",
                                 joint.name.c_str(), param.first.c_str(), param.second.c_str());
                 }
 
@@ -60,14 +65,6 @@ namespace pca9685_hardware_interface {
                          e.what());
             return CallbackReturn::ERROR;
         }
-
-        // Validate position bounds
-        // for (auto i = 0u; i < info_.joints.size(); i++) {
-        //     if (min_positions_[i] > max_positions_[i]) {
-        //         RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"), "Invalid Position bounds specified.");
-        //         return CallbackReturn::ERROR;
-        //     }
-        // }
 
         return hardware_interface::CallbackReturn::SUCCESS;
     }
@@ -104,12 +101,6 @@ namespace pca9685_hardware_interface {
             return hardware_interface::CallbackReturn::ERROR;
         }
 
-        // Not sure if I need this second check
-        if (!i2c_bus_) {
-            RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to initialize I2C bus.");
-            return hardware_interface::CallbackReturn::ERROR;
-        }
-
         // Setup the PCA9685 object
         try {
             pca_.setup(i2c_bus_, cfg_.i2c_address);
@@ -141,7 +132,7 @@ namespace pca9685_hardware_interface {
         const rclcpp_lifecycle::State & /*previous_state*/) {
         for (auto i = 0u; i < hw_commands_.size(); i++) {
             if (std::isnan(hw_commands_[i])) {
-                hw_commands_[i] = (min_positions_[i] + max_positions_[i]) / 2; // Initialize at mid-point
+                hw_commands_[i] = (min_positions_[i] + max_positions_[i]) / 2;  // Initialize at mid-point
             }
         }
 
@@ -174,32 +165,65 @@ namespace pca9685_hardware_interface {
                                                         double min_duty_cycle, double max_duty_cycle) {
         double clamped_command = std::clamp(command, min_input, max_input);
 
-        double slope = (max_duty_cycle - min_duty_cycle) / (max_input - min_input);
-        double offset = (max_duty_cycle + min_duty_cycle) / 2;
-
-        return slope * clamped_command + offset;
+        return map(command, min_input, max_input, min_duty_cycle, max_duty_cycle);
     }
 
     hardware_interface::return_type Pca9685SystemHardware::write(const rclcpp::Time & /*time*/,
                                                                  const rclcpp::Duration & /*period*/) {
+        num_write_attempts_ = 0;
+        write_success_ = false;
+
         // Connect to the I2C bus (if this fails, no point in continuing)
-        if (!pca_.connect()) {
-            RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to connect to I2CBus during write.");
+        try {
+            pca_.connect();
+        } catch (const std::exception &e) {
+            RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to connect to I2CBus during write: %s",
+                         e.what());
             return hardware_interface::return_type::ERROR;
         }
 
         for (auto i = 0u; i < hw_commands_.size(); i++) {
+            bool write_success_ = false;
+
             if (current_pwm_values_[i] != hw_commands_[i]) {
                 double duty_cycle = command_to_duty_cycle(hw_commands_[i], min_positions_[i], max_positions_[i],
                                                           cfg_.min_duty_cycle, cfg_.max_duty_cycle);
-                pca_.set_pwm_ms(i, duty_cycle);
-                current_pwm_values_[i] = hw_commands_[i];
+
+                // Try to write values to the I2C bus, re-attempt up to MAX_WRITE_ATTEMPTS times
+                while (!write_success_ && num_write_attempts_ < MAX_WRITE_ATTEMPTS) {
+                    try {
+                        write_servo_duty_cycle(i, duty_cycle);
+                    } catch (const std::exception &e) {
+                        if (num_write_attempts_ < MAX_WRITE_ATTEMPTS) {
+                            num_write_attempts_++;
+                            RCLCPP_WARN(rclcpp::get_logger("Pca9685SystemHardware"),
+                                        "Failed to write to PCA9685, re-trying (attempt %d): %s", e.what(),
+                                        num_write_attempts_);
+                            rclcpp::sleep_for(std::chrono::nanoseconds(I2C_REWRITE_DELAY_US * NS_PER_US));
+                        } else {
+                            RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"),
+                                         "Failed to write to PCA9685 after maximum attempts: %s", e.what());
+                            return hardware_interface::return_type::ERROR;
+                        }
+                    }
+                }
             }
         }
 
         return hardware_interface::return_type::OK;
     }
 
+    /**
+     * Writes the current state of the PCA9685 to the I2C bus.
+     *
+     * @param channel The channel on the PCA9685 you want to set the PWM for.
+     * @param duty_cycle The duty cycle in ms to be sent to the channel.
+     * @throws std::system_error if an error occurs during the I2C communication.
+     */
+    void write_servo_duty_cycle(int channel, double duty_cycle) {
+        pca_.set_pwm_ms(channel, duty_cycle);  // This function may throw an exception
+        current_pwm_values_[channel] = hw_commands_[channel];
+    }
 }  // namespace pca9685_hardware_interface
 
 #include "pluginlib/class_list_macros.hpp"
