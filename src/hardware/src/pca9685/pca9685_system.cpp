@@ -161,18 +161,20 @@ namespace pca9685_hardware_interface {
         return hardware_interface::return_type::OK;
     }
 
+    /**
+     * Performs a linear conversion of the command in range [min_input, max_input]
+     * to a duty cycle in range [min_duty_cycle, max_duty_cycle].
+     */
     double Pca9685SystemHardware::command_to_duty_cycle(double command, double min_input, double max_input,
                                                         double min_duty_cycle, double max_duty_cycle) {
         double clamped_command = std::clamp(command, min_input, max_input);
 
-        return map(command, min_input, max_input, min_duty_cycle, max_duty_cycle);
+        return min_duty_cycle +
+               (((max_duty_cycle - min_duty_cycle) / (max_input - min_input)) * (clamped_command - min_input));
     }
 
     hardware_interface::return_type Pca9685SystemHardware::write(const rclcpp::Time & /*time*/,
                                                                  const rclcpp::Duration & /*period*/) {
-        num_write_attempts_ = 0;
-        write_success_ = false;
-
         // Connect to the I2C bus (if this fails, no point in continuing)
         try {
             pca_.connect();
@@ -183,22 +185,27 @@ namespace pca9685_hardware_interface {
         }
 
         for (auto i = 0u; i < hw_commands_.size(); i++) {
-            bool write_success_ = false;
+            num_write_attempts_ = 0;
+            write_success_ = false;
 
-            if (current_pwm_values_[i] != hw_commands_[i]) {
+            if (current_command_values_[i] != hw_commands_[i]) {
                 double duty_cycle = command_to_duty_cycle(hw_commands_[i], min_positions_[i], max_positions_[i],
                                                           cfg_.min_duty_cycle, cfg_.max_duty_cycle);
 
                 // Try to write values to the I2C bus, re-attempt up to MAX_WRITE_ATTEMPTS times
                 while (!write_success_ && num_write_attempts_ < MAX_WRITE_ATTEMPTS) {
                     try {
-                        write_servo_duty_cycle(i, duty_cycle);
+                        pca_.set_pwm_ms(i, duty_cycle);  // This function may throw an exception
+                        RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"),
+                                    "Servo: 1, Command: %f, Duty Cycle: %f", i, hw_commands_[i], duty_cycle);
+                        write_success_ = true;
+                        current_command_values_[i] = hw_commands_[i];
                     } catch (const std::exception &e) {
                         if (num_write_attempts_ < MAX_WRITE_ATTEMPTS) {
                             num_write_attempts_++;
                             RCLCPP_WARN(rclcpp::get_logger("Pca9685SystemHardware"),
-                                        "Failed to write to PCA9685, re-trying (attempt %d): %s", e.what(),
-                                        num_write_attempts_);
+                                        "Failed to write to PCA9685, re-trying (attempt %d): %s", num_write_attempts_,
+                                        e.what());
                             rclcpp::sleep_for(std::chrono::nanoseconds(I2C_REWRITE_DELAY_US * NS_PER_US));
                         } else {
                             RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"),
@@ -209,20 +216,7 @@ namespace pca9685_hardware_interface {
                 }
             }
         }
-
         return hardware_interface::return_type::OK;
-    }
-
-    /**
-     * Writes the current state of the PCA9685 to the I2C bus.
-     *
-     * @param channel The channel on the PCA9685 you want to set the PWM for.
-     * @param duty_cycle The duty cycle in ms to be sent to the channel.
-     * @throws std::system_error if an error occurs during the I2C communication.
-     */
-    void write_servo_duty_cycle(int channel, double duty_cycle) {
-        pca_.set_pwm_ms(channel, duty_cycle);  // This function may throw an exception
-        current_pwm_values_[channel] = hw_commands_[channel];
     }
 }  // namespace pca9685_hardware_interface
 

@@ -62,9 +62,6 @@ namespace mcp23017_hardware_interface {
         hardware_interface::return_type write(const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
     private:
-        // Auxiliary function prototypes
-        void write_solenoid_states(uint8_t new_solenoid_values_)
-
         // I2C parameters
         std::shared_ptr<hardware::I2CPeripheral> i2c_bus_ = nullptr;
 

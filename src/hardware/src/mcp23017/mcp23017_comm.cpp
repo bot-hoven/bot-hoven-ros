@@ -16,7 +16,7 @@ namespace mcp23017_hardware_interface {
     /**
      * @throw std::system_error if the I2C peripheral cannot be connected to.
      */
-    int MCP23017::connect() {
+    void MCP23017::connect() {
         if (i2c_dev->GetCurrentI2CAddress() != address) {
             i2c_dev->ConnectToPeripheral(address);
         }

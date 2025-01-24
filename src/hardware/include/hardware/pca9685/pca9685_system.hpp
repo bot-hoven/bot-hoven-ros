@@ -69,8 +69,6 @@ namespace pca9685_hardware_interface {
         double command_to_duty_cycle(double command, double min_input, double max_input, double min_duty_cycle,
                                      double max_duty_cycle);
 
-        void write_servo_duty_cycle(int channel, double duty_cycle);
-
         // I2C parameters
         std::shared_ptr<hardware::I2CPeripheral> i2c_bus_ = nullptr;
 
@@ -84,7 +82,7 @@ namespace pca9685_hardware_interface {
         std::vector<double> hw_commands_;
 
         // Internal variables
-        std::vector<double> current_pwm_values_ = {0.5, 0.5, 0.5, 0.5, 0.5};
+        std::vector<double> current_command_values_ = {0.5, 0.5, 0.5, 0.5, 0.5};
         std::mutex instance_mutex_;
         int num_write_attempts_ = 0;
         bool write_success_ = false;

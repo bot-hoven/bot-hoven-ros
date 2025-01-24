@@ -19,7 +19,7 @@ namespace pca9685_hardware_interface {
     /**
      * @throw std::system_error if the I2C peripheral cannot be connected to.
      */
-    int PCA9685::connect() {
+    void PCA9685::connect() {
         if (i2c_dev->GetCurrentI2CAddress() != address) {
             i2c_dev->ConnectToPeripheral(address);
         }
@@ -33,7 +33,7 @@ namespace pca9685_hardware_interface {
 
         // Set component to totem pole structure
         // Set PWM outputs to only change on last ACK of all 4 writes for a PWM channel
-        i2c_dev->WriteRegisterByte(MODE2, OUTDRV & OCH);
+        i2c_dev->WriteRegisterByte(MODE2, OUTDRV | OCH);
 
         // PCA9685 responds to LED All Call I2C-bus address (0x70)
         i2c_dev->WriteRegisterByte(MODE1, ALLCALL);

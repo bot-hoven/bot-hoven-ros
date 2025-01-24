@@ -185,27 +185,34 @@ namespace mcp23017_hardware_interface {
 
         // Only perform the write if the new state is different from the current state
         if (new_solenoid_values_ != current_solenoid_values_) {
-
             // Connect to the I2C bus (if this fails, no point in continuing)
             try {
                 mcp_.connect();
             } catch (const std::exception &e) {
-                RCLCPP_ERROR(rclcpp::get_logger("Mcp23017SystemHardware"), "Failed to connect to I2CBus during write: %s",
-                             e.what());
+                RCLCPP_ERROR(rclcpp::get_logger("Mcp23017SystemHardware"),
+                             "Failed to connect to I2CBus during write: %s", e.what());
                 return hardware_interface::return_type::ERROR;
             }
 
             // Try to write values to the I2C bus, attempt multiple times if necessary
-            while (!success && num_write_attempts_ < MAX_WRITE_ATTEMPTS) {
+            while (!write_success_ && num_write_attempts_ < MAX_WRITE_ATTEMPTS) {
                 try {
-                    write_solenoid_states(new_solenoid_values_)
+                    // write_solenoid_states(new_solenoid_values_)
+                    mcp_.set_gpio_state(new_solenoid_values_);  // This function may throw an exception
+                    current_solenoid_values_ = new_solenoid_values_;
+                    write_success_ = true;
+
+                    for (int i = 0; i < 5; ++i) {
+                        uint8_t bit_value = (current_solenoid_values_ >> i) & 0x01;
+                        RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Bit %d: %d", i, bit_value);
+                    }
                 } catch (const std::exception &e) {
                     if (num_write_attempts_ < MAX_WRITE_ATTEMPTS) {
                         num_write_attempts_++;
                         RCLCPP_WARN(rclcpp::get_logger("Mcp23017SystemHardware"),
-                                    "Failed to write to MCP23017, re-trying (attempt %d): %s", e.what(),
-                                    num_write_attempts_);
-                        // Wait 100 ms between re-write attempts
+                                    "Failed to write to MCP23017, re-trying (attempt %d): %s", num_write_attempts_,
+                                    e.what());
+                        // Wait I2C_REWRITE_DELAY_US ms between re-write attempts
                         rclcpp::sleep_for(std::chrono::nanoseconds(I2C_REWRITE_DELAY_US * NS_PER_US));
                     } else {
                         RCLCPP_ERROR(rclcpp::get_logger("Mcp23017SystemHardware"),
@@ -213,27 +220,8 @@ namespace mcp23017_hardware_interface {
                         return hardware_interface::return_type::ERROR;
                     }
                 }
-            } 
-
-            num_write_attempts_ = 0;
-        }
-
-        /**
-         * Writes the current state of the MCP23017 to the I2C bus.
-         *
-         * @param new_solenoid_values_ The new state to be written to the GPIOs.
-         * @throws std::system_error if an error occurs during the I2C communication.
-         */
-        void write_solenoid_states(uint8_t new_solenoid_values_) {
-            mcp_.set_gpio_state(new_solenoid_values_);  // This function may throw an exception
-            current_solenoid_values_ = new_solenoid_values_;
-
-            for (int i = 0; i < 5; ++i) {
-                uint8_t bit_value = (current_solenoid_values_ >> i) & 0x01;
-                RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Bit %d: %d", i, bit_value);
             }
         }
-
         return hardware_interface::return_type::OK;
     }
 
