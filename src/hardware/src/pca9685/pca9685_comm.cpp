@@ -91,6 +91,7 @@ namespace pca9685_hardware_interface {
      * each channel has 4 registers that need to be written to set the PWM signal.
      * 
      * @throw std::system_error if an error occurs during the I2C communication.
+     * @throw std::out_of_range if an error occurs during the I2C communication.
      */
     void PCA9685::set_pwm(const int channel, const uint16_t on, const uint16_t off) {
         if (channel < 0 || channel > 15) {

@@ -66,6 +66,14 @@ namespace pca9685_hardware_interface {
             return CallbackReturn::ERROR;
         }
 
+        // Validate position bounds
+        for (auto i = 0u; i < info_.joints.size(); i++) {
+            if (min_positions_[i] > max_positions_[i]) {
+                RCLCPP_FATAL(get_logger(), "Invalid Position bounds specified.");
+                return CallbackReturn::ERROR;
+            }
+        }
+
         return hardware_interface::CallbackReturn::SUCCESS;
     }
 
@@ -175,15 +183,6 @@ namespace pca9685_hardware_interface {
 
     hardware_interface::return_type Pca9685SystemHardware::write(const rclcpp::Time & /*time*/,
                                                                  const rclcpp::Duration & /*period*/) {
-        // Connect to the I2C bus (if this fails, no point in continuing)
-        try {
-            pca_.connect();
-        } catch (const std::exception &e) {
-            RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to connect to I2CBus during write: %s",
-                         e.what());
-            return hardware_interface::return_type::ERROR;
-        }
-
         for (auto i = 0u; i < hw_commands_.size(); i++) {
             num_write_attempts_ = 0;
             write_success_ = false;
@@ -195,24 +194,24 @@ namespace pca9685_hardware_interface {
                 // Try to write values to the I2C bus, re-attempt up to MAX_WRITE_ATTEMPTS times
                 while (!write_success_ && num_write_attempts_ < MAX_WRITE_ATTEMPTS) {
                     try {
+                        pca_.connect(); // This function may throw an exception
                         pca_.set_pwm_ms(i, duty_cycle);  // This function may throw an exception
-                        RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"),
-                                    "Servo: 1, Command: %f, Duty Cycle: %f", i, hw_commands_[i], duty_cycle);
+                        RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"),
+                                    "Servo: %d, Command: %f, Duty Cycle: %f", i, hw_commands_[i], duty_cycle);
                         write_success_ = true;
                         current_command_values_[i] = hw_commands_[i];
                     } catch (const std::exception &e) {
-                        if (num_write_attempts_ < MAX_WRITE_ATTEMPTS) {
-                            num_write_attempts_++;
-                            RCLCPP_WARN(rclcpp::get_logger("Pca9685SystemHardware"),
-                                        "Failed to write to PCA9685, re-trying (attempt %d): %s", num_write_attempts_,
-                                        e.what());
-                            rclcpp::sleep_for(std::chrono::nanoseconds(I2C_REWRITE_DELAY_US * NS_PER_US));
-                        } else {
-                            RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"),
-                                         "Failed to write to PCA9685 after maximum attempts: %s", e.what());
-                            return hardware_interface::return_type::ERROR;
-                        }
+                        num_write_attempts_++;
+                        RCLCPP_WARN(rclcpp::get_logger("Pca9685SystemHardware"),
+                                    "Failed to write to PCA9685, re-trying (attempt %d): %s", num_write_attempts_,
+                                    e.what());
+                        rclcpp::sleep_for(std::chrono::nanoseconds(I2C_REWRITE_DELAY_US * NS_PER_US));
                     }
+                }
+                if (num_write_attempts_ == MAX_WRITE_ATTEMPTS) {
+                    RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"),
+                                 "Failed to write to PCA9685 after maximum attempts");
+                    return hardware_interface::return_type::ERROR;
                 }
             }
         }

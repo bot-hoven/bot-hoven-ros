@@ -51,8 +51,6 @@ namespace mcp23017_hardware_interface {
             for (const hardware_interface::ComponentInfo &joint : info_.joints) {
                 min_positions_.push_back(std::stod(joint.command_interfaces[0].min));
                 max_positions_.push_back(std::stod(joint.command_interfaces[0].max));
-                // position_command_interface_names_ = joint_command_interfaces_.begin()->first;
-                // position_state_interface_names_ = joint_state_interfaces_.begin()->first;
             }
         } catch (const std::exception &e) {
             RCLCPP_FATAL(get_logger(), "Failed to parse interface parameters: %s", e.what());
@@ -185,41 +183,32 @@ namespace mcp23017_hardware_interface {
 
         // Only perform the write if the new state is different from the current state
         if (new_solenoid_values_ != current_solenoid_values_) {
-            // Connect to the I2C bus (if this fails, no point in continuing)
-            try {
-                mcp_.connect();
-            } catch (const std::exception &e) {
-                RCLCPP_ERROR(rclcpp::get_logger("Mcp23017SystemHardware"),
-                             "Failed to connect to I2CBus during write: %s", e.what());
-                return hardware_interface::return_type::ERROR;
-            }
 
             // Try to write values to the I2C bus, attempt multiple times if necessary
             while (!write_success_ && num_write_attempts_ < MAX_WRITE_ATTEMPTS) {
                 try {
-                    // write_solenoid_states(new_solenoid_values_)
+                    mcp_.connect(); // This function may throw an exception
                     mcp_.set_gpio_state(new_solenoid_values_);  // This function may throw an exception
                     current_solenoid_values_ = new_solenoid_values_;
                     write_success_ = true;
 
-                    for (int i = 0; i < 5; ++i) {
+                    for (auto i = 0u; i < hw_commands_.size(); ++i) {
                         uint8_t bit_value = (current_solenoid_values_ >> i) & 0x01;
-                        RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Bit %d: %d", i, bit_value);
+                        RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Solenoid %d: %d", i, bit_value);
                     }
                 } catch (const std::exception &e) {
-                    if (num_write_attempts_ < MAX_WRITE_ATTEMPTS) {
-                        num_write_attempts_++;
-                        RCLCPP_WARN(rclcpp::get_logger("Mcp23017SystemHardware"),
-                                    "Failed to write to MCP23017, re-trying (attempt %d): %s", num_write_attempts_,
-                                    e.what());
-                        // Wait I2C_REWRITE_DELAY_US ms between re-write attempts
-                        rclcpp::sleep_for(std::chrono::nanoseconds(I2C_REWRITE_DELAY_US * NS_PER_US));
-                    } else {
-                        RCLCPP_ERROR(rclcpp::get_logger("Mcp23017SystemHardware"),
-                                     "Failed to write to MCP23017 after maximum attempts: %s", e.what());
-                        return hardware_interface::return_type::ERROR;
-                    }
+                    num_write_attempts_++;
+                    RCLCPP_WARN(rclcpp::get_logger("Mcp23017SystemHardware"),
+                                "Failed to write to MCP23017, re-trying (attempt %d): %s", num_write_attempts_,
+                                e.what());
+                    // Wait I2C_REWRITE_DELAY_US ms between re-write attempts
+                    rclcpp::sleep_for(std::chrono::nanoseconds(I2C_REWRITE_DELAY_US * NS_PER_US));
                 }
+            }
+            if (num_write_attempts_ == MAX_WRITE_ATTEMPTS) {
+                RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"),
+                             "Failed to write to PCA9685 after maximum attempts");
+                return hardware_interface::return_type::ERROR;
             }
         }
         return hardware_interface::return_type::OK;
