@@ -10,7 +10,8 @@ RUN if ! id -u $USER_UID >/dev/null 2>&1; then \
         useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME; \
     fi && \
     groupadd --gid 993 gpio && \
-    usermod -aG gpio $USERNAME
+    groupadd i2c
+
 # Add sudo support for the non-root user
 RUN apt-get update && \
     apt-get install -y \ 
@@ -19,7 +20,8 @@ RUN apt-get update && \
     ros-jazzy-ros2-controllers \
     ros-jazzy-hardware-interface \
     ros-jazzy-xacro \
-    libgpiod-dev && \
+    libgpiod-dev \
+    libi2c-dev && \
     rm -rf /var/lib/apt/lists/* && \
     echo "$USERNAME ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME && \
     chmod 0440 /etc/sudoers.d/$USERNAME
@@ -45,6 +47,10 @@ RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc
 ################################
 ## ADD ANY CUSTOM SETUP BELOW ##
 ################################
+
+# Permissions for I2C AND GPIO
+RUN sudo usermod -aG i2c $USERNAME && \
+    sudo usermod -aG gpio $USERNAME
 
 # Persist Bash history across sessions
 RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \

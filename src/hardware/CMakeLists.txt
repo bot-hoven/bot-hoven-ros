@@ -29,15 +29,21 @@ include_directories(${LIBGPIOD_INCLUDE_DIRS}) # Adds libgpiod headers to include
 # Add a library to the project using the specified source files
 add_library(
   ${PROJECT_NAME} SHARED
-  src/bothoven_hardware.cpp
   src/cl42t.cpp
+  src/i2c/I2CPeripheral.cpp
+  src/pca9685/pca9685_comm.cpp
+  src/pca9685/pca9685_system.cpp
+  src/mcp23017/mcp23017_comm.cpp
+  src/mcp23017/mcp23017_system.cpp
 )
 
 # Include directories
-target_include_directories(${PROJECT_NAME} PUBLIC
+target_include_directories(
+  ${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   ${LIBGPIOD_INCLUDE_DIRS}
+  ${LIBI2C_INCLUDE_DIRS}
 )
 
 # Link dependencies
@@ -46,8 +52,10 @@ ament_target_dependencies(
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(
+  ${PROJECT_NAME}
   ${LIBGPIOD_LIBRARIES}
+  i2c
 )
 
 # Export plugin

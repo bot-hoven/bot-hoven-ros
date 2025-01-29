@@ -13,6 +13,8 @@
   <depend>controller_manager</depend>
   <depend>rclcpp</depend>
   <depend>pluginlib</depend>
+  <depend>libgpiod-dev</depend>
+  <depend>libi2c-dev</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

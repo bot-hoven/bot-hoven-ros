@@ -135,3 +135,18 @@ For example:
 ```sh
 ros2 action send_goal /left_hand_controller/follow_joint_trajectory control_msgs/action/FollowJointTrajectory "{trajectory: {joint_names: ['left_hand_stepper_joint'], points: [{positions: [65.0], time_from_start: {sec: 1}}]}}"
 ```
+
+## Troubleshooting
+
+### I2C Errors
+
+If you experience the error
+```
+[ros2_control_node-1] [FATAL] [1736967875.343749015] [Mcp23017SystemHardware]: Error initializing I2C Bus: Could not open i2c bus.: Permission denied
+```
+
+then first run the command 
+
+```
+sudo chmod 666 /dev/i2c-1
+```
