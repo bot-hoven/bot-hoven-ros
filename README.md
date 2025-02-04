@@ -147,6 +147,16 @@ For example:
 ros2 action send_goal /left_hand_controller/follow_joint_trajectory control_msgs/action/FollowJointTrajectory "{trajectory: {joint_names: ['left_hand_stepper_joint'], points: [{positions: [65.0], time_from_start: {sec: 1}}]}}"
 ```
 
+### Run Gtests
+1. First, build the package you are testing. For example, the `hardware` package.
+```sh
+colcon build --packages-select hardware
+```
+2. Run the Gtests in that package.
+```sh
+colcon test --packages-select hardware --ctest-args -L gtest --event-handlers console_direct+
+```
+
 ## Troubleshooting
 
 ### I2C Errors
