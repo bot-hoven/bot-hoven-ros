@@ -75,7 +75,7 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 
   ament_add_gtest(${PROJECT_NAME}_robotic_controller_performance_metric test/robotic_controller_performance_metric.cpp)
-  set_tests_properties(${PROJECT_NAME}_robotic_controller_performance_metric PROPERTIES LABELS "gtest")
+  set_tests_properties(${PROJECT_NAME}_robotic_controller_performance_metric PROPERTIES LABELS "gtest" TIMEOUT 10)
   target_include_directories(${PROJECT_NAME}_robotic_controller_performance_metric PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
