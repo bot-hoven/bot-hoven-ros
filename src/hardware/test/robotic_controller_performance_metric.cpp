@@ -30,7 +30,7 @@ void feedback_callback(
   }
 }
 
-TEST(RoboticControllerPerformanceMetricTest, GoalAcceptanceWithin100ms)
+TEST(RoboticControllerPerformanceMetricTest, GoalReceivalWithin20ms)
 {
   rclcpp::init(0, nullptr);
   auto node = rclcpp::Node::make_shared("performance_test_node");
@@ -68,10 +68,10 @@ TEST(RoboticControllerPerformanceMetricTest, GoalAcceptanceWithin100ms)
   // Capture the time after the goal is accepted
   auto accept_time = Clock::now();
   auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(accept_time - send_time).count();
-  RCLCPP_INFO(node->get_logger(), "Time to receive goal acceptance: %ld ms", duration_ms);
+  RCLCPP_INFO(node->get_logger(), "Time to receive goal: %ld ms", duration_ms);
 
-  // Assert that the goal acceptance time is within the 100 ms threshold
-  EXPECT_LE(duration_ms, 100) << "Goal acceptance exceeded 100 ms threshold";
+  // Assert that the goal receival time is within the 20 ms threshold
+  EXPECT_LE(duration_ms, 20) << "Goal receival exceeded 20 ms threshold";
 
   executor.cancel();
   spin_thread.join();
@@ -108,10 +108,10 @@ public:
     else if (log_msg.find("Accepted new action goal") != std::string::npos && start_time_recorded)
     {
       auto accept_time = Clock::now();
-      auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(accept_time - start_time_).count();
-      RCLCPP_INFO(this->get_logger(), "Time for goal acceptance: %ld ms", duration_ms);
+      auto duration_us = std::chrono::duration_cast<std::chrono::microseconds>(accept_time - start_time_).count();
+      RCLCPP_INFO(this->get_logger(), "Time to accept goal: %ld us", duration_us);
 
-      recorded_time_ = duration_ms;
+      recorded_time_ = duration_us;
       start_time_recorded = false;
       executor_.cancel(); // Stop spinning once the event is recorded
     }
@@ -129,15 +129,38 @@ private:
   std::optional<long> recorded_time_;
 };
 
-TEST(RoboticControllerPerformanceMetricTest, GoalAcceptanceTimeFromLogs)
+TEST(RoboticControllerPerformanceMetricTest, GoalAcceptanceWithin20ms)
 {
   rclcpp::init(0, nullptr);
   auto log_listener = std::make_shared<LogListener>();
 
-  // Run log listener in a separate thread
+  // Start log listener in a separate thread
   std::thread log_thread([&]() { log_listener->listen_for_logs(); });
 
-  // Wait for log processing to complete (timeout after 5 seconds)
+  // Give time for log listener to subscribe
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+
+  // Create node to send goal
+  auto node = rclcpp::Node::make_shared("goal_sender");
+  auto action_client = rclcpp_action::create_client<FollowJointTrajectory>(
+    node, "/right_hand_controller/follow_joint_trajectory");
+
+  ASSERT_TRUE(action_client->wait_for_action_server(std::chrono::seconds(5)))
+      << "Action server not available";
+
+  FollowJointTrajectory::Goal goal;
+  goal.goal_time_tolerance = rclcpp::Duration::from_seconds(0.1);
+  goal.trajectory.joint_names = {"right_hand_stepper_joint"};
+
+  trajectory_msgs::msg::JointTrajectoryPoint point;
+  point.time_from_start = rclcpp::Duration::from_seconds(0.5);
+  point.positions.push_back(1.0);
+  goal.trajectory.points.push_back(point);
+
+  auto goal_handle_future = action_client->async_send_goal(goal);
+  ASSERT_EQ(rclcpp::spin_until_future_complete(node, goal_handle_future),
+            rclcpp::FutureReturnCode::SUCCESS);
+
   auto start = Clock::now();
   while (!log_listener->get_recorded_time().has_value() &&
          std::chrono::duration_cast<std::chrono::seconds>(Clock::now() - start).count() < 5)
@@ -150,7 +173,7 @@ TEST(RoboticControllerPerformanceMetricTest, GoalAcceptanceTimeFromLogs)
 
   // Assert that the log timestamps were captured and within threshold
   ASSERT_TRUE(log_listener->get_recorded_time().has_value()) << "Failed to capture goal acceptance logs";
-  EXPECT_LE(log_listener->get_recorded_time().value(), 2000) << "Controller took too long to accept the goal";
+  EXPECT_LE(log_listener->get_recorded_time().value(), 20000) << "Goal acceptance exceeded 20 ms threshold";
 }
 
 int main(int argc, char ** argv)
