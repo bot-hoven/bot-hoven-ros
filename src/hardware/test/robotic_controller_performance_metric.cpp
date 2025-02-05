@@ -5,6 +5,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_action/rclcpp_action.hpp>
+#include <rcl_interfaces/msg/log.hpp>
 #include <control_msgs/action/follow_joint_trajectory.hpp>
 #include <trajectory_msgs/msg/joint_trajectory_point.hpp>
 
@@ -69,12 +70,87 @@ TEST(RoboticControllerPerformanceMetricTest, GoalAcceptanceWithin100ms)
   auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(accept_time - send_time).count();
   RCLCPP_INFO(node->get_logger(), "Time to receive goal acceptance: %ld ms", duration_ms);
 
-  // Assert that the goal acceptance time is within the 20 ms threshold
+  // Assert that the goal acceptance time is within the 100 ms threshold
   EXPECT_LE(duration_ms, 100) << "Goal acceptance exceeded 100 ms threshold";
 
   executor.cancel();
   spin_thread.join();
   rclcpp::shutdown();
+}
+
+class LogListener : public rclcpp::Node
+{
+public:
+  LogListener() : Node("log_listener") {}
+
+  void listen_for_logs()
+  {
+    subscription_ = this->create_subscription<rcl_interfaces::msg::Log>(
+      "/rosout", 10,
+      [this](const rcl_interfaces::msg::Log::SharedPtr msg) {
+        std::string log_msg = msg->msg;
+        process_log(log_msg);
+      });
+
+    executor_.add_node(this->get_node_base_interface());
+    executor_.spin();
+  }
+
+  void process_log(const std::string &log_msg)
+  {
+    static bool start_time_recorded = false;
+
+    if (log_msg.find("Received new action goal") != std::string::npos && !start_time_recorded)
+    {
+      start_time_ = Clock::now();
+      start_time_recorded = true;
+    }
+    else if (log_msg.find("Accepted new action goal") != std::string::npos && start_time_recorded)
+    {
+      auto accept_time = Clock::now();
+      auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(accept_time - start_time_).count();
+      RCLCPP_INFO(this->get_logger(), "Time for goal acceptance: %ld ms", duration_ms);
+
+      recorded_time_ = duration_ms;
+      start_time_recorded = false;
+      executor_.cancel(); // Stop spinning once the event is recorded
+    }
+  }
+
+  std::optional<long> get_recorded_time() const
+  {
+    return recorded_time_;
+  }
+
+private:
+  rclcpp::Subscription<rcl_interfaces::msg::Log>::SharedPtr subscription_;
+  rclcpp::executors::SingleThreadedExecutor executor_;
+  Clock::time_point start_time_;
+  std::optional<long> recorded_time_;
+};
+
+TEST(RoboticControllerPerformanceMetricTest, GoalAcceptanceTimeFromLogs)
+{
+  rclcpp::init(0, nullptr);
+  auto log_listener = std::make_shared<LogListener>();
+
+  // Run log listener in a separate thread
+  std::thread log_thread([&]() { log_listener->listen_for_logs(); });
+
+  // Wait for log processing to complete (timeout after 5 seconds)
+  auto start = Clock::now();
+  while (!log_listener->get_recorded_time().has_value() &&
+         std::chrono::duration_cast<std::chrono::seconds>(Clock::now() - start).count() < 5)
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+  }
+
+  log_thread.join();
+  rclcpp::shutdown();
+
+  // Assert that the log timestamps were captured and within threshold
+  ASSERT_TRUE(log_listener->get_recorded_time().has_value()) << "Failed to capture goal acceptance logs";
+  EXPECT_LE(log_listener->get_recorded_time().value(), 2000) << "Controller took too long to accept the goal";
 }
 
 int main(int argc, char ** argv)
