@@ -80,24 +80,47 @@ TEST(RoboticControllerPerformanceMetricTest, GoalAcceptanceWithin20ms)
 
   // Create node to send goal
   auto node = rclcpp::Node::make_shared("goal_sender");
-  auto action_client = rclcpp_action::create_client<FollowJointTrajectory>(
-    node, "/right_hand_controller/follow_joint_trajectory");
 
-  ASSERT_TRUE(action_client->wait_for_action_server(std::chrono::seconds(5)))
-      << "Action server not available";
-
-  FollowJointTrajectory::Goal goal;
-  goal.goal_time_tolerance = rclcpp::Duration::from_seconds(0.1);
-  goal.trajectory.joint_names = {"right_hand_stepper_joint"};
-
-  trajectory_msgs::msg::JointTrajectoryPoint point;
-  point.time_from_start = rclcpp::Duration::from_seconds(0.5);
-  point.positions.push_back(1.0);
-  goal.trajectory.points.push_back(point);
-
-  auto goal_handle_future = action_client->async_send_goal(goal);
-  ASSERT_EQ(rclcpp::spin_until_future_complete(node, goal_handle_future),
-            rclcpp::FutureReturnCode::SUCCESS);
+  std::vector<std::string> controllers = {"/right_hand_controller/follow_joint_trajectory", 
+                                          "/left_hand_controller/follow_joint_trajectory"};
+  
+  for (const auto &controller : controllers)
+  {
+    auto action_client = rclcpp_action::create_client<FollowJointTrajectory>(node, controller);
+    ASSERT_TRUE(action_client->wait_for_action_server(std::chrono::seconds(5)))
+        << "Action server not available for " << controller;
+  
+    FollowJointTrajectory::Goal goal;
+    goal.goal_time_tolerance = rclcpp::Duration::from_seconds(0.1);
+    
+    if (controller.find("right") != std::string::npos)
+    {
+      goal.trajectory.joint_names = {"right_hand_stepper_joint", "right_hand_thumb_solenoid_joint", 
+                                     "right_hand_thumb_servo_joint", "right_hand_index_finger_solenoid_joint", 
+                                     "right_hand_index_finger_servo_joint", "right_hand_middle_finger_solenoid_joint", 
+                                     "right_hand_middle_finger_servo_joint", "right_hand_ring_finger_solenoid_joint", 
+                                     "right_hand_ring_finger_servo_joint", "right_hand_pinky_solenoid_joint", 
+                                     "right_hand_pinky_servo_joint"};
+    }
+    else
+    {
+      goal.trajectory.joint_names = {"left_hand_stepper_joint", "left_hand_thumb_solenoid_joint", 
+                                     "left_hand_thumb_servo_joint", "left_hand_index_finger_solenoid_joint", 
+                                     "left_hand_index_finger_servo_joint", "left_hand_middle_finger_solenoid_joint", 
+                                     "left_hand_middle_finger_servo_joint", "left_hand_ring_finger_solenoid_joint", 
+                                     "left_hand_ring_finger_servo_joint", "left_hand_pinky_solenoid_joint", 
+                                     "left_hand_pinky_servo_joint"};
+    }
+    
+    trajectory_msgs::msg::JointTrajectoryPoint point;
+    point.time_from_start = rclcpp::Duration::from_seconds(0.5);
+    point.positions.resize(goal.trajectory.joint_names.size(), 1.0);
+    goal.trajectory.points.push_back(point);
+    
+    auto goal_handle_future = action_client->async_send_goal(goal);
+    ASSERT_EQ(rclcpp::spin_until_future_complete(node, goal_handle_future),
+              rclcpp::FutureReturnCode::SUCCESS);
+  }
 
   auto start = Clock::now();
   while (!log_listener->get_recorded_time().has_value() &&
