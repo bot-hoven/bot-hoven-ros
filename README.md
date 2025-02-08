@@ -157,6 +157,16 @@ colcon build --packages-select hardware
 colcon test --packages-select hardware --ctest-args -L gtest --event-handlers console_direct+
 ```
 
+### Mock the Hardware
+1. First, build the workspace.
+```sh
+colcon build
+```
+2. Launch the hardware with the `use_mock_hardware` flag set.
+```sh
+ros2 launch hardware hardware.launch.py use_mock_hardware:=true
+```
+
 ## Troubleshooting
 
 ### I2C Errors

@@ -1,97 +1,153 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <ros2_control name="left_stepper_driver" type="actuator" is_async="true">
-    <hardware>
-      <plugin>cl42t_hardware/CL42T</plugin>
-      <param name="pulses_per_rev">1600</param>
-    </hardware>
+  <xacro:macro name="bothoven_ros2_control" params="use_mock_hardware">
+    <ros2_control name="left_stepper_driver" type="system" is_async="false">
+      <xacro:unless value="${use_mock_hardware}">
+        <hardware>
+          <plugin>cl42t_hardware/CL42T</plugin>
+          <param name="pulses_per_rev">1600</param>
+        </hardware>
+      </xacro:unless>
+      <xacro:if value="${use_mock_hardware}">
+        <hardware>
+          <plugin>mock_components/GenericSystem</plugin>
+          <param name="calculate_dynamics">true</param>
+          <param name="mock_gpio_commands">true</param>
+        </hardware>
+      </xacro:if>
 
-    <xacro:include filename="$(find hardware)/urdf/left_stepper_joint.xacro" />
+      <xacro:include filename="$(find hardware)/urdf/left_stepper_joint.xacro" />
 
-    <gpio name="left_stepper_pul">
-      <param name="chip_name">/dev/gpiochip4</param>
-      <param name="pin_number">22</param>
-      <param name="descriptor">PUL+</param>
-      <param name="direction">output</param>
-      <param name="init_value">0</param>
-    </gpio>
-    <gpio name="left_stepper_dir">
-      <param name="chip_name">/dev/gpiochip4</param>
-      <param name="pin_number">23</param>
-      <param name="descriptor">DIR+</param>
-      <param name="direction">output</param>
-      <param name="init_value">0</param>
-    </gpio>
-  </ros2_control>
+      <gpio name="left_stepper_pul">
+        <param name="chip_name">/dev/gpiochip4</param>
+        <param name="pin_number">22</param>
+        <param name="descriptor">PUL+</param>
+        <param name="direction">output</param>
+        <param name="init_value">0</param>
+      </gpio>
+      <gpio name="left_stepper_dir">
+        <param name="chip_name">/dev/gpiochip4</param>
+        <param name="pin_number">23</param>
+        <param name="descriptor">DIR+</param>
+        <param name="direction">output</param>
+        <param name="init_value">0</param>
+      </gpio>
+    </ros2_control>
 
-  <ros2_control name="right_stepper_driver" type="actuator" is_async="true">
-    <hardware>
-      <plugin>cl42t_hardware/CL42T</plugin>
-      <param name="pulses_per_rev">1600</param>
-    </hardware>
+    <ros2_control name="right_stepper_driver" type="system" is_async="false">
+      <xacro:unless value="${use_mock_hardware}">
+        <hardware>
+          <plugin>cl42t_hardware/CL42T</plugin>
+          <param name="pulses_per_rev">1600</param>
+        </hardware>
+      </xacro:unless>
+      <xacro:if value="${use_mock_hardware}">
+        <hardware>
+          <plugin>mock_components/GenericSystem</plugin>
+          <param name="calculate_dynamics">true</param>
+          <param name="mock_gpio_commands">true</param>
+        </hardware>
+      </xacro:if>
 
-    <xacro:include filename="$(find hardware)/urdf/right_stepper_joint.xacro" />
+      <xacro:include filename="$(find hardware)/urdf/right_stepper_joint.xacro" />
 
-    <gpio name="right_stepper_pul">
-      <param name="chip_name">/dev/gpiochip4</param>
-      <param name="pin_number">5</param>
-      <param name="descriptor">PUL+</param>
-      <param name="direction">output</param>
-      <param name="init_value">0</param>
-    </gpio>
-    <gpio name="right_stepper_dir">
-      <param name="chip_name">/dev/gpiochip4</param>
-      <param name="pin_number">6</param>
-      <param name="descriptor">DIR+</param>
-      <param name="direction">output</param>
-      <param name="init_value">0</param>
-    </gpio>
-  </ros2_control>
+      <gpio name="right_stepper_pul">
+        <param name="chip_name">/dev/gpiochip4</param>
+        <param name="pin_number">5</param>
+        <param name="descriptor">PUL+</param>
+        <param name="direction">output</param>
+        <param name="init_value">0</param>
+      </gpio>
+      <gpio name="right_stepper_dir">
+        <param name="chip_name">/dev/gpiochip4</param>
+        <param name="pin_number">6</param>
+        <param name="descriptor">DIR+</param>
+        <param name="direction">output</param>
+        <param name="init_value">0</param>
+      </gpio>
+    </ros2_control>
 
-  <ros2_control name="left_servo_driver" type="system">
-    <hardware>
-      <plugin>pca9685_hardware_interface/Pca9685SystemHardware</plugin>
-      <param name="i2c_device">/dev/i2c-1</param> 
-      <param name="frequency_hz">50</param>
-      <param name="i2c_address">64</param>  
-      <param name="min_duty_cycle_ms">1.3</param>
-      <param name="max_duty_cycle_ms">1.7</param>
-    </hardware>
+    <ros2_control name="left_servo_driver" type="system">
+      <xacro:unless value="${use_mock_hardware}">
+        <hardware>
+          <plugin>pca9685_hardware_interface/Pca9685SystemHardware</plugin>
+          <param name="i2c_device">/dev/i2c-1</param> 
+          <param name="frequency_hz">50</param>
+          <param name="i2c_address">64</param>  
+          <param name="min_duty_cycle_ms">1.3</param>
+          <param name="max_duty_cycle_ms">1.7</param>
+        </hardware>
+      </xacro:unless>
+      <xacro:if value="${use_mock_hardware}">
+        <hardware>
+          <plugin>mock_components/GenericSystem</plugin>
+          <param name="calculate_dynamics">true</param>
+          <param name="mock_gpio_commands">true</param>
+        </hardware>
+      </xacro:if>
 
-    <xacro:include filename="$(find hardware)/urdf/left_servo_joints.xacro" />
-  </ros2_control>
+      <xacro:include filename="$(find hardware)/urdf/left_servo_joints.xacro" />
+    </ros2_control>
 
-  <ros2_control name="right_servo_driver" type="system">
-    <hardware>
-      <plugin>pca9685_hardware_interface/Pca9685SystemHardware</plugin>
-      <param name="i2c_device">/dev/i2c-1</param> 
-      <param name="frequency_hz">50</param> 
-      <param name="i2c_address">65</param> 
-      <param name="min_duty_cycle_ms">1.0</param>
-      <param name="max_duty_cycle_ms">2.0</param>
-    </hardware>
+    <ros2_control name="right_servo_driver" type="system">
+      <xacro:unless value="${use_mock_hardware}">
+        <hardware>
+          <plugin>pca9685_hardware_interface/Pca9685SystemHardware</plugin>
+          <param name="i2c_device">/dev/i2c-1</param> 
+          <param name="frequency_hz">50</param> 
+          <param name="i2c_address">65</param> 
+          <param name="min_duty_cycle_ms">1.0</param>
+          <param name="max_duty_cycle_ms">2.0</param>
+        </hardware>
+      </xacro:unless>
+      <xacro:if value="${use_mock_hardware}">
+        <hardware>
+          <plugin>mock_components/GenericSystem</plugin>
+          <param name="calculate_dynamics">true</param>
+          <param name="mock_gpio_commands">true</param>
+        </hardware>
+      </xacro:if>
 
-    <xacro:include filename="$(find hardware)/urdf/right_servo_joints.xacro" />
-  </ros2_control>
+      <xacro:include filename="$(find hardware)/urdf/right_servo_joints.xacro" />
+    </ros2_control>
 
-  <ros2_control name="left_solenoid_driver" type="system">
-    <hardware>
-      <plugin>mcp23017_hardware_interface/Mcp23017SystemHardware</plugin>
-      <param name="i2c_device">/dev/i2c-1</param> 
-      <param name="i2c_address">32</param>  
-    </hardware>
+    <ros2_control name="left_solenoid_driver" type="system">
+      <xacro:unless value="${use_mock_hardware}">
+        <hardware>
+          <plugin>mcp23017_hardware_interface/Mcp23017SystemHardware</plugin>
+          <param name="i2c_device">/dev/i2c-1</param> 
+          <param name="i2c_address">32</param>  
+        </hardware>
+      </xacro:unless>
+      <xacro:if value="${use_mock_hardware}">
+        <hardware>
+          <plugin>mock_components/GenericSystem</plugin>
+          <param name="calculate_dynamics">true</param>
+          <param name="mock_gpio_commands">true</param>
+        </hardware>
+      </xacro:if>
 
-    <xacro:include filename="$(find hardware)/urdf/left_solenoid_joints.xacro" />
-  </ros2_control>
+      <xacro:include filename="$(find hardware)/urdf/left_solenoid_joints.xacro" />
+    </ros2_control>
 
-  <ros2_control name="right_solenoid_driver" type="system">
-    <hardware>
-      <plugin>mcp23017_hardware_interface/Mcp23017SystemHardware</plugin>
-      <param name="i2c_device">/dev/i2c-1</param> 
-      <param name="i2c_address">33</param>  
-    </hardware>
+    <ros2_control name="right_solenoid_driver" type="system">
+      <xacro:unless value="${use_mock_hardware}">
+        <hardware>
+          <plugin>mcp23017_hardware_interface/Mcp23017SystemHardware</plugin>
+          <param name="i2c_device">/dev/i2c-1</param> 
+          <param name="i2c_address">33</param>  
+        </hardware>
+      </xacro:unless>
+      <xacro:if value="${use_mock_hardware}">
+        <hardware>
+          <plugin>mock_components/GenericSystem</plugin>
+          <param name="calculate_dynamics">true</param>
+          <param name="mock_gpio_commands">true</param>
+        </hardware>
+      </xacro:if>
 
-    <xacro:include filename="$(find hardware)/urdf/right_solenoid_joints.xacro" />
-  </ros2_control>
+      <xacro:include filename="$(find hardware)/urdf/right_solenoid_joints.xacro" />
+    </ros2_control>
+  </xacro:macro>
 
 </robot>
