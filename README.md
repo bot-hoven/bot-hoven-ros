@@ -157,6 +157,23 @@ colcon build --packages-select hardware
 colcon test --packages-select hardware --ctest-args -L gtest --event-handlers console_direct+
 ```
 
+### Run the Robotic Controller Performance Metric Test
+> Note: To perform this test you will need to manually install these two packeges in the docker container: `stress-ng` & `sysstat`. Due to their size, I did not include them in the docker image.
+1. First, build the workspace.
+```sh
+colcon build
+```
+2. In Terminal A, Launch the hardware with the `use_mock_hardware` flag set.
+```sh
+ros2 launch hardware hardware.launch.py use_mock_hardware:=true
+```
+3. In Terminal B, run the `robotic_controller_perf_metric_cpu_load.sh` script.
+```sh
+./scripts/robotic_controller_perf_metric_cpu_load.sh
+```
+
+The results will be logged in `goal_acceptance_times.csv`
+
 ### Mock the Hardware
 1. First, build the workspace.
 ```sh
