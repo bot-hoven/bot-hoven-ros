@@ -74,6 +74,16 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 
+  # Add the first test
+  ament_add_gtest(${PROJECT_NAME}_robotic_controller_goal_receival_test test/robotic_controller_goal_receival_test.cpp)
+  set_tests_properties(${PROJECT_NAME}_robotic_controller_goal_receival_test PROPERTIES LABELS "gtest" TIMEOUT 20)
+  target_include_directories(${PROJECT_NAME}_robotic_controller_goal_receival_test PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+  )
+  target_link_libraries(${PROJECT_NAME}_robotic_controller_goal_receival_test ${PROJECT_NAME})
+
+  # Add the second test
   ament_add_gtest(${PROJECT_NAME}_robotic_controller_performance_metric test/robotic_controller_performance_metric.cpp)
   set_tests_properties(${PROJECT_NAME}_robotic_controller_performance_metric PROPERTIES LABELS "gtest" TIMEOUT 20)
   target_include_directories(${PROJECT_NAME}_robotic_controller_performance_metric PUBLIC
