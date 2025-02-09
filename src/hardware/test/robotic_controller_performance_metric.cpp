@@ -12,10 +12,6 @@
 using FollowJointTrajectory = control_msgs::action::FollowJointTrajectory;
 using Clock = std::chrono::steady_clock;
 
-// Global promise to capture the time of the first feedback
-std::promise<Clock::time_point> feedback_time_promise;
-std::atomic<bool> feedback_received{false};
-
 class LogListener : public rclcpp::Node
 {
 public:
@@ -27,60 +23,71 @@ public:
       "/rosout", 10,
       [this](const rcl_interfaces::msg::Log::SharedPtr msg) {
         std::string log_msg = msg->msg;
-        process_log(log_msg);
+        std::string node_name = msg->name;
+        process_log(node_name, log_msg);
       });
 
     executor_.add_node(this->get_node_base_interface());
     executor_.spin();
   }
 
-  void process_log(const std::string &log_msg)
+  void process_log(const std::string &node_name, const std::string &log_msg)
   {
-    static bool start_time_recorded = false;
-
-    if (log_msg.find("Received new action goal") != std::string::npos && !start_time_recorded)
+    if (log_msg.find("Received new action goal") != std::string::npos)
     {
-      start_time_ = Clock::now();
-      start_time_recorded = true;
+      if (node_name.find("right_hand_controller") != std::string::npos)
+        start_times_["right"] = Clock::now();
+      else if (node_name.find("left_hand_controller") != std::string::npos)
+        start_times_["left"] = Clock::now();
     }
-    else if (log_msg.find("Accepted new action goal") != std::string::npos && start_time_recorded)
+    else if (log_msg.find("Accepted new action goal") != std::string::npos)
     {
-      auto accept_time = Clock::now();
-      auto duration_us = std::chrono::duration_cast<std::chrono::microseconds>(accept_time - start_time_).count();
-      RCLCPP_INFO(this->get_logger(), "Time to accept goal: %ld us", duration_us);
+      auto now = Clock::now();
+      if (node_name.find("right_hand_controller") != std::string::npos && start_times_.count("right"))
+      {
+        right_hand_time_ = std::chrono::duration_cast<std::chrono::microseconds>(now - start_times_["right"]);
+        RCLCPP_INFO(this->get_logger(), "Right Hand Controller - Time to accept goal: %ld us", right_hand_time_->count());
+      }
+      else if (node_name.find("left_hand_controller") != std::string::npos && start_times_.count("left"))
+      {
+        left_hand_time_ = std::chrono::duration_cast<std::chrono::microseconds>(now - start_times_["left"]);
+        RCLCPP_INFO(this->get_logger(), "Left Hand Controller - Time to accept goal: %ld us", left_hand_time_->count());
+      }
 
-      recorded_time_ = duration_us;
-      start_time_recorded = false;
-      executor_.cancel(); // Stop spinning once the event is recorded
+      if (right_hand_time_ && left_hand_time_)
+      {
+        average_time_ = std::chrono::microseconds((right_hand_time_->count() + left_hand_time_->count()) / 2);
+        RCLCPP_INFO(this->get_logger(), "Average Goal Acceptance Time: %ld us", average_time_->count());
+        executor_.cancel();
+      }
     }
   }
 
-  std::optional<long> get_recorded_time() const
-  {
-    return recorded_time_;
-  }
+  std::optional<std::chrono::microseconds> get_right_hand_time() const { return right_hand_time_; }
+  std::optional<std::chrono::microseconds> get_left_hand_time() const { return left_hand_time_; }
+  std::optional<std::chrono::microseconds> get_average_time() const { return average_time_; }
 
 private:
   rclcpp::Subscription<rcl_interfaces::msg::Log>::SharedPtr subscription_;
   rclcpp::executors::SingleThreadedExecutor executor_;
-  Clock::time_point start_time_;
-  std::optional<long> recorded_time_;
+  std::unordered_map<std::string, Clock::time_point> start_times_;
+  std::optional<std::chrono::microseconds> right_hand_time_;
+  std::optional<std::chrono::microseconds> left_hand_time_;
+  std::optional<std::chrono::microseconds> average_time_;
 };
 
 TEST(RoboticControllerPerformanceMetricTest, GoalAcceptanceWithin20ms)
 {
   rclcpp::init(0, nullptr);
+  auto timeout_us = std::chrono::microseconds(20000);
   auto log_listener = std::make_shared<LogListener>();
 
   // Start log listener in a separate thread
   std::thread log_thread([&]() { log_listener->listen_for_logs(); });
 
-  // Give time for log listener to subscribe
   std::this_thread::sleep_for(std::chrono::seconds(1));
 
-  // Create node to send goal
   auto node = rclcpp::Node::make_shared("goal_sender");
-
   std::vector<std::string> controllers = {"/right_hand_controller/follow_joint_trajectory", 
                                           "/left_hand_controller/follow_joint_trajectory"};
   
@@ -122,19 +129,21 @@ TEST(RoboticControllerPerformanceMetricTest, GoalAcceptanceWithin20ms)
               rclcpp::FutureReturnCode::SUCCESS);
   }
 
+  RCLCPP_INFO(node->get_logger(), "Waiting for goal acceptance logs...");
   auto start = Clock::now();
-  while (!log_listener->get_recorded_time().has_value() &&
-         std::chrono::duration_cast<std::chrono::seconds>(Clock::now() - start).count() < 5)
+  while ((!log_listener->get_right_hand_time().has_value() || !log_listener->get_left_hand_time().has_value()) &&
+         std::chrono::duration_cast<std::chrono::microseconds>(Clock::now() - start).count() < timeout_us.count())
   {
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    std::this_thread::sleep_for(std::chrono::microseconds(1));
   }
 
   log_thread.join();
   rclcpp::shutdown();
 
-  // Assert that the log timestamps were captured and within threshold
-  ASSERT_TRUE(log_listener->get_recorded_time().has_value()) << "Failed to capture goal acceptance logs";
-  EXPECT_LE(log_listener->get_recorded_time().value(), 20000) << "Goal acceptance exceeded 20 ms threshold";
+  ASSERT_TRUE(log_listener->get_right_hand_time().has_value()) << "Failed to capture right hand goal acceptance log";
+  ASSERT_TRUE(log_listener->get_left_hand_time().has_value()) << "Failed to capture left hand goal acceptance log";
+  EXPECT_LE(log_listener->get_right_hand_time().value().count(), timeout_us.count()) << "Right hand goal acceptance exceeded 20 ms threshold";
+  EXPECT_LE(log_listener->get_left_hand_time().value().count(), timeout_us.count()) << "Left hand goal acceptance exceeded 20 ms threshold";
 }
 
 int main(int argc, char ** argv)
