@@ -4,13 +4,13 @@ LOG_FILE="goal_acceptance_times.csv"
 echo "Simulated_CPU_Load_Percentage,Actual_CPU_Load_Percentage,Test_Run,Time_us" > $LOG_FILE
 
 CPU_LOADS=(0 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75)
-NUM_RUNS=5
+NUM_RUNS=10
 
 for LOAD in "${CPU_LOADS[@]}"; do
     echo "Setting CPU Load to $LOAD%..."
     
     # Start CPU load generator in the background
-    stress-ng --cpu 4 --cpu-load $LOAD --timeout 60 --cpu-method matrixprod & 
+    stress-ng --cpu 4 --cpu-load $LOAD --timeout 180 --cpu-method loop & 
     STRESS_PID=$!
 
     sleep 3  # Allow time for load to stabilize
