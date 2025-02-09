@@ -6,6 +6,9 @@ echo "Simulated_CPU_Load_Percentage,Actual_CPU_Load_Percentage,Test_Run,Time_us"
 CPU_LOADS=(0 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75)
 NUM_RUNS=10
 
+# Capture the start time
+START_TIME=$(date +%s)
+
 for LOAD in "${CPU_LOADS[@]}"; do
     echo "Setting CPU Load to $LOAD%..."
     
@@ -32,4 +35,11 @@ for LOAD in "${CPU_LOADS[@]}"; do
     sleep 3  # Allow system to stabilize
 done
 
+# Capture the end time
+END_TIME=$(date +%s)
+
+# Calculate the total time taken
+TOTAL_TIME=$((END_TIME - START_TIME))
+
 echo "Test completed. Results saved in $LOG_FILE."
+echo "Total time taken: $TOTAL_TIME seconds."
