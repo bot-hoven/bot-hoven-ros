@@ -93,6 +93,16 @@ if(BUILD_TESTING)
   target_link_libraries(${PROJECT_NAME}_robotic_controller_performance_metric ${PROJECT_NAME})
 endif()
 
+add_executable(single_finger_test test/single_finger_test.cpp)
+ament_target_dependencies(single_finger_test 
+  rclcpp 
+  rclcpp_action 
+  control_msgs 
+  trajectory_msgs
+)
+install(TARGETS single_finger_test DESTINATION lib/${PROJECT_NAME})
+
+
 # Add an executable to the project using the specified source files
 add_executable(example_jtc examples/example_jtc.cpp)
 ament_target_dependencies(example_jtc
@@ -100,6 +110,22 @@ ament_target_dependencies(example_jtc
   rclcpp_action
   control_msgs
   trajectory_msgs
+)
+
+add_executable(switch_monitor test/switch_monitor.cpp)
+ament_target_dependencies(switch_monitor rclcpp std_msgs)
+install(TARGETS switch_monitor DESTINATION lib/${PROJECT_NAME})
+
+# Ensure libgpiod is linked properly
+ament_target_dependencies(switch_monitor
+  rclcpp
+  std_msgs
+  PkgConfig
+)
+
+# Use the same plain signature format
+target_link_libraries(switch_monitor
+  ${LIBGPIOD_LIBRARIES}  # Link libgpiodcxx properly
 )
 
 # Specify rules to run at install time
