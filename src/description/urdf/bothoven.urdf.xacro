@@ -3,10 +3,12 @@
 
   <xacro:arg name="use_ros2_control" default="true"/>
   <xacro:arg name="sim_mode" default="false"/>
+  <xacro:arg name="use_mock_hardware" default="false" />
 
   <xacro:include filename="$(find description)/description/bothoven_core.xacro"/>
   <xacro:if value="$(arg use_ros2_control)">
       <xacro:include filename="$(find hardware)/urdf/ros2_control.xacro"/>
+      <xacro:bothoven_ros2_control use_mock_hardware="$(arg use_mock_hardware)"/>
   </xacro:if>
   <xacro:unless value="$(arg use_ros2_control)">
       <xacro:include filename="$(find description)/description/gazebo_control.xacro" />

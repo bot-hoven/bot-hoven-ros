@@ -38,7 +38,14 @@ def generate_launch_description():
     pkg_path_description = os.path.join(get_package_share_directory('description'))
     xacro_file = os.path.join(pkg_path_description,'urdf','bothoven.urdf.xacro')
 
-    robot_description_content = Command(['xacro ', xacro_file, ' use_ros2_control:=', use_ros2_control, ' sim_mode:=', use_sim_time])
+    robot_description_content = Command(
+        [
+            'xacro ', xacro_file, 
+            ' use_ros2_control:=', use_ros2_control, 
+            ' sim_mode:=', use_sim_time,
+            ' use_mock_hardware:=', use_mock_hardware
+        ]
+    )
     robot_description = {'robot_description': robot_description_content, 'use_sim_time': use_sim_time}
 
     robot_controllers = PathJoinSubstitution(
@@ -90,7 +97,7 @@ def generate_launch_description():
 
     # List all arguments that we want to declare
     declared_arguments = [
-        # declare_use_mock_hardware,
+        declare_use_mock_hardware,
         declare_use_sim_time,
         declare_use_ros2_control
     ]

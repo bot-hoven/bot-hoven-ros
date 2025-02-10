@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <gpiod.hpp>
-#include <hardware_interface/actuator_interface.hpp>
+#include <hardware_interface/system_interface.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 #include <iostream>
 #include <rclcpp/rclcpp.hpp>
@@ -36,9 +36,9 @@ namespace cl42t_hardware {
         int init_value;
     };
 
-    class CL42T : public hardware_interface::ActuatorInterface {
+    class CL42T : public hardware_interface::SystemInterface {
     public:
-        RCLCPP_SHARED_PTR_DEFINITIONS(ActuatorInterface)
+        RCLCPP_SHARED_PTR_DEFINITIONS(SystemInterface)
 
         hardware_interface::CallbackReturn on_init(const hardware_interface::HardwareInfo& info) override;
 

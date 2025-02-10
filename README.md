@@ -43,6 +43,17 @@ This step is only required when setting up a new Pi to run the production image 
 ```sh
 xhost +local:docker
 ```
+4. (Optional) This option is useful when running GPU-accelerated applications that require access to a dedicated GPU. In the [devcontainer.json](.devcontainer/dev/devcontainer.json), add the following line to the `runArgs`:
+```json
+{
+  ...
+  "runArgs": [
+   ...
+    "--gpus=all"
+  ],
+  ...
+}
+```
 
 ## Building the Docker Image
 To build the Docker image, run the following command in the root of the project:
@@ -134,6 +145,43 @@ ros2 action send_goal /<controller_name>/follow_joint_trajectory control_msgs/ac
 For example:
 ```sh
 ros2 action send_goal /left_hand_controller/follow_joint_trajectory control_msgs/action/FollowJointTrajectory "{trajectory: {joint_names: ['left_hand_stepper_joint'], points: [{positions: [65.0], time_from_start: {sec: 1}}]}}"
+```
+
+### Run Gtests
+1. First, build the package you are testing. For example, the `hardware` package.
+```sh
+colcon build --packages-select hardware
+```
+2. Run the Gtests in that package.
+```sh
+colcon test --packages-select hardware --ctest-args -L gtest --event-handlers console_direct+
+```
+
+### Run the Robotic Controller Performance Metric Test
+> Note: To perform this test you will need to manually install these two packeges in the docker container: `stress-ng` & `sysstat`. Due to their size, I did not include them in the docker image.
+1. First, build the workspace.
+```sh
+colcon build
+```
+2. In Terminal A, Launch the hardware with the `use_mock_hardware` flag set.
+```sh
+ros2 launch hardware hardware.launch.py use_mock_hardware:=true
+```
+3. In Terminal B, run the `robotic_controller_perf_metric_cpu_load.sh` script.
+```sh
+./scripts/robotic_controller_perf_metric_cpu_load.sh
+```
+
+The results will be logged in `goal_acceptance_times.csv`
+
+### Mock the Hardware
+1. First, build the workspace.
+```sh
+colcon build
+```
+2. Launch the hardware with the `use_mock_hardware` flag set.
+```sh
+ros2 launch hardware hardware.launch.py use_mock_hardware:=true
 ```
 
 ## Troubleshooting

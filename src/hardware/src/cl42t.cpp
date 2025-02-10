@@ -5,7 +5,7 @@
 namespace cl42t_hardware {
 
     hardware_interface::CallbackReturn CL42T::on_init(const hardware_interface::HardwareInfo& info) {
-        if (hardware_interface::ActuatorInterface::on_init(info) != hardware_interface::CallbackReturn::SUCCESS) {
+        if (hardware_interface::SystemInterface::on_init(info) != hardware_interface::CallbackReturn::SUCCESS) {
             return hardware_interface::CallbackReturn::ERROR;
         }
 
@@ -279,4 +279,4 @@ namespace cl42t_hardware {
 }  // namespace cl42t_hardware
 
 // Register the plugin
-PLUGINLIB_EXPORT_CLASS(cl42t_hardware::CL42T, hardware_interface::ActuatorInterface)
+PLUGINLIB_EXPORT_CLASS(cl42t_hardware::CL42T, hardware_interface::SystemInterface)
