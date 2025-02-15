@@ -1,17 +1,30 @@
-#ifndef CL42T_HPP
-#define CL42T_HPP
+#ifndef HARDWARE__CL42T__CL42T_COMM_HPP
+#define HARDWARE__CL42T__CL42T_COMM_HPP
 
+#include <hardware/cl42t/cl42t_comm.h>
+#include "hardware/cl42t/visibility_control.h"
+#include <iostream>
+#include <gpiod.hpp>
 #include <algorithm>
 #include <cmath>
-#include <gpiod.hpp>
-#include <hardware_interface/system_interface.hpp>
+#include <memory>
+#include <string>
+#include <vector>
+#include "hardware_interface/handle.hpp"
+#include "hardware_interface/hardware_info.hpp"
+#include "hardware_interface/system_interface.hpp"
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
-#include <iostream>
+#include "hardware_interface/types/hardware_interface_return_values.hpp"
 #include <rclcpp/rclcpp.hpp>
 #include <thread>
-#include <vector>
+#include "rclcpp/clock.hpp"
+#include "rclcpp/duration.hpp"
+#include "rclcpp/macros.hpp"
+#include "rclcpp/time.hpp"
+#include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
+#include "rclcpp_lifecycle/state.hpp"
 
-namespace cl42t_hardware {
+namespace cl42t_hardware_interface {
 
     // CL42T-V4.1 constants
     constexpr uint8_t LogicalHigh = 1;
@@ -36,22 +49,43 @@ namespace cl42t_hardware {
         int init_value;
     };
 
-    class CL42T : public hardware_interface::SystemInterface {
-    public:
-        RCLCPP_SHARED_PTR_DEFINITIONS(SystemInterface)
+    struct Config {
+        std::string spi_device_;
+        int chip_select_;
+        int bus_speed_hz_;
+        int bits_per_word_;
+        std::string stepper_side_;
+    };
 
+    class Cl42tSystemHardware : public hardware_interface::SystemInterface {
+    public:
+        RCLCPP_SHARED_PTR_DEFINITIONS(Cl42tSystemHardware)
+
+        CL42T_HARDWARE_INTERFACE_PUBLIC
         hardware_interface::CallbackReturn on_init(const hardware_interface::HardwareInfo& info) override;
 
+        // CL42T_HARDWARE_INTERFACE_PUBLIC
+        // std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
+
+        // CL42T_HARDWARE_INTERFACE_PUBLIC
+        // std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
+
+        CL42T_HARDWARE_INTERFACE_PUBLIC
         hardware_interface::CallbackReturn on_configure(const rclcpp_lifecycle::State& previous_state) override;
 
-        hardware_interface::CallbackReturn on_activate(const rclcpp_lifecycle::State& previous_state) override;
-
-        hardware_interface::CallbackReturn on_deactivate(const rclcpp_lifecycle::State& previous_state) override;
-
+        CL42T_HARDWARE_INTERFACE_PUBLIC
         hardware_interface::CallbackReturn on_cleanup(const rclcpp_lifecycle::State& previous_state) override;
 
+        CL42T_HARDWARE_INTERFACE_PUBLIC
+        hardware_interface::CallbackReturn on_activate(const rclcpp_lifecycle::State& previous_state) override;
+
+        CL42T_HARDWARE_INTERFACE_PUBLIC
+        hardware_interface::CallbackReturn on_deactivate(const rclcpp_lifecycle::State& previous_state) override;
+
+        CL42T_HARDWARE_INTERFACE_PUBLIC
         hardware_interface::return_type read(const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
+        CL42T_HARDWARE_INTERFACE_PUBLIC
         hardware_interface::return_type write(const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
     private:
@@ -60,6 +94,12 @@ namespace cl42t_hardware {
 
         // Hardware parameters
         int pulses_per_rev_;
+
+        // Communication parameters
+        Config cfg_; 
+        cl42t_hardware_interface::CL42TComm comm_;
+        
+        hardware::SPIPeripheral * spi_peripheral_;
 
         // GPIO parameters
         std::vector<GPIOPin> gpio_pins_;
@@ -77,6 +117,6 @@ namespace cl42t_hardware {
         int num_pulses_;
     };
 
-}  // namespace cl42t_hardware
+}  // namespace cl42t_hardware_interface
 
-#endif  // CL42T_HPP
+#endif  // HARDWARE__CL42T__CL42T_COMM_HPP

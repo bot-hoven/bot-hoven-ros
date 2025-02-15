@@ -1,10 +1,11 @@
 <library path="hardware">
   <class
-    name="cl42t_hardware/CL42T"
-    type="cl42t_hardware::CL42T"
-    base_class_type="hardware_interface::ActuatorInterface">
+    name="cl42t_hardware_interface/Cl42tSystemHardware"
+    type="cl42t_hardware_interface::Cl42tSystemHardware"
+    base_class_type="hardware_interface::SystemInterface">
     <description>
-      ROS2 control hardware interface for the CL42TV4.1 stepper motor driver
+      ROS2 control hardware interface for SPI communication to the 
+      CL42TV4.1 stepper motor driver via a micro controller
     </description>
   </class>
   <class

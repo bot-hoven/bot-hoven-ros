@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
+#include "pluginlib/class_list_macros.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 namespace pca9685_hardware_interface {
@@ -219,5 +220,4 @@ namespace pca9685_hardware_interface {
     }
 }  // namespace pca9685_hardware_interface
 
-#include "pluginlib/class_list_macros.hpp"
 PLUGINLIB_EXPORT_CLASS(pca9685_hardware_interface::Pca9685SystemHardware, hardware_interface::SystemInterface)
