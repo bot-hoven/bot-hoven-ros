@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
+#include "pluginlib/class_list_macros.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 namespace mcp23017_hardware_interface {
@@ -216,5 +217,4 @@ namespace mcp23017_hardware_interface {
 
 }  // namespace mcp23017_hardware_interface
 
-#include "pluginlib/class_list_macros.hpp"
 PLUGINLIB_EXPORT_CLASS(mcp23017_hardware_interface::Mcp23017SystemHardware, hardware_interface::SystemInterface)
