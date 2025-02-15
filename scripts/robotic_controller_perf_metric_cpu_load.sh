@@ -24,7 +24,7 @@ for LOAD in "${CPU_LOADS[@]}"; do
         # Get actual CPU load percentage
         ACTUAL_CPU_LOAD=$(mpstat 1 5 | awk '/Average/ {print 100 - $NF}')
         
-        OUTPUT=$(colcon test --packages-select hardware --ctest-args -L gtest -R "hardware_robotic_controller_performance_metric" --event-handlers console_direct+ | grep "Time to accept goal")
+        OUTPUT=$(/bot-hoven-ros/scripts/chrt/chrt_run_hardware_tests.sh | grep "Time to accept goal")
         TIME_US=$(echo $OUTPUT | awk '{print $(NF-1)}') # Extract time value at second last position
 
         echo "$LOAD,$ACTUAL_CPU_LOAD,$i,$TIME_US" >> $LOG_FILE

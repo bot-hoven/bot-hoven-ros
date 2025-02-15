@@ -10,7 +10,8 @@ RUN if ! id -u $USER_UID >/dev/null 2>&1; then \
         useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME; \
     fi && \
     groupadd --gid 993 gpio && \
-    groupadd i2c
+    groupadd --gid 994 i2c && \
+    groupadd --gid 1001 realtime
 
 # Add sudo support for the non-root user
 RUN apt-get update && \
@@ -50,7 +51,8 @@ RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc
 
 # Permissions for I2C AND GPIO
 RUN sudo usermod -aG i2c $USERNAME && \
-    sudo usermod -aG gpio $USERNAME
+    sudo usermod -aG gpio $USERNAME && \
+    sudo usermod -aG realtime $USERNAME
 
 # Persist Bash history across sessions
 RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
@@ -58,3 +60,11 @@ RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhisto
     && sudo touch /commandhistory/.bash_history \
     && sudo chown -R $USERNAME /commandhistory \
     && echo "$SNIPPET" | sudo tee -a "/home/$USERNAME/.bashrc"
+
+# Add real-time limits to /etc/security/limits.conf
+RUN echo "@realtime soft rtprio 99" | sudo tee -a /etc/security/limits.conf && \
+    echo "@realtime soft priority 99" | sudo tee -a /etc/security/limits.conf && \
+    echo "@realtime soft memlock 102400" | sudo tee -a /etc/security/limits.conf && \
+    echo "@realtime hard rtprio 99" | sudo tee -a /etc/security/limits.conf && \
+    echo "@realtime hard priority 99" | sudo tee -a /etc/security/limits.conf && \
+    echo "@realtime hard memlock 102400" | sudo tee -a /etc/security/limits.conf

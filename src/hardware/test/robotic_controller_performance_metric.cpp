@@ -2,6 +2,8 @@
 #include <chrono>
 #include <future>
 #include <memory>
+#include <thread>
+#include <pthread.h>
 
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_action/rclcpp_action.hpp>
@@ -77,6 +79,16 @@ private:
   std::optional<rclcpp::Duration> average_time_;     // nanoseconds
 };
 
+void set_thread_priority(std::thread &thread, int priority)
+{
+  struct sched_param sched;
+  sched.sched_priority = priority;
+  if (pthread_setschedparam(thread.native_handle(), SCHED_FIFO, &sched) != 0)
+  {
+    throw std::runtime_error("Failed to set thread priority");
+  }
+}
+
 TEST(RoboticControllerPerformanceMetricTest, GoalAcceptanceWithin20ms)
 {
   rclcpp::init(0, nullptr);
@@ -85,6 +97,8 @@ TEST(RoboticControllerPerformanceMetricTest, GoalAcceptanceWithin20ms)
 
   // Start log listener in a separate thread
   std::thread log_thread([&]() { log_listener->listen_for_logs(); });
+
+  set_thread_priority(log_thread, 50);
 
   std::this_thread::sleep_for(std::chrono::seconds(1));
 
