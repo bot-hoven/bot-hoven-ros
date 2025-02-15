@@ -7,24 +7,9 @@
         <hardware>
           <plugin>cl42t_hardware_interface/Cl42tSystemHardware</plugin>
           <param name="spi_device">/dev/spidev0.0</param> 
-          <param name="chip_select">0</param>
           <param name="bus_speed_hz">500000</param>
           <param name="bits_per_word">8</param>  
           <param name="stepper_side">l</param>  
-        </hardware>
-      </xacro:unless>
-      <xacro:if value="${use_mock_hardware}">
-        <hardware>
-          <plugin>mock_components/GenericSystem</plugin>
-          <param name="calculate_dynamics">true</param>
-          <param name="mock_gpio_commands">true</param>
-        </hardware>
-      </xacro:if>
-
-      <!-- <xacro:unless value="${use_mock_hardware}">
-        <hardware>
-          <plugin>cl42t_hardware_interface/Cl42tSystemHardware</plugin>
-          <param name="pulses_per_rev">1600</param>
         </hardware>
       </xacro:unless>
       <xacro:if value="${use_mock_hardware}">
@@ -51,7 +36,7 @@
         <param name="descriptor">DIR+</param>
         <param name="direction">output</param>
         <param name="init_value">0</param>
-      </gpio> -->
+      </gpio>
     </ros2_control>
 
     <ros2_control name="right_stepper_driver" type="system" is_async="false">
@@ -168,6 +153,7 @@
 
       <xacro:include filename="$(find hardware)/urdf/right_solenoid_joints.xacro" />
     </ros2_control>
+
   </xacro:macro>
 
 </robot>

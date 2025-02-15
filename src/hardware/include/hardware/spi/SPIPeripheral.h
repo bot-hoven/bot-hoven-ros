@@ -7,64 +7,88 @@
 
 namespace hardware {
 
+/**
+ * @brief A class for SPI peripheral communication.
+ *
+ * This class provides functions to open an SPI bus, configure its parameters,
+ * and perform read, write, and transfer operations.
+ */
 class SPIPeripheral {
 public:
     /**
-     * Constructor.
+     * @brief Constructor that opens the SPI device.
      * @param device The SPI device file (e.g., "/dev/spidev0.0").
      */
     SPIPeripheral(const std::string &device);
     
+    /**
+     * @brief Destructor that closes the SPI device.
+     */
     ~SPIPeripheral();
 
     /**
-     * Initialize the SPI peripheral.
-     * @param chip_select An optional chip select value.
-     * @param bits Bits per word (e.g., 8).
-     * @param speed_hz SPI bus speed in Hz (e.g., 500000).
-     * @throw std::runtime_error if the SPI device cannot be configured.
+     * @brief Initializes the SPI peripheral with configuration parameters.
+     * @param bits Number of bits per word.
+     * @param speed_hz SPI bus speed in Hz.
+     * @throw std::runtime_error if configuration fails.
      */
-    void InitPeripheral(uint8_t chip_select = 0, uint8_t bits = 8, uint32_t speed_hz = 500000);
+    void InitPeripheral(uint8_t bits = 8, uint32_t speed_hz = 500000);
 
     /**
-     * Write a block of data to the SPI bus.
+     * @brief Writes a block of data to the SPI bus.
      * @param data Pointer to the data buffer.
      * @param length Number of bytes to write.
-     * @throw std::runtime_error if the write fails.
+     * @throw std::runtime_error if the write operation fails.
      */
     void WriteData(const uint8_t* data, size_t length);
 
     /**
-     * Read a block of data from the SPI bus.
+     * @brief Reads a block of data from the SPI bus.
      * @param data Pointer to the buffer where data will be stored.
      * @param length Number of bytes to read.
-     * @throw std::runtime_error if the read fails.
+     * @throw std::runtime_error if the read operation fails.
      */
     void ReadData(uint8_t* data, size_t length);
 
     /**
-     * Transfer data over SPI (simultaneously send tx_data and receive into rx_data).
-     * @param tx_data Pointer to data to send.
-     * @param rx_data Pointer to buffer for received data.
+     * @brief Transfers data over SPI by simultaneously sending and receiving.
+     * @param tx_data Pointer to the data to send.
+     * @param rx_data Pointer to the buffer for received data.
      * @param length Number of bytes to transfer.
-     * @throw std::runtime_error if the transfer fails.
+     * @throw std::runtime_error if the transfer operation fails.
      */
     void Transfer(const uint8_t* tx_data, uint8_t* rx_data, size_t length);
 
-    // Optional setters for SPI parameters
+    /**
+     * @brief Sets the SPI mode.
+     * @param mode The SPI mode (e.g., SPI_MODE_0).
+     * @throw std::runtime_error if setting the mode fails.
+     */
     void SetMode(uint8_t mode);
+
+    /**
+     * @brief Sets the SPI bus speed.
+     * @param speed_hz The desired speed in Hz.
+     * @throw std::runtime_error if setting the speed fails.
+     */
     void SetSpeed(uint32_t speed_hz);
+
+    /**
+     * @brief Sets the number of bits per word for SPI communication.
+     * @param bits Number of bits per word.
+     * @throw std::runtime_error if setting bits per word fails.
+     */
     void SetBitsPerWord(uint8_t bits);
 
 private:
     int fd_;
     std::string device_;
-    uint8_t chip_select_;  // For custom chip select handling
-
+    uint8_t chip_select_;
     uint8_t mode_;
     uint8_t bits_per_word_;
     uint32_t bus_speed_hz_;
 
+    // Internal functions to manage the SPI bus.
     void OpenBus(const std::string &device);
     void CloseBus();
 };
