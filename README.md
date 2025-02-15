@@ -184,6 +184,14 @@ colcon build
 ros2 launch hardware hardware.launch.py use_mock_hardware:=true
 ```
 
+### Running Single Finger Test
+1. First, ensure that you set the test variables `num_on_commands` and `command_period` which sets the number of key presses you would like and the period to send the messages, respectively.
+
+2. Launch the test executable.
+```sh
+ros2 run hardware single_finger_test
+```
+
 ## Troubleshooting
 
 ### I2C Errors
