@@ -61,6 +61,14 @@ public:
      */
     void send_command(const std::string &command);
 
+    /**
+     * @brief Read the current position from the CL42T driver.
+     *
+     * @return The current position.
+     * @throw std::runtime_error if the SPI read fails.
+     */
+    double read_position(const std::string &stepper_side);
+
 private:
     std::unique_ptr<hardware::SPIPeripheral> spi_dev_;
     uint8_t bits_per_word_;   ///< Number of bits per word.

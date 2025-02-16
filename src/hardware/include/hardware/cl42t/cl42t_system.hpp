@@ -24,109 +24,110 @@
  */
 namespace cl42t_hardware_interface {
 
-struct Config {
-    std::string spi_device_;
-    int bus_speed_hz_;
-    int bits_per_word_;
-    std::string stepper_side_;
-};
+    struct Config {
+        std::string spi_device_;
+        int bus_speed_hz_;
+        int bits_per_word_;
+        std::string stepper_side_;
+    };
 
-class Cl42tSystemHardware : public hardware_interface::SystemInterface {
-public:
-    RCLCPP_SHARED_PTR_DEFINITIONS(Cl42tSystemHardware)
+    class Cl42tSystemHardware : public hardware_interface::SystemInterface {
+    public:
+        RCLCPP_SHARED_PTR_DEFINITIONS(SystemInterface)
 
-    /**
-     * @brief Initializes the hardware interface.
-     *
-     * Parses configuration parameters and validates the hardware interfaces.
-     *
-     * @param info Hardware configuration information.
-     * @return CallbackReturn::SUCCESS if successful.
-     */
-    hardware_interface::CallbackReturn on_init(const hardware_interface::HardwareInfo& info) override;
+        /**
+         * @brief Initializes the hardware interface.
+         *
+         * Parses configuration parameters and validates the hardware interfaces.
+         *
+         * @param info Hardware configuration information.
+         * @return CallbackReturn::SUCCESS if successful.
+         */
+        hardware_interface::CallbackReturn on_init(const hardware_interface::HardwareInfo& info) override;
 
-    /**
-     * @brief Configures the hardware.
-     *
-     * Sets up the SPI peripheral and communication interface.
-     *
-     * @param previous_state Previous lifecycle state.
-     * @return CallbackReturn::SUCCESS if successful.
-     */
-    hardware_interface::CallbackReturn on_configure(const rclcpp_lifecycle::State& previous_state) override;
+        /**
+         * @brief Configures the hardware.
+         *
+         * Sets up the SPI peripheral and communication interface.
+         *
+         * @param previous_state Previous lifecycle state.
+         * @return CallbackReturn::SUCCESS if successful.
+         */
+        hardware_interface::CallbackReturn on_configure(const rclcpp_lifecycle::State& previous_state) override;
 
-    /**
-     * @brief Cleans up the hardware interface.
-     *
-     * Releases allocated resources.
-     *
-     * @param previous_state Previous lifecycle state.
-     * @return CallbackReturn::SUCCESS if successful.
-     */
-    hardware_interface::CallbackReturn on_cleanup(const rclcpp_lifecycle::State& previous_state) override;
+        /**
+         * @brief Cleans up the hardware interface.
+         *
+         * Releases allocated resources.
+         *
+         * @param previous_state Previous lifecycle state.
+         * @return CallbackReturn::SUCCESS if successful.
+         */
+        hardware_interface::CallbackReturn on_cleanup(const rclcpp_lifecycle::State& previous_state) override;
 
-    /**
-     * @brief Activates the hardware interface.
-     *
-     * Prepares the system for operation.
-     *
-     * @param previous_state Previous lifecycle state.
-     * @return CallbackReturn::SUCCESS if successful.
-     */
-    hardware_interface::CallbackReturn on_activate(const rclcpp_lifecycle::State& previous_state) override;
+        /**
+         * @brief Activates the hardware interface.
+         *
+         * Prepares the system for operation.
+         *
+         * @param previous_state Previous lifecycle state.
+         * @return CallbackReturn::SUCCESS if successful.
+         */
+        hardware_interface::CallbackReturn on_activate(const rclcpp_lifecycle::State& previous_state) override;
 
-    /**
-     * @brief Deactivates the hardware interface.
-     *
-     * Stops hardware operations.
-     *
-     * @param previous_state Previous lifecycle state.
-     * @return CallbackReturn::SUCCESS if successful.
-     */
-    hardware_interface::CallbackReturn on_deactivate(const rclcpp_lifecycle::State& previous_state) override;
+        /**
+         * @brief Deactivates the hardware interface.
+         *
+         * Stops hardware operations.
+         *
+         * @param previous_state Previous lifecycle state.
+         * @return CallbackReturn::SUCCESS if successful.
+         */
+        hardware_interface::CallbackReturn on_deactivate(const rclcpp_lifecycle::State& previous_state) override;
 
-    /**
-     * @brief Reads the hardware state.
-     *
-     * @param time Current time.
-     * @param period Duration of the cycle.
-     * @return return_type::OK if reading is successful.
-     */
-    hardware_interface::return_type read(const rclcpp::Time& time, const rclcpp::Duration& period) override;
+        /**
+         * @brief Reads the hardware state.
+         *
+         * @param time Current time.
+         * @param period Duration of the cycle.
+         * @return return_type::OK if reading is successful.
+         */
+        hardware_interface::return_type read(const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
-    /**
-     * @brief Writes commands to the hardware.
-     *
-     * Sends commands via SPI.
-     *
-     * @param time Current time.
-     * @param period Duration of the cycle.
-     * @return return_type::OK if writing is successful.
-     */
-    hardware_interface::return_type write(const rclcpp::Time& time, const rclcpp::Duration& period) override;
+        /**
+         * @brief Writes commands to the hardware.
+         *
+         * Sends commands via SPI.
+         *
+         * @param time Current time.
+         * @param period Duration of the cycle.
+         * @return return_type::OK if writing is successful.
+         */
+        hardware_interface::return_type write(const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
-private:
-    // Helper function if needed (e.g., generate pulses)
-    void generate_pulses(/* parameters if required */);
+    private:
+        // Helper function if needed (e.g., generate pulses)
+        void generate_pulses(/* parameters if required */);
 
-    int pulses_per_rev_;
-    Config cfg_;
-    CL42TComm comm_;
-    hardware::SPIPeripheral* spi_peripheral_;
+        int pulses_per_rev_;
+        Config cfg_;
+        CL42TComm comm_;
+        hardware::SPIPeripheral* spi_peripheral_;
 
-    // Interface parameters (simplified example)
-    double min_position_;
-    double max_position_;
-    std::string position_state_interface_name_;
-    std::string position_command_interface_name_;
+        // Interface parameters (simplified example)
+        double min_position_;
+        double max_position_;
+        std::string position_state_interface_name_;
+        std::string position_command_interface_name_;
 
-    int dir_;
-    double angular_resolution_;
-    int num_pulses_;
-
-    bool command_sent_ = false;
-    std::chrono::steady_clock::time_point last_command_time_;
-};
+        int dir_;
+        double angular_resolution_;
+        int num_pulses_;
+        double desired_position_;
+        double cl42t_resolution_;
+        
+        std::chrono::steady_clock::time_point last_command_time_;
+    };
 
 }  // namespace cl42t_hardware_interface
 

@@ -11,7 +11,8 @@ RUN if ! id -u $USER_UID >/dev/null 2>&1; then \
     fi && \
     groupadd --gid 993 gpio && \
     groupadd --gid 994 i2c && \
-    groupadd --gid 1001 realtime
+    groupadd --gid 1001 realtime && \
+    groupadd spi
 
 # Add sudo support for the non-root user
 RUN apt-get update && \
@@ -53,6 +54,8 @@ RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc
 RUN sudo usermod -aG i2c $USERNAME && \
     sudo usermod -aG gpio $USERNAME && \
     sudo usermod -aG realtime $USERNAME
+    sudo usermod -aG gpio $USERNAME && \
+    sudo usermod -aG spi $USERNAME
 
 # Persist Bash history across sessions
 RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
