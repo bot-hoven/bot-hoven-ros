@@ -31,3 +31,7 @@ package_logs/
 
 # ROS2 test results
 test_results/
+
+# SPI Console test
+rpi-spi-test/build/
+rpi-spi-test/.vscode/
