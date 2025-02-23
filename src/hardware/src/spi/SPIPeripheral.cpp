@@ -34,13 +34,21 @@ namespace hardware {
         }
     }
 
-    void SPIPeripheral::InitPeripheral(uint8_t bits, uint32_t speed_hz) {
-        mode_ = SPI_MODE_0;
+    void SPIPeripheral::InitPeripheral(uint8_t bits, uint32_t speed_hz, uint8_t mode) {
         bits_per_word_ = bits;
         bus_speed_hz_ = speed_hz;
 
+        switch (mode) {
+        case 0:mode_ = SPI_MODE_0; break;
+        case 1:mode_ = SPI_MODE_1; break;
+        case 2:mode_ = SPI_MODE_2; break;
+        case 3: mode_ = SPI_MODE_3; break;
+        default:mode_ = SPI_MODE_0; break;
+        }
+
+
         // Configure the SPI peripheral.
-        SetMode(SPI_MODE_0);
+        SetMode(mode_);
         SetBitsPerWord(bits);
         SetSpeed(speed_hz);
     }

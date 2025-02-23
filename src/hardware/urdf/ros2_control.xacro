@@ -7,7 +7,8 @@
         <hardware>
           <plugin>cl42t_hardware_interface/Cl42tSystemHardware</plugin>
           <param name="spi_device">/dev/spidev0.0</param> 
-          <param name="bus_speed_hz">500000</param>
+          <param name="spi_mode">1</param>
+          <param name="bus_speed_hz">1000000</param>
           <param name="bits_per_word">8</param>  
           <param name="stepper_side">l</param>  
         </hardware>
@@ -22,28 +23,18 @@
 
       <xacro:include filename="$(find hardware)/urdf/left_stepper_joint.xacro" />
 
-      
-      <gpio name="left_stepper_pul">
-        <param name="chip_name">/dev/gpiochip4</param>
-        <param name="pin_number">22</param>
-        <param name="descriptor">PUL+</param>
-        <param name="direction">output</param>
-        <param name="init_value">0</param>
-      </gpio>
-      <gpio name="left_stepper_dir">
-        <param name="chip_name">/dev/gpiochip4</param>
-        <param name="pin_number">23</param>
-        <param name="descriptor">DIR+</param>
-        <param name="direction">output</param>
-        <param name="init_value">0</param>
-      </gpio>
     </ros2_control>
 
     <ros2_control name="right_stepper_driver" type="system" is_async="false">
+
       <xacro:unless value="${use_mock_hardware}">
         <hardware>
           <plugin>cl42t_hardware_interface/Cl42tSystemHardware</plugin>
-          <param name="pulses_per_rev">1600</param>
+          <param name="spi_device">/dev/spidev0.0</param> 
+          <param name="spi_mode">1</param>
+          <param name="bus_speed_hz">1000000</param>
+          <param name="bits_per_word">8</param>  
+          <param name="stepper_side">l</param>  
         </hardware>
       </xacro:unless>
       <xacro:if value="${use_mock_hardware}">
@@ -56,20 +47,6 @@
 
       <xacro:include filename="$(find hardware)/urdf/right_stepper_joint.xacro" />
 
-      <gpio name="right_stepper_pul">
-        <param name="chip_name">/dev/gpiochip4</param>
-        <param name="pin_number">5</param>
-        <param name="descriptor">PUL+</param>
-        <param name="direction">output</param>
-        <param name="init_value">0</param>
-      </gpio>
-      <gpio name="right_stepper_dir">
-        <param name="chip_name">/dev/gpiochip4</param>
-        <param name="pin_number">6</param>
-        <param name="descriptor">DIR+</param>
-        <param name="direction">output</param>
-        <param name="init_value">0</param>
-      </gpio>
     </ros2_control>
 
     <ros2_control name="left_servo_driver" type="system">

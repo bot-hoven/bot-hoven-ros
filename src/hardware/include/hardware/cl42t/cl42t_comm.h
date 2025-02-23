@@ -42,7 +42,7 @@ public:
      * @param bits_per_word Number of bits per word.
      * @param bus_speed_hz SPI bus speed in Hz.
      */
-    void setup(hardware::SPIPeripheral* spi_dev, uint8_t bits_per_word, uint32_t bus_speed_hz);
+    void setup(hardware::SPIPeripheral* spi_dev, uint8_t bits_per_word, uint32_t bus_speed_hz, int mode);
 
     /**
      * @brief Initialize the SPI peripheral with the stored configuration.
@@ -59,7 +59,7 @@ public:
      * @param command The command string to send.
      * @throw std::runtime_error if the SPI write fails.
      */
-    void send_command(const std::string &command);
+    void send_command(const std::string &stepper_side, double position);
 
     /**
      * @brief Read the current position from the CL42T driver.
@@ -73,6 +73,7 @@ private:
     std::unique_ptr<hardware::SPIPeripheral> spi_dev_;
     uint8_t bits_per_word_;   ///< Number of bits per word.
     uint32_t bus_speed_hz_;   ///< SPI bus speed in Hz.
+    int mode_;                ///< SPI mode.
 };
 
 } // namespace cl42t_hardware_interface

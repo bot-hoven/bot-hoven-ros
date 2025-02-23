@@ -32,7 +32,7 @@ public:
      * @param speed_hz SPI bus speed in Hz.
      * @throw std::runtime_error if configuration fails.
      */
-    void InitPeripheral(uint8_t bits = 8, uint32_t speed_hz = 500000);
+    void InitPeripheral(uint8_t bits = 8, uint32_t speed_hz = 500000, uint8_t mode = 0);
 
     /**
      * @brief Writes a block of data to the SPI bus.

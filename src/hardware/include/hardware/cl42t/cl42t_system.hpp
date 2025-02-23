@@ -26,6 +26,7 @@ namespace cl42t_hardware_interface {
 
     struct Config {
         std::string spi_device_;
+        int spi_mode_;
         int bus_speed_hz_;
         int bits_per_word_;
         std::string stepper_side_;
@@ -107,7 +108,6 @@ namespace cl42t_hardware_interface {
 
     private:
         // Helper function if needed (e.g., generate pulses)
-        void generate_pulses(/* parameters if required */);
 
         int pulses_per_rev_;
         Config cfg_;
@@ -127,6 +127,7 @@ namespace cl42t_hardware_interface {
         double cl42t_resolution_;
         
         std::chrono::steady_clock::time_point last_command_time_;
+        double previous_position_command_;
     };
 
 }  // namespace cl42t_hardware_interface
