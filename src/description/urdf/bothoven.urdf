@@ -1,0 +1,429 @@
+<?xml version="1.0"?>
+<robot name="bothoven">
+    <link name="base_link"></link>
+    <joint name="base_link_to_base" type="prismatic">
+        <parent link="base_link"/>
+        <child link="finger_mount_plate" />
+        <origin rpy="0.0 0 0" xyz="0 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit effort="1" velocity="20" lower="-2.0" upper="2.0"/>
+        <joint_properties friction="0.0"/>
+    </joint>
+    <link name="finger_mount_plate">
+        <visual>
+            <origin xyz="0.0023499287608851338049 0.033803517640591265736 -0.021799999999999989525" rpy="1.9958838398273146999e-16 -6.5938365254384542654e-32 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/finger_mount_plate.stl"/>
+            </geometry>
+            <material name="finger_mount_plate_material">
+                <color rgba="0.2313725490196078538 0.38039215686274507888 0.7058823529411765163 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.0023499287608851338049 0.033803517640591265736 -0.021799999999999989525" rpy="1.9958838398273146999e-16 -6.5938365254384542654e-32 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/finger_mount_plate.stl"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="-0.0016837484720910514662 1.4276240260882057901e-06 0.002106530059724595616" rpy="0 0 0"/>
+            <mass value="0.11340578569099707407" />
+            <inertia ixx="0.00029322260025943936834" ixy="3.5800312945825626543e-09" ixz="2.0984196496050321038e-07" iyy="0.00013425891623205000211" iyz="-9.0739848179879501565e-11" izz="0.00042640270506617979854" />
+        </inertial>
+    </link>
+
+    <link name="large_finger">
+        <visual>
+            <origin xyz="1.249000902703301108e-16 0.024374519083739238506 -0.036000000000000004219" rpy="-7.2857929796164516794e-31 -4.379057701015107798e-47 3.141592653589793116" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_solenoid.stl"/>
+            </geometry>
+            <material name="large_solenoid_material">
+                <color rgba="0.98039215686274505668 0.71372549019607844922 0.0039215686274509803377 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="1.249000902703301108e-16 0.024374519083739238506 -0.036000000000000004219" rpy="-7.2857929796164516794e-31 -4.379057701015107798e-47 3.141592653589793116" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_solenoid.stl"/>
+            </geometry>
+        </collision>
+        <visual>
+            <origin xyz="1.3877787807814456755e-17 0.0077594027759290487567 0" rpy="3.141592653589793116 -0 -4.4742338604764904719e-53" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_finger.stl"/>
+            </geometry>
+            <material name="large_finger_material">
+                <color rgba="0.76862745098039220171 0.88627450980392152857 0.95294117647058818044 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="1.3877787807814456755e-17 0.0077594027759290487567 0" rpy="3.141592653589793116 -0 -4.4742338604764904719e-53" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_finger.stl"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="-4.7069857418904347498e-07 0.023476208506192974834 -0.021307554751111033864" rpy="0 0 0"/>
+            <mass value="0.55984193934830450701" />
+            <inertia ixx="0.00019837195303918920804" ixy="-1.3999261178294412501e-08" ixz="-6.5821649450970939947e-09" iyy="7.9419732517482197762e-05" iyz="-2.7270662434362043428e-06" izz="0.00018037934580199610295" />
+        </inertial>
+    </link>
+
+    <link name="finger_arm_large">
+        <visual>
+            <origin xyz="0.063368257669539268528 -5.4787295081876186131e-05 -0.0049999999999999905631" rpy="0 -1.8998849924420838071e-32 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/finger_arm_large.stl"/>
+            </geometry>
+            <material name="finger_arm_large_material">
+                <color rgba="0.97254901960784312376 0.52941176470588235947 0.0039215686274509803377 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.063368257669539268528 -5.4787295081876186131e-05 -0.0049999999999999905631" rpy="0 -1.8998849924420838071e-32 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/finger_arm_large.stl"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0.051327194737765834132 -0.0021301611848530605832 -0.0025000197144712113864" rpy="0 0 0"/>
+            <mass value="0.007972723597301041229" />
+            <inertia ixx="5.9298578433162374603e-07" ixy="7.2370069362940236446e-07" ixz="-1.314527374475747138e-11" iyy="1.1055709395186793815e-05" iyz="-3.8580036837104497661e-12" izz="1.1616703844229354562e-05" />
+        </inertial>
+    </link>
+
+    <joint name="Finger_Arm1" type="revolute">
+        <origin xyz="0.0025000000000000022204 -0.029631554039493041702 -0.046304046845760712947" rpy="-1.570796326794896558 6.9388939039072776815e-18 -1.5707963267948970021" />
+        <parent link="large_finger" />
+        <child link="finger_arm_large" />
+        <axis xyz="0 0 1"/>
+        <limit effort="1" velocity="20" lower="-0.52359877559829881566" upper="0"/>
+        <joint_properties friction="0.0"/>
+    </joint>
+
+    <joint name="Finger_Mount1" type="revolute">
+        <origin xyz="0.025323819514354840854 0.075003517640591363391 0.0050000000000000044409" rpy="3.141592653589793116 -1.4425215283460216998e-31 -1.570796326794896558" />
+        <parent link="finger_mount_plate" />
+        <child link="large_finger" />
+        <axis xyz="0 0 1"/>
+        <limit effort="1" velocity="20" lower="-0.087266462599716473902" upper="0.087266462599716473902"/>
+        <joint_properties friction="0.0"/>
+    </joint>
+
+    <link name="large_finger_2">
+        <visual>
+            <origin xyz="0 0.027625480916260842373 -0.036000000000000004219" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_solenoid.stl"/>
+            </geometry>
+            <material name="large_solenoid_material">
+                <color rgba="0.98039215686274505668 0.71372549019607844922 0.0039215686274509803377 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0.027625480916260842373 -0.036000000000000004219" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_solenoid.stl"/>
+            </geometry>
+        </collision>
+        <visual>
+            <origin xyz="6.9388939039072283776e-18 0.0077594027759290487567 0" rpy="3.141592653589793116 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_finger.stl"/>
+            </geometry>
+            <material name="large_finger_material">
+                <color rgba="0.76862745098039220171 0.88627450980392152857 0.95294117647058818044 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="6.9388939039072283776e-18 0.0077594027759290487567 0" rpy="3.141592653589793116 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_finger.stl"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="-4.7069857430633196836e-07 0.022992118159579102293 -0.021307554751111033864" rpy="0 0 0"/>
+            <mass value="0.55984193934830450701" />
+            <inertia ixx="0.0001968727916881294498" ixy="-1.387169523777063066e-08" ixz="-6.5821649451089830616e-09" iyy="7.941973251748379696e-05" iyz="-2.7792216152194113478e-06" izz="0.00017888018445093371552" />
+        </inertial>
+    </link>
+
+    <link name="finger_arm_large_2">
+        <visual>
+            <origin xyz="0.063368257669539268528 -5.4787295081876186131e-05 -0.004999999999999997502" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/finger_arm_large.stl"/>
+            </geometry>
+            <material name="finger_arm_large_material">
+                <color rgba="0.97254901960784312376 0.52941176470588235947 0.0039215686274509803377 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.063368257669539268528 -5.4787295081876186131e-05 -0.004999999999999997502" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/finger_arm_large.stl"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0.051327194737765834132 -0.0021301611848530605832 -0.0025000197144712183253" rpy="0 0 0"/>
+            <mass value="0.007972723597301041229" />
+            <inertia ixx="5.9298578433162374603e-07" ixy="7.2370069362940236446e-07" ixz="-1.314527374475747138e-11" iyy="1.1055709395186793815e-05" iyz="-3.8580036837104497661e-12" izz="1.1616703844229354562e-05" />
+        </inertial>
+    </link>
+
+    <joint name="Finger_Arm2" type="revolute">
+        <origin xyz="0.0024999999999999952816 -0.029631554039493024355 -0.046304046845760706008" rpy="-1.570796326794896558 -0 -1.5707963267948970021" />
+        <parent link="large_finger_2" />
+        <child link="finger_arm_large_2" />
+        <axis xyz="0 0 1"/>
+        <limit effort="1" velocity="20" lower="-0.52359877559829881566" upper="0"/>
+        <joint_properties friction="0.0"/>
+    </joint>
+
+    <joint name="Finger_Mount2" type="revolute">
+        <origin xyz="0.025323819514354750648 0.037503517640591260696 0.0050000000000000044409" rpy="3.141592653589793116 -0 -1.570796326794896558" />
+        <parent link="finger_mount_plate" />
+        <child link="large_finger_2" />
+        <axis xyz="0 0 1"/>
+        <limit effort="1" velocity="20" lower="-0.087266462599716473902" upper="0.087266462599716473902"/>
+        <joint_properties friction="0.0"/>
+    </joint>
+
+    <link name="large_finger_3">
+        <visual>
+            <origin xyz="7.8062556418956319249e-18 0.0077594027759290487567 0" rpy="3.141592653589793116 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_finger.stl"/>
+            </geometry>
+            <material name="large_finger_material">
+                <color rgba="0.76862745098039220171 0.88627450980392152857 0.95294117647058818044 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="7.8062556418956319249e-18 0.0077594027759290487567 0" rpy="3.141592653589793116 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_finger.stl"/>
+            </geometry>
+        </collision>
+        <visual>
+            <origin xyz="-4.336808689942017736e-18 0.027625480916260842373 -0.036000000000000004219" rpy="0 -0 -1.7763568394002437594e-15" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_solenoid.stl"/>
+            </geometry>
+            <material name="large_solenoid_material">
+                <color rgba="0.98039215686274505668 0.71372549019607844922 0.0039215686274509803377 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="-4.336808689942017736e-18 0.027625480916260842373 -0.036000000000000004219" rpy="0 -0 -1.7763568394002437594e-15" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_solenoid.stl"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="-4.7069857430720303587e-07 0.022992118159579102293 -0.021307554751111033864" rpy="0 0 0"/>
+            <mass value="0.55984193934830450701" />
+            <inertia ixx="0.00019687279168813091347" ixy="-1.3871695238069835122e-08" ixz="-6.5821649451091700044e-09" iyy="7.941973251748379696e-05" iyz="-2.7792216152194113478e-06" izz="0.00017888018445093371552" />
+        </inertial>
+    </link>
+
+    <link name="finger_arm_large_3">
+        <visual>
+            <origin xyz="0.063368257669539268528 -5.4787295081876186131e-05 -0.0049999999999999992367" rpy="0 -0 -6.1911101702353887834e-63" />
+            <geometry>
+                <mesh filename="package://description/meshes/finger_arm_large.stl"/>
+            </geometry>
+            <material name="finger_arm_large_material">
+                <color rgba="0.97254901960784312376 0.52941176470588235947 0.0039215686274509803377 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.063368257669539268528 -5.4787295081876186131e-05 -0.0049999999999999992367" rpy="0 -0 -6.1911101702353887834e-63" />
+            <geometry>
+                <mesh filename="package://description/meshes/finger_arm_large.stl"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0.051327194737765834132 -0.0021301611848530605832 -0.00250001971447122006" rpy="0 0 0"/>
+            <mass value="0.007972723597301041229" />
+            <inertia ixx="5.9298578433162374603e-07" ixy="7.2370069362940236446e-07" ixz="-1.314527374475747138e-11" iyy="1.1055709395186793815e-05" iyz="-3.8580036837104497661e-12" izz="1.1616703844229354562e-05" />
+        </inertial>
+    </link>
+
+    <joint name="Finger_Arm3" type="revolute">
+        <origin xyz="0.0024999999999999970163 -0.029631554039493031294 -0.046304046845760712947" rpy="-1.570796326794896558 -0 -1.5707963267948970021" />
+        <parent link="large_finger_3" />
+        <child link="finger_arm_large_3" />
+        <axis xyz="0 0 1"/>
+        <limit effort="1" velocity="20" lower="-0.52359877559829881566" upper="0"/>
+        <joint_properties friction="0.0"/>
+    </joint>
+
+    <joint name="Finger_Mount3" type="revolute">
+        <origin xyz="0.025323819514354743709 3.517640591228256286e-06 0.0050000000000000044409" rpy="3.141592653589793116 -0 -1.570796326794896558" />
+        <parent link="finger_mount_plate" />
+        <child link="large_finger_3" />
+        <axis xyz="0 0 1"/>
+        <limit effort="1" velocity="20" lower="-0.087266462599716473902" upper="0.087266462599716473902"/>
+        <joint_properties friction="0.0"/>
+    </joint>
+
+    <link name="large_finger_4">
+        <visual>
+            <origin xyz="6.9388939039072283776e-18 0.0077594027759290487567 0" rpy="3.141592653589793116 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_finger.stl"/>
+            </geometry>
+            <material name="large_finger_material">
+                <color rgba="0.76862745098039220171 0.88627450980392152857 0.95294117647058818044 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="6.9388939039072283776e-18 0.0077594027759290487567 0" rpy="3.141592653589793116 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_finger.stl"/>
+            </geometry>
+        </collision>
+        <visual>
+            <origin xyz="-6.9388939039072283776e-18 0.024374519083739110137 -0.0069999999999999992784" rpy="3.141592653589793116 -0 4.4408920985006212313e-16" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_solenoid.stl"/>
+            </geometry>
+            <material name="large_solenoid_material">
+                <color rgba="0.98039215686274505668 0.71372549019607844922 0.0039215686274509803377 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="-6.9388939039072283776e-18 0.024374519083739110137 -0.0069999999999999992784" rpy="3.141592653589793116 -0 4.4408920985006212313e-16" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_solenoid.stl"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="-4.7069857431204345859e-07 0.02347620850619287769 -0.021307554751111040803" rpy="0 0 0"/>
+            <mass value="0.55984193934830450701" />
+            <inertia ixx="0.00019837195303919189144" ixy="-1.3999261178038125477e-08" ixz="-6.5821649451095960024e-09" iyy="7.941973251748379696e-05" iyz="-2.7270662434362056134e-06" izz="0.0001803793458019958048" />
+        </inertial>
+    </link>
+
+    <link name="finger_arm_large_4">
+        <visual>
+            <origin xyz="0.063368257669539268528 -5.4787295081876186131e-05 -0.004999999999999997502" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/finger_arm_large.stl"/>
+            </geometry>
+            <material name="finger_arm_large_material">
+                <color rgba="0.97254901960784312376 0.52941176470588235947 0.0039215686274509803377 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.063368257669539268528 -5.4787295081876186131e-05 -0.004999999999999997502" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/finger_arm_large.stl"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0.051327194737765834132 -0.0021301611848530605832 -0.0025000197144712183253" rpy="0 0 0"/>
+            <mass value="0.007972723597301041229" />
+            <inertia ixx="5.9298578433162374603e-07" ixy="7.2370069362940236446e-07" ixz="-1.314527374475747138e-11" iyy="1.1055709395186793815e-05" iyz="-3.8580036837104497661e-12" izz="1.1616703844229354562e-05" />
+        </inertial>
+    </link>
+
+    <joint name="Finger_Arm4" type="revolute">
+        <origin xyz="0.0024999999999999952816 -0.029631554039493031294 -0.046304046845760712947" rpy="-1.570796326794896558 -0 -1.5707963267948970021" />
+        <parent link="large_finger_4" />
+        <child link="finger_arm_large_4" />
+        <axis xyz="0 0 1"/>
+        <limit effort="1" velocity="20" lower="-0.52359877559829881566" upper="0"/>
+        <joint_properties friction="0.0"/>
+    </joint>
+
+    <joint name="Finger_Mount4" type="revolute">
+        <origin xyz="0.025323819514354743709 -0.037496482359408812857 0.0050000000000000044409" rpy="3.141592653589793116 -0 -1.570796326794896558" />
+        <parent link="finger_mount_plate" />
+        <child link="large_finger_4" />
+        <axis xyz="0 0 1"/>
+        <limit effort="1" velocity="20" lower="-0.087266462599716473902" upper="0.087266462599716473902"/>
+        <joint_properties friction="0.0"/>
+    </joint>
+
+    <link name="large_finger_5">
+        <visual>
+            <origin xyz="0 0.027625480916260845843 -0.036000000000000004219" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_solenoid.stl"/>
+            </geometry>
+            <material name="large_solenoid_material">
+                <color rgba="0.98039215686274505668 0.71372549019607844922 0.0039215686274509803377 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0.027625480916260845843 -0.036000000000000004219" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_solenoid.stl"/>
+            </geometry>
+        </collision>
+        <visual>
+            <origin xyz="1.3877787807814456755e-17 0.0077594027759290487567 0" rpy="3.141592653589793116 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_finger.stl"/>
+            </geometry>
+            <material name="large_finger_material">
+                <color rgba="0.76862745098039220171 0.88627450980392152857 0.95294117647058818044 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="1.3877787807814456755e-17 0.0077594027759290487567 0" rpy="3.141592653589793116 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/large_finger.stl"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="-4.7069857430588769958e-07 0.022992118159579109232 -0.021307554751111033864" rpy="0 0 0"/>
+            <mass value="0.55984193934830450701" />
+            <inertia ixx="0.0001968727916881294498" ixy="-1.3871695237760633355e-08" ixz="-6.5821649451096828564e-09" iyy="7.941973251748379696e-05" iyz="-2.7792216152194117713e-06" izz="0.00017888018445093371552" />
+        </inertial>
+    </link>
+
+    <link name="finger_arm_large_5">
+        <visual>
+            <origin xyz="0.063368257669539268528 -5.4787295081876186131e-05 -0.0050000000000000044409" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/finger_arm_large.stl"/>
+            </geometry>
+            <material name="finger_arm_large_material">
+                <color rgba="0.97254901960784312376 0.52941176470588235947 0.0039215686274509803377 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0.063368257669539268528 -5.4787295081876186131e-05 -0.0050000000000000044409" rpy="0 -0 0" />
+            <geometry>
+                <mesh filename="package://description/meshes/finger_arm_large.stl"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0.051327194737765834132 -0.0021301611848530605832 -0.0025000197144712252642" rpy="0 0 0"/>
+            <mass value="0.007972723597301041229" />
+            <inertia ixx="5.9298578433162374603e-07" ixy="7.2370069362940236446e-07" ixz="-1.314527374475747138e-11" iyy="1.1055709395186793815e-05" iyz="-3.8580036837104497661e-12" izz="1.1616703844229354562e-05" />
+        </inertial>
+    </link>
+
+    <joint name="Finger_Arm5" type="revolute">
+        <origin xyz="0.0025000000000000022204 -0.029631554039493031294 -0.046304046845760719886" rpy="-1.570796326794896558 -0 -1.5707963267948970021" />
+        <parent link="large_finger_5" />
+        <child link="finger_arm_large_5" />
+        <axis xyz="0 0 1"/>
+        <limit effort="1" velocity="20" lower="-0.52359877559829881566" upper="0"/>
+        <joint_properties friction="0.0"/>
+    </joint>
+
+    <joint name="Finger_Mount5" type="revolute">
+        <origin xyz="0.025323819514354743709 -0.074996482359408839224 0.0050000000000000044409" rpy="3.141592653589793116 -0 -1.570796326794896558" />
+        <parent link="finger_mount_plate" />
+        <child link="large_finger_5" />
+        <axis xyz="0 0 1"/>
+        <limit effort="1" velocity="20" lower="-0.087266462599716473902" upper="0.087266462599716473902"/>
+        <joint_properties friction="0.0"/>
+    </joint>
+</robot>

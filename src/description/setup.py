@@ -20,6 +20,10 @@ setup(
         ('share/' + package_name + '/models/bothoven', ['models/bothoven/model.config']),
         ('share/' + package_name + '/models/bothoven', ['models/bothoven/model.sdf']),
         ('share/' + package_name + '/resource', ['resource/gazebo_config.config']),
+        ('share/' + package_name + '/meshes', ['meshes/finger_arm_large.stl']),
+        ('share/' + package_name + '/meshes', ['meshes/finger_mount_plate.stl']),
+        ('share/' + package_name + '/meshes', ['meshes/large_finger.stl']),
+        ('share/' + package_name + '/meshes', ['meshes/large_solenoid.stl'])
     ],
     install_requires=['setuptools'],
     zip_safe=True,
