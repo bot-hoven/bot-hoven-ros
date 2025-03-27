@@ -34,24 +34,30 @@ namespace cl42t_hardware_interface {
         spi_dev_->InitPeripheral(bits_per_word_, bus_speed_hz_, mode_);
     }
 
-    void CL42TComm::send_command(const std::string& stepper_side, double position) {
+    void CL42TComm::send_command(std::string cmd) {
         if (!spi_dev_) {
             throw std::runtime_error("SPI peripheral not initialized in CL42TComm.");
         }
 
+        // Write the command via SPI.
+        spi_dev_->WriteData(reinterpret_cast<const uint8_t*>(cmd.c_str()), cmd.size());
+    }
+
+    void CL42TComm::send_position(const std::string& stepper_side, double position) {
         // Build the output message
         std::ostringstream oss;
         oss << "p" << stepper_side << position;
         std::string command = oss.str();
 
-        // Ensure the command string is null-terminated.
-        std::string cmd = command;
-        if (cmd.empty() || cmd.back() != '\0') {
-            cmd.push_back('\0');
+        if (command.empty() || command.back() != '\0') {
+            command.push_back('\0');
         }
-        // Write the command via SPI.
-        spi_dev_->WriteData(reinterpret_cast<const uint8_t*>(cmd.c_str()), cmd.size());
+
+        // Send the command via SPI.
+        send_command(command);
     }
+
+
 
     double CL42TComm::read_position(const std::string& stepper_side) {
         const size_t MAX_RESPONSE_LEN = 32;

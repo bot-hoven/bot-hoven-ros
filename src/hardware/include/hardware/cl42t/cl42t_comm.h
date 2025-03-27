@@ -59,7 +59,16 @@ public:
      * @param command The command string to send.
      * @throw std::runtime_error if the SPI write fails.
      */
-    void send_command(const std::string &stepper_side, double position);
+    void send_command(std::string cmd);
+
+    /**
+     * @brief Send a position command to the CL42T driver.
+     *
+     * @param stepper_side The side of the stepper motor to command (e.g., "l" or "r").
+     * @param position The desired position to move to.
+     * @throw std::runtime_error if the SPI write fails.
+     */
+    void send_position(const std::string &stepper_side, double position);
 
     /**
      * @brief Read the current position from the CL42T driver.
