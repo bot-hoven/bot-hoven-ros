@@ -1,0 +1,13 @@
+{
+    "configuration": "default",
+    "documentId": "aad42bbee8b53052c6a2e74e",
+    "documentMicroversion": "25c15cfdd0c09cbd6aad6114",
+    "elementId": "1401ec9fe59e5234db161b5f",
+    "fullConfiguration": "default",
+    "id": "Mcduou8bIOQc9UXsb",
+    "isStandardContent": false,
+    "name": "Large Finger Solenoid <5>",
+    "partId": "RxBD",
+    "suppressed": false,
+    "type": "Part"
+}

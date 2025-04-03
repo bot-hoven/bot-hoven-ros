@@ -1,4 +1,6 @@
 from setuptools import find_packages, setup
+from glob import glob
+import os
 
 package_name = 'description'
 
@@ -13,8 +15,12 @@ setup(
         ('share/' + package_name + '/launch', ['launch/gazebo.launch.py']),
         ('share/' + package_name + '/launch', ['launch/rsp.launch.py']),
         ('share/' + package_name + '/description', ['description/bothoven_core.xacro']),
+        ('share/' + package_name + '/description', ['description/left_hand.xacro']),
+        ('share/' + package_name + '/description', ['description/right_hand.xacro']),
+        ('share/' + package_name + '/description', ['description/finger.xacro']),
         ('share/' + package_name + '/description', ['description/gazebo_control.xacro']),
-        ('share/' + package_name + '/description', ['description/common.xacro']),
+        ('share/' + package_name + '/description', glob('meshes/*')),
+        # ('share/' + package_name + '/description', ['description/common.xacro']),
         ('share/' + package_name + '/worlds', ['worlds/bothoven_world.sdf']),
         ('share/' + package_name + '/resource', ['resource/rviz2_config.rviz']),
         ('share/' + package_name + '/models/bothoven', ['models/bothoven/model.config']),

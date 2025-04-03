@@ -81,6 +81,10 @@ class PicoStepperController:
         self.left_position = None
         self.right_position = None
         
+        # PID parameters tracking
+        self.left_pid = {"kp": 25000.0, "ki": 0.0, "kd": 5000.0}
+        self.right_pid = {"kp": 25000.0, "ki": 0.0, "kd": 5000.0}
+        
         # Capture Ctrl+C for clean shutdown
         signal.signal(signal.SIGINT, self.signal_handler)
         
@@ -92,7 +96,7 @@ class PicoStepperController:
         """Print application banner with connection information"""
         banner = f"""
 {Colors.HEADER}{Colors.BOLD}╔═══════════════════════════════════════════════════════════╗
-║ Raspberry Pi Pico Stepper Controller                        ║
+║ Raspberry Pi Pico Stepper Controller                      ║
 ╚═══════════════════════════════════════════════════════════╝{Colors.ENDC}
 {Colors.CYAN}• SPI Connection: Bus {SPI_BUS}, Device {SPI_DEVICE}
 • Speed: {SPI_SPEED/1000:.1f} kHz, Mode: {SPI_MODE}
@@ -291,6 +295,64 @@ class PicoStepperController:
             return position
         return None
 
+    def home_motors(self):
+        """Send the home command to both motors.
+        
+        This tells the motors to return to their home position (usually center).
+        """
+        print(f"{Colors.YELLOW}Sending motors to home position...{Colors.ENDC}")
+        
+        # Send home command 'h'
+        self.send_command('h')
+        print(f"{Colors.YELLOW}Home command sent.{Colors.ENDC}")
+
+    def tune_pid(self, motor, kp, ki, kd):
+        """Set PID parameters for a motor.
+        
+        Args:
+            motor (str): Motor to tune ('left'/'l' or 'right'/'r')
+            kp (float): Proportional gain
+            ki (float): Integral gain
+            kd (float): Derivative gain
+        """
+        # Validate motor parameter
+        motor_code = self.get_motor_code(motor)
+        if not motor_code:
+            return
+            
+        # Update local PID parameters
+        if motor_code == 'l':
+            self.left_pid = {"kp": kp, "ki": ki, "kd": kd}
+        else:
+            self.right_pid = {"kp": kp, "ki": ki, "kd": kd}
+            
+        # Send PID tuning command: t<motor_code><kp>,<ki>,<kd>
+        command = f"t{motor_code}{kp},{ki},{kd}"
+        self.send_command(command)
+        
+        print(f"{Colors.GREEN}PID parameters for {motor} motor set to: Kp={kp}, Ki={ki}, Kd={kd}{Colors.ENDC}")
+        
+    def get_pid_parameters(self, motor):
+        """Get the current PID parameters for a motor.
+        
+        Args:
+            motor (str): Motor to query ('left'/'l' or 'right'/'r')
+        """
+        # Validate motor parameter
+        motor_code = self.get_motor_code(motor)
+        if not motor_code:
+            return
+            
+        if motor_code == 'l':
+            pid = self.left_pid
+        else:
+            pid = self.right_pid
+            
+        print(f"{Colors.GREEN}Current PID parameters for {motor} motor:{Colors.ENDC}")
+        print(f"{Colors.CYAN}  Kp: {pid['kp']}{Colors.ENDC}")
+        print(f"{Colors.CYAN}  Ki: {pid['ki']}{Colors.ENDC}")
+        print(f"{Colors.CYAN}  Kd: {pid['kd']}{Colors.ENDC}")
+
     def monitor_positions(self):
         """Start continuous monitoring of both motor positions.
         
@@ -368,7 +430,7 @@ class PicoStepperController:
         """Display detailed help information"""
         help_text = f"""
 {Colors.HEADER}{Colors.BOLD}╔═══════════════════════════════════════════════════════════╗
-║ Raspberry Pi Pico Stepper Controller - Command Reference    ║
+║ Raspberry Pi Pico Stepper Controller - Command Reference  ║
 ╚═══════════════════════════════════════════════════════════╝{Colors.ENDC}
 
 {Colors.BOLD}Basic Commands:{Colors.ENDC}
@@ -385,6 +447,16 @@ class PicoStepperController:
 
   {Colors.CYAN}position <motor>{Colors.ENDC}        Get current position of specified motor
   {Colors.CYAN}p <motor>{Colors.ENDC}               {Colors.YELLOW}Example: position right  (shows right motor position){Colors.ENDC}
+
+  {Colors.CYAN}home{Colors.ENDC}                    Move both motors to their home positions
+                            {Colors.YELLOW}This returns motors to center position after calibration{Colors.ENDC}
+
+{Colors.BOLD}PID Control:{Colors.ENDC}
+  {Colors.CYAN}pid <motor> <kp> <ki> <kd>{Colors.ENDC}  Set PID parameters for a motor
+                            {Colors.YELLOW}Example: pid left 25000 0 5000{Colors.ENDC}
+
+  {Colors.CYAN}getpid <motor>{Colors.ENDC}          Show current PID parameters for a motor
+                            {Colors.YELLOW}Example: getpid right{Colors.ENDC}
 
 {Colors.BOLD}Monitoring:{Colors.ENDC}
   {Colors.CYAN}monitor{Colors.ENDC}                 Start continuous position monitoring of both motors
@@ -403,6 +475,8 @@ class PicoStepperController:
   {Colors.CYAN}c{Colors.ENDC}                       Calibrate both motors
   {Colors.CYAN}p<motor><position>{Colors.ENDC}      Move motor to position (ex: pl0.5, pr-0.2)
   {Colors.CYAN}r<motor>{Colors.ENDC}                Query motor position (ex: rl, rr)
+  {Colors.CYAN}h{Colors.ENDC}                       Home both motors
+  {Colors.CYAN}t<motor><kp>,<ki>,<kd>{Colors.ENDC}  Set PID parameters (ex: tl25000,0,5000)
 
 {Colors.GREEN}All commands are case-insensitive.{Colors.ENDC}
 """
@@ -477,6 +551,34 @@ class PicoStepperController:
                     print(f"{Colors.RED}Error: Invalid position '{parts[2]}'. Must be a number{Colors.ENDC}")
             else:
                 print(f"{Colors.RED}Error: Invalid format. Use 'move <motor> <position>'{Colors.ENDC}")
+
+        # Home command
+        elif cmd_lower in ["home"]:
+            self.home_motors()
+
+        # PID tuning command
+        elif cmd_lower.startswith("pid "):
+            parts = re.split(r'\s+', cmd_lower, maxsplit=4)
+            if len(parts) >= 5:
+                motor = parts[1]
+                try:
+                    kp = float(parts[2])
+                    ki = float(parts[3])
+                    kd = float(parts[4])
+                    self.tune_pid(motor, kp, ki, kd)
+                except ValueError:
+                    print(f"{Colors.RED}Error: Invalid PID parameters. Must be numbers{Colors.ENDC}")
+            else:
+                print(f"{Colors.RED}Error: Invalid format. Use 'pid <motor> <kp> <ki> <kd>'{Colors.ENDC}")
+
+        # Get PID parameters command
+        elif cmd_lower.startswith("getpid "):
+            parts = cmd_lower.split(maxsplit=1)
+            if len(parts) == 2:
+                motor = parts[1]
+                self.get_pid_parameters(motor)
+            else:
+                print(f"{Colors.RED}Error: Missing motor specification. Use 'getpid <motor>'{Colors.ENDC}")
                 
         # Monitor positions
         elif cmd_lower == "monitor":

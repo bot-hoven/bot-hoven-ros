@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <joint name="right_hand_stepper_joint">
+    <joint name="rh_stepper">
         <command_interface name="position">
-            <param name="min">${stepper_min_angle}</param>
-            <param name="max">${stepper_max_angle}</param>
+            <param name="min">${rh_stepper_min}</param>
+            <param name="max">${rh_stepper_max}</param>
         </command_interface>
         <state_interface name="position" />
     </joint>

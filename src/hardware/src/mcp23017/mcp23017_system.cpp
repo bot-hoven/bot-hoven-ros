@@ -169,7 +169,7 @@ namespace mcp23017_hardware_interface {
 
         for (auto i = 0u; i < hw_commands_.size(); i++) {
             // Round the value to the nearest integer (0 or 1)
-            uint8_t bit_value = static_cast<uint8_t>(std::round(hw_commands_[i]));
+            uint8_t bit_value = static_cast<uint8_t>(hw_commands_[i]);
 
             // Ensure the value is clamped to 0 or 1
             bit_value = std::min<uint8_t>(1, bit_value);

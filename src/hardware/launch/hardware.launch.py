@@ -3,11 +3,13 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, RegisterEventHandler
 from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution
+from launch.event_handlers import OnProcessExit
 
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+from launch_ros.parameter_descriptions import ParameterValue
 
 def generate_launch_description():
     #Initialize Arguments
@@ -46,7 +48,10 @@ def generate_launch_description():
             ' use_mock_hardware:=', use_mock_hardware
         ]
     )
-    robot_description = {'robot_description': robot_description_content, 'use_sim_time': use_sim_time}
+    robot_description = {
+        'robot_description': ParameterValue(robot_description_content, value_type=str),
+        'use_sim_time': use_sim_time
+    }
 
     robot_controllers = PathJoinSubstitution(
         [
@@ -82,17 +87,70 @@ def generate_launch_description():
         arguments=["joint_state_broadcaster", "-c", "/controller_manager"],
     )
 
-    # Add spawner node for each hand controller
-    right_hand_controller_spawner = Node(
+    # # Add spawner node for each hand controller
+    # right_hand_controller_spawner = Node(
+    #     package="controller_manager",
+    #     executable="spawner",
+    #     arguments=["right_hand_controller", "-c", "/controller_manager"],
+    # )
+
+    # left_hand_controller_spawner = Node(
+    #     package="controller_manager",
+    #     executable="spawner",
+    #     arguments=["left_hand_controller", "-c", "/controller_manager"],
+    # )
+
+    # Left Hand Controllers
+    left_stepper_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["right_hand_controller", "-c", "/controller_manager"],
+        arguments=["left_stepper_controller", "-c", "/controller_manager"],
+    )
+    
+    left_servo_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["left_servo_controller", "-c", "/controller_manager"],
+    )
+    
+    left_solenoid_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["left_solenoid_controller", "-c", "/controller_manager"],
     )
 
-    left_hand_controller_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["left_hand_controller", "-c", "/controller_manager"],
+    # Right Hand Controllers (commented out until hardware is available)
+    # right_stepper_controller_spawner = Node(
+    #     package="controller_manager",
+    #     executable="spawner",
+    #     arguments=["right_stepper_controller", "-c", "/controller_manager"],
+    # )
+    # 
+    # right_servo_controller_spawner = Node(
+    #     package="controller_manager",
+    #     executable="spawner",
+    #     arguments=["right_servo_controller", "-c", "/controller_manager"],
+    # )
+    # 
+    # right_solenoid_controller_spawner = Node(
+    #     package="controller_manager",
+    #     executable="spawner",
+    #     arguments=["right_solenoid_controller", "-c", "/controller_manager"],
+    # )
+
+    # Start controllers after joint state broadcaster
+    delay_left_controllers_after_joint_state_broadcaster = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=joint_state_broadcaster_spawner,
+            on_exit=[
+                left_stepper_controller_spawner,
+                left_servo_controller_spawner,
+                left_solenoid_controller_spawner,
+                # right_stepper_controller_spawner,
+                # right_servo_controller_spawner,
+                # right_solenoid_controller_spawner
+            ],
+        )
     )
 
     # List all arguments that we want to declare
@@ -107,8 +165,9 @@ def generate_launch_description():
         control_node,
         robot_state_publisher,
         joint_state_broadcaster_spawner,
-        right_hand_controller_spawner,
-        left_hand_controller_spawner
+        # right_hand_controller_spawner,
+        # left_hand_controller_spawner,
+        delay_left_controllers_after_joint_state_broadcaster
     ]
 
     return LaunchDescription(declared_arguments + nodes)
