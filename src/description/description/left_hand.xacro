@@ -28,49 +28,49 @@
       <visual>
         <origin xyz="0.045938244354197944885 -0.043846468705386110187 0.078200000000000005618" rpy="3.141592653589793116 -0 3.141592653589793116" />
         <geometry>
-          <mesh filename="package://description/meshes/servo.stl"/>
+          <mesh filename="package://description/description/meshes/servo.stl"/>
         </geometry>
         <material name="servo_material"/>
       </visual>
       <visual>
         <origin xyz="0.045938244354197944885 -0.0063464687053861098404 0.078200000000000005618" rpy="3.141592653589793116 -0 3.141592653589793116" />
         <geometry>
-          <mesh filename="package://description/meshes/servo.stl"/>
+          <mesh filename="package://description/description/meshes/servo.stl"/>
         </geometry>
         <material name="servo_material"/>
       </visual>
       <visual>
         <origin xyz="0.0023499287608851338049 0.033803517640591265736 -0.021799999999999989525" rpy="1.9958838398273146999e-16 -6.5938365254384542654e-32 0" />
         <geometry>
-          <mesh filename="package://description/meshes/finger_mount_plate.stl"/>
+          <mesh filename="package://description/description/meshes/finger_mount_plate.stl"/>
         </geometry>
         <material name="finger_mount_plate_material"/>
       </visual>
       <visual>
         <origin xyz="0.045938244354197951824 0.068653531294613892588 0.078200000000000005618" rpy="3.141592653589793116 -0 3.141592653589793116" />
         <geometry>
-          <mesh filename="package://description/meshes/servo.stl"/>
+          <mesh filename="package://description/description/meshes/servo.stl"/>
         </geometry>
         <material name="servo_material"/>
       </visual>
       <visual>
         <origin xyz="0.045938244354197944885 0.031153531294613880098 0.078200000000000005618" rpy="3.141592653589793116 -0 3.141592653589793116" />
         <geometry>
-          <mesh filename="package://description/meshes/servo.stl"/>
+          <mesh filename="package://description/description/meshes/servo.stl"/>
         </geometry>
         <material name="servo_material"/>
       </visual>
       <visual>
         <origin xyz="0.002343270376630176427 3.5176405913106556511e-06 0.060000000000000004718" rpy="3.141592653589793116 -0 0" />
         <geometry>
-          <mesh filename="package://description/meshes/servo_mechanism_top_mount.stl"/>
+          <mesh filename="package://description/description/meshes/servo_mechanism_top_mount.stl"/>
         </geometry>
         <material name="servo_mechanism_top_mount_material"/>
       </visual>
       <visual>
         <origin xyz="0.045938244354197944885 -0.081346468705386101861 0.078200000000000005618" rpy="3.141592653589793116 -0 3.141592653589793116" />
         <geometry>
-          <mesh filename="package://description/meshes/servo.stl"/>
+          <mesh filename="package://description/description/meshes/servo.stl"/>
         </geometry>
         <material name="servo_material"/>
       </visual>

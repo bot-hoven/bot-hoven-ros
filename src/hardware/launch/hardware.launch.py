@@ -119,24 +119,23 @@ def generate_launch_description():
         arguments=["left_solenoid_controller", "-c", "/controller_manager"],
     )
 
-    # Right Hand Controllers (commented out until hardware is available)
-    # right_stepper_controller_spawner = Node(
-    #     package="controller_manager",
-    #     executable="spawner",
-    #     arguments=["right_stepper_controller", "-c", "/controller_manager"],
-    # )
-    # 
-    # right_servo_controller_spawner = Node(
-    #     package="controller_manager",
-    #     executable="spawner",
-    #     arguments=["right_servo_controller", "-c", "/controller_manager"],
-    # )
-    # 
-    # right_solenoid_controller_spawner = Node(
-    #     package="controller_manager",
-    #     executable="spawner",
-    #     arguments=["right_solenoid_controller", "-c", "/controller_manager"],
-    # )
+    right_stepper_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["right_stepper_controller", "-c", "/controller_manager"],
+    )
+    
+    right_servo_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["right_servo_controller", "-c", "/controller_manager"],
+    )
+    
+    right_solenoid_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["right_solenoid_controller", "-c", "/controller_manager"],
+    )
 
     # Start controllers after joint state broadcaster
     delay_left_controllers_after_joint_state_broadcaster = RegisterEventHandler(
@@ -146,9 +145,9 @@ def generate_launch_description():
                 left_stepper_controller_spawner,
                 left_servo_controller_spawner,
                 left_solenoid_controller_spawner,
-                # right_stepper_controller_spawner,
-                # right_servo_controller_spawner,
-                # right_solenoid_controller_spawner
+                right_stepper_controller_spawner,
+                right_servo_controller_spawner,
+                right_solenoid_controller_spawner
             ],
         )
     )

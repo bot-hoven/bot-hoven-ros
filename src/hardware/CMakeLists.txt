@@ -37,6 +37,7 @@ add_library(
   src/pca9685/pca9685_system.cpp
   src/mcp23017/mcp23017_comm.cpp
   src/mcp23017/mcp23017_system.cpp
+  src/ads7138/ads7138_comm.cpp 
 )
 
 # Include directories

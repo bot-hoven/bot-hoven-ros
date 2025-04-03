@@ -28,6 +28,7 @@ namespace mcp23017_hardware_interface {
         }
 
         hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+        hw_states_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
         // Validate the command interface
         for (const hardware_interface::ComponentInfo &joint : info_.joints) {
@@ -73,10 +74,13 @@ namespace mcp23017_hardware_interface {
         std::vector<hardware_interface::StateInterface> state_interfaces;
 
         for (auto i = 0u; i < info_.joints.size(); i++) {
-            state_interfaces.emplace_back(hardware_interface::StateInterface(
-                info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_commands_[i]));
-        }
+                state_interfaces.emplace_back(hardware_interface::StateInterface(
+                    info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_states_[i]));
 
+                // RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"),
+                //             "Exporting state interface for joint [%s] mapped to MCP23017 channel [%d]",
+                //             info_.joints[i].name.c_str(), channel_mapping_[i]);
+        }
         return state_interfaces;
     }
 
@@ -158,8 +162,11 @@ namespace mcp23017_hardware_interface {
 
     hardware_interface::return_type Mcp23017SystemHardware::read(const rclcpp::Time & /*time*/,
                                                                  const rclcpp::Duration & /*period*/) {
-        return hardware_interface::return_type::OK;
+    for (auto i = 0u; i < hw_states_.size(); i++) {
+        hw_states_[i] = hw_commands_[i];
     }
+    return hardware_interface::return_type::OK;
+}
 
     hardware_interface::return_type Mcp23017SystemHardware::write(const rclcpp::Time & /*time*/,
                                                                   const rclcpp::Duration & /*period*/) {

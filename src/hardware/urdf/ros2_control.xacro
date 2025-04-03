@@ -25,7 +25,7 @@
 
     </ros2_control>
 
-    <!-- <ros2_control name="right_stepper_driver" type="system" is_async="false">
+    <ros2_control name="right_stepper_driver" type="system" is_async="false">
 
       <xacro:unless value="${use_mock_hardware}">
         <hardware>
@@ -47,17 +47,19 @@
 
       <xacro:include filename="$(find hardware)/urdf/right_stepper_joint.xacro" />
 
-    </ros2_control> -->
+    </ros2_control>
 
     <ros2_control name="left_servo_driver" type="system">
       <xacro:unless value="${use_mock_hardware}">
         <hardware>
           <plugin>pca9685_hardware_interface/Pca9685SystemHardware</plugin>
           <param name="i2c_device">/dev/i2c-1</param> 
-          <param name="frequency_hz">50</param>
-          <param name="i2c_address">65</param>  
-          <param name="min_duty_cycle_ms">1.3</param>
-          <param name="max_duty_cycle_ms">1.7</param>
+          <param name="pca_frequency_hz">50</param>
+          <param name="pca_i2c_address">65</param>  
+          <param name="min_duty_cycle_ms">0.5</param>
+          <param name="max_duty_cycle_ms">2.5</param>
+          <param name="ads_i2c_address">18</param> <!-- 0x10 -->
+          <param name="ads_conversion_rate">20</param> <!-- 20 kSPS -->
         </hardware>
       </xacro:unless>
       <xacro:if value="${use_mock_hardware}">
@@ -71,15 +73,17 @@
       <xacro:include filename="$(find hardware)/urdf/left_servo_joints.xacro" />
     </ros2_control>
 
-    <!-- <ros2_control name="right_servo_driver" type="system">
+    <ros2_control name="right_servo_driver" type="system">
       <xacro:unless value="${use_mock_hardware}">
         <hardware>
           <plugin>pca9685_hardware_interface/Pca9685SystemHardware</plugin>
           <param name="i2c_device">/dev/i2c-1</param> 
-          <param name="frequency_hz">50</param> 
-          <param name="i2c_address">64</param> 
-          <param name="min_duty_cycle_ms">1.0</param>
-          <param name="max_duty_cycle_ms">2.0</param>
+          <param name="pca_frequency_hz">50</param> 
+          <param name="pca_i2c_address">64</param> 
+          <param name="min_duty_cycle_ms">0.5</param>
+          <param name="max_duty_cycle_ms">2.5</param>
+          <param name="ads_i2c_address">16</param> <!-- 0x12 -->
+          <param name="ads_conversion_rate">20</param> <!-- 20 kSPS -->
         </hardware>
       </xacro:unless>
       <xacro:if value="${use_mock_hardware}">
@@ -91,7 +95,7 @@
       </xacro:if>
 
       <xacro:include filename="$(find hardware)/urdf/right_servo_joints.xacro" />
-    </ros2_control> -->
+    </ros2_control>
 
     <ros2_control name="left_solenoid_driver" type="system">
       <xacro:unless value="${use_mock_hardware}">
@@ -112,7 +116,7 @@
       <xacro:include filename="$(find hardware)/urdf/left_solenoid_joints.xacro" />
     </ros2_control>
 
-    <!-- <ros2_control name="right_solenoid_driver" type="system">
+    <ros2_control name="right_solenoid_driver" type="system">
       <xacro:unless value="${use_mock_hardware}">
         <hardware>
           <plugin>mcp23017_hardware_interface/Mcp23017SystemHardware</plugin>
@@ -129,7 +133,7 @@
       </xacro:if>
 
       <xacro:include filename="$(find hardware)/urdf/right_solenoid_joints.xacro" />
-    </ros2_control> -->
+    </ros2_control>
 
   </xacro:macro>
 

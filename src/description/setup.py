@@ -19,7 +19,7 @@ setup(
         ('share/' + package_name + '/description', ['description/right_hand.xacro']),
         ('share/' + package_name + '/description', ['description/finger.xacro']),
         ('share/' + package_name + '/description', ['description/gazebo_control.xacro']),
-        ('share/' + package_name + '/description', glob('meshes/*')),
+        ('share/' + package_name + '/description' + '/meshes', glob('description/meshes/*')),
         # ('share/' + package_name + '/description', ['description/common.xacro']),
         ('share/' + package_name + '/worlds', ['worlds/bothoven_world.sdf']),
         ('share/' + package_name + '/resource', ['resource/rviz2_config.rviz']),
