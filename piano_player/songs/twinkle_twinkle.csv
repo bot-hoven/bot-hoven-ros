@@ -1,0 +1,18 @@
+name=Twinkle Twinkle Little Star,tempo=80
+# Format: note_name,finger,hand,servo_position,solenoid_activation,duration
+# C C G G A A G (rest) F F E E D D C (rest)
+C4,pinky,left,90.0,1.0,1.0
+C4,pinky,left,90.0,1.0,1.0
+G4,index,right,90.0,1.0,1.0
+G4,index,right,90.0,1.0,1.0
+A4,middle,right,90.0,1.0,1.0
+A4,middle,right,90.0,1.0,1.0
+G4,index,right,90.0,1.0,2.0
+# Second phrase
+F4,index,left,90.0,1.0,1.0
+F4,index,left,90.0,1.0,1.0
+E4,middle,left,90.0,1.0,1.0
+E4,middle,left,90.0,1.0,1.0
+D4,ring,left,90.0,1.0,1.0
+D4,ring,left,90.0,1.0,1.0
+C4,pinky,left,90.0,1.0,2.0
