@@ -55,10 +55,10 @@
           <plugin>pca9685_hardware_interface/Pca9685SystemHardware</plugin>
           <param name="i2c_device">/dev/i2c-1</param> 
           <param name="pca_frequency_hz">50</param>
-          <param name="pca_i2c_address">65</param>  
+          <param name="pca_i2c_address">64</param>  
           <param name="min_duty_cycle_ms">0.5</param>
           <param name="max_duty_cycle_ms">2.5</param>
-          <param name="ads_i2c_address">18</param> <!-- 0x10 -->
+          <param name="ads_i2c_address">16</param> <!-- 0x10 -->
           <param name="ads_conversion_rate">20</param> <!-- 20 kSPS -->
         </hardware>
       </xacro:unless>
@@ -79,11 +79,11 @@
           <plugin>pca9685_hardware_interface/Pca9685SystemHardware</plugin>
           <param name="i2c_device">/dev/i2c-1</param> 
           <param name="pca_frequency_hz">50</param> 
-          <param name="pca_i2c_address">64</param> 
+          <param name="pca_i2c_address">65</param> 
           <param name="min_duty_cycle_ms">0.5</param>
           <param name="max_duty_cycle_ms">2.5</param>
-          <param name="ads_i2c_address">16</param> <!-- 0x12 -->
-          <param name="ads_conversion_rate">20</param> <!-- 20 kSPS -->
+          <param name="ads_i2c_address">18</param>
+          <param name="ads_conversion_rate">20</param> 
         </hardware>
       </xacro:unless>
       <xacro:if value="${use_mock_hardware}">
@@ -102,7 +102,7 @@
         <hardware>
           <plugin>mcp23017_hardware_interface/Mcp23017SystemHardware</plugin>
           <param name="i2c_device">/dev/i2c-1</param> 
-          <param name="i2c_address">33</param>  
+          <param name="i2c_address">32</param>  
         </hardware>
       </xacro:unless>
       <xacro:if value="${use_mock_hardware}">
@@ -121,7 +121,7 @@
         <hardware>
           <plugin>mcp23017_hardware_interface/Mcp23017SystemHardware</plugin>
           <param name="i2c_device">/dev/i2c-1</param> 
-          <param name="i2c_address">32</param>  
+          <param name="i2c_address">33</param>  
         </hardware>
       </xacro:unless>
       <xacro:if value="${use_mock_hardware}">

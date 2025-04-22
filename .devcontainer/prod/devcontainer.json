@@ -8,8 +8,8 @@
     "DISPLAY=${localEnv:DISPLAY}",
     "-v",
     "/tmp/.X11-unix:/tmp/.X11-unix",
-    "-v",
-    "/sys/class/gpio:/sys/class/gpio",
+    // "-v",
+    // "/sys/class/gpio:/sys/class/gpio",
     "-v",
     "/dev:/dev",
     "--cap-add=sys_nice",
@@ -18,7 +18,7 @@
     "--ulimit",
     "rtprio=99"
   ],
-  "postCreateCommand": "/bin/bash -c 'for dev in /dev/i2c-1 /dev/i2c-13 /dev/i2c-14; do if [ -e $dev ]; then sudo chown :i2c $dev && sudo chmod g+rw $dev; fi; done && if [ -e /dev/spidev0.0 ]; then sudo chown :spi /dev/spidev0.0 && sudo chmod g+rw /dev/spidev0.0; fi'",
+  "postCreateCommand": "/bin/bash -c 'for dev in /dev/i2c-1 ; do if [ -e $dev ]; then sudo chown :i2c $dev && sudo chmod g+rw $dev; fi; done && if [ -e /dev/spidev0.0 ]; then sudo chown :spi /dev/spidev0.0 && sudo chmod g+rw /dev/spidev0.0; fi'",
   "workspaceMount": "source=${localWorkspaceFolder},target=/${localWorkspaceFolderBasename},type=bind",
   "workspaceFolder": "/${localWorkspaceFolderBasename}",
   "mounts": [

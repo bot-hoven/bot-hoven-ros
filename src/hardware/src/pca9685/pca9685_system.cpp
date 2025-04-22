@@ -64,10 +64,10 @@ namespace pca9685_hardware_interface {
                 const hardware_interface::ComponentInfo &joint = info_.joints[i];
 
                 // Print all parameters for debugging
-                // for (const auto &param : joint.parameters) {
-                //     RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Joint [%s] Parameter: [%s] = [%s]",
-                //                 joint.name.c_str(), param.first.c_str(), param.second.c_str());
-                // }
+                for (const auto &param : joint.parameters) {
+                    RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Joint [%s] Parameter: [%s] = [%s]",
+                                joint.name.c_str(), param.first.c_str(), param.second.c_str());
+                }
 
                 min_positions_.push_back(std::stod(joint.command_interfaces[0].min));
                 max_positions_.push_back(std::stod(joint.command_interfaces[0].max));
@@ -107,11 +107,11 @@ namespace pca9685_hardware_interface {
                                 joint.name.c_str(), pwm_slopes_[i], pwm_intercepts_[i]);
                 }
 
-                // RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"),
-                //            "Joint [%s]: channel=%d, min_pos=%f, max_pos=%f, pwm_min=%d, pwm_max=%d, slope=%f,
-                //            intercept=%f", joint.name.c_str(), servo_channels_[i], min_positions_[i],
-                //            max_positions_[i], pwm_min_values_[i], pwm_max_values_[i], pwm_slopes_[i],
-                //            pwm_intercepts_[i]);
+                RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"),
+                           "Joint [%s]: channel=%d, min_pos=%f, max_pos=%f, pwm_min=%d, pwm_max=%d, slope=%f, intercept=%f", 
+                           joint.name.c_str(), servo_channels_[i], min_positions_[i],
+                           max_positions_[i], pwm_min_values_[i], pwm_max_values_[i], pwm_slopes_[i],
+                           pwm_intercepts_[i]);
             }
         } catch (const std::exception &e) {
             RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to parse interface parameters: %s",
@@ -127,140 +127,151 @@ namespace pca9685_hardware_interface {
             }
         }
 
-        // Try to parse the ADS7138 parameters
-        try {
-            cfg_.ads_i2c_address = std::stoi(info_.hardware_parameters.at("ads_i2c_address"));
+        // // Try to parse the ADS7138 parameters
+        // try {
+        //     cfg_.ads_i2c_address = std::stoi(info_.hardware_parameters.at("ads_i2c_address"));
 
-            // Optional parameter with default
-            if (info_.hardware_parameters.count("conversion_rate") > 0) {
-                cfg_.ads_conversion_rate = std::stod(info_.hardware_parameters.at("ads_conversion_rate"));
-            } else {
-                cfg_.ads_conversion_rate = 20.0;  // Default to 20 kSPS
-            }
-        } catch (const std::exception &e) {
-            RCLCPP_FATAL(rclcpp::get_logger("Ads7138SystemHardware"), "Failed to parse ADS7138 parameters: %s",
-                         e.what());
-            return hardware_interface::CallbackReturn::ERROR;
-        }
+        //     // Optional parameter with default
+        //     if (info_.hardware_parameters.count("conversion_rate") > 0) {
+        //         cfg_.ads_conversion_rate = std::stod(info_.hardware_parameters.at("ads_conversion_rate"));
+        //     } else {
+        //         cfg_.ads_conversion_rate = 20.0;  // Default to 20 kSPS
+        //     }
+        // } catch (const std::exception &e) {
+        //     RCLCPP_FATAL(rclcpp::get_logger("Ads7138SystemHardware"), "Failed to parse ADS7138 parameters: %s",
+        //                  e.what());
+        //     return hardware_interface::CallbackReturn::ERROR;
+        // }
 
-        // Resize state values vector
-        hw_states_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+        // // Resize state values vector
+        // hw_states_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
-        // For each joint, we need to extract parameters and validate interfaces
-        channel_mapping_.resize(info_.joints.size());
-        min_angles_.resize(info_.joints.size());
-        max_angles_.resize(info_.joints.size());
-        adc_slopes_.resize(info_.joints.size());
-        adc_intercepts_.resize(info_.joints.size());
+        // // For each joint, we need to extract parameters and validate interfaces
+        // channel_mapping_.resize(info_.joints.size());
+        // min_angles_.resize(info_.joints.size());
+        // max_angles_.resize(info_.joints.size());
+        // adc_slopes_.resize(info_.joints.size());
+        // adc_intercepts_.resize(info_.joints.size());
 
-        // Validate interfaces - ADS7138 only provides state interfaces, no command interfaces
-        for (auto i = 0u; i < info_.joints.size(); i++) {
-            const hardware_interface::ComponentInfo &joint = info_.joints[i];
+        // // Validate interfaces - ADS7138 only provides state interfaces, no command interfaces
+        // for (auto i = 0u; i < info_.joints.size(); i++) {
+        //     const hardware_interface::ComponentInfo &joint = info_.joints[i];
 
-            // Print all parameters for this joint
-            // RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"), "Joint [%s] parameters:", joint.name.c_str());
-            // for (const auto &param : joint.parameters) {
-            //     RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"), "  %s = %s",
-            //              param.first.c_str(), param.second.c_str());
-            // }
+        //     // Print all parameters for this joint
+        //     // RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"), "Joint [%s] parameters:", joint.name.c_str());
+        //     // for (const auto &param : joint.parameters) {
+        //     //     RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"), "  %s = %s",
+        //     //              param.first.c_str(), param.second.c_str());
+        //     // }
 
-            // ADS7138 should have state interfaces
-            if (joint.state_interfaces.empty()) {
-                RCLCPP_WARN(rclcpp::get_logger("Ads7138SystemHardware"), "Joint '%s' has no state interfaces.",
-                            joint.name.c_str());
-                continue;
-            }
+        //     // ADS7138 should have state interfaces
+        //     if (joint.state_interfaces.empty()) {
+        //         RCLCPP_WARN(rclcpp::get_logger("Ads7138SystemHardware"), "Joint '%s' has no state interfaces.",
+        //                     joint.name.c_str());
+        //         continue;
+        //     }
 
-            bool has_position_interface = false;
-            for (const auto &state_interface : joint.state_interfaces) {
-                if (state_interface.name == hardware_interface::HW_IF_POSITION) {
-                    has_position_interface = true;
-                    break;
-                }
-            }
+        //     bool has_position_interface = false;
+        //     for (const auto &state_interface : joint.state_interfaces) {
+        //         if (state_interface.name == hardware_interface::HW_IF_POSITION) {
+        //             has_position_interface = true;
+        //             break;
+        //         }
+        //     }
 
-            if (!has_position_interface) {
-                RCLCPP_WARN(rclcpp::get_logger("Ads7138SystemHardware"), "Joint '%s' has no position state interface.",
-                            joint.name.c_str());
-                continue;
-            }
+        //     if (!has_position_interface) {
+        //         RCLCPP_WARN(rclcpp::get_logger("Ads7138SystemHardware"), "Joint '%s' has no position state interface.",
+        //                     joint.name.c_str());
+        //         continue;
+        //     }
 
-            // Try to parse the joint parameters
-            try {
-                // Extract channel mapping from parameters
-                if (joint.parameters.count("adc_channel") > 0) {
-                    int channel = std::stoi(joint.parameters.at("adc_channel"));
-                    if (channel < 0 || channel > 7) {
-                        throw std::out_of_range("ADS7138 channel must be between 0 and 7");
-                    }
-                    channel_mapping_[i] = static_cast<uint8_t>(channel);
-                } else {
-                    // Default to index if not specified
-                    channel_mapping_[i] = i < 8 ? static_cast<uint8_t>(i) : 0;
-                    RCLCPP_WARN(rclcpp::get_logger("Ads7138SystemHardware"),
-                                "No adc_channel parameter for joint %s, defaulting to %d", joint.name.c_str(),
-                                channel_mapping_[i]);
-                }
+        //     // Try to parse the joint parameters
+        //     try {
+        //         // Extract channel mapping from parameters
+        //         if (joint.parameters.count("adc_channel") > 0) {
+        //             int channel = std::stoi(joint.parameters.at("adc_channel"));
+        //             if (channel < 0 || channel > 7) {
+        //                 throw std::out_of_range("ADS7138 channel must be between 0 and 7");
+        //             }
+        //             channel_mapping_[i] = static_cast<uint8_t>(channel);
+        //         } else {
+        //             // Default to index if not specified
+        //             channel_mapping_[i] = i < 8 ? static_cast<uint8_t>(i) : 0;
+        //             RCLCPP_WARN(rclcpp::get_logger("Ads7138SystemHardware"),
+        //                         "No adc_channel parameter for joint %s, defaulting to %d", joint.name.c_str(),
+        //                         channel_mapping_[i]);
+        //         }
 
-                // Get angle range from command interface limits or parameters
-                if (joint.parameters.count("min_angle") > 0 && joint.parameters.count("max_angle") > 0) {
-                    min_angles_[i] = std::stod(joint.parameters.at("min_angle"));
-                    max_angles_[i] = std::stod(joint.parameters.at("max_angle"));
-                } else if (!joint.command_interfaces.empty()) {
-                    // If no explicit angle range, try to use command interface limits
-                    min_angles_[i] = std::stod(joint.command_interfaces[0].min);
-                    max_angles_[i] = std::stod(joint.command_interfaces[0].max);
-                } else {
-                    // Default values
-                    min_angles_[i] = 0.0;
-                    max_angles_[i] = 90.0;
-                    RCLCPP_WARN(rclcpp::get_logger("Ads7138SystemHardware"),
-                                "No min_angle/max_angle parameters for joint %s, defaulting to %f/%f",
-                                joint.name.c_str(), min_angles_[i], max_angles_[i]);
-                }
+        //         // Get angle range from command interface limits or parameters
+        //         if (joint.parameters.count("min_angle") > 0 && joint.parameters.count("max_angle") > 0) {
+        //             min_angles_[i] = std::stod(joint.parameters.at("min_angle"));
+        //             max_angles_[i] = std::stod(joint.parameters.at("max_angle"));
+        //         } else if (!joint.command_interfaces.empty()) {
+        //             // If no explicit angle range, try to use command interface limits
+        //             min_angles_[i] = std::stod(joint.command_interfaces[0].min);
+        //             max_angles_[i] = std::stod(joint.command_interfaces[0].max);
+        //         } else {
+        //             // Default values
+        //             min_angles_[i] = 0.0;
+        //             max_angles_[i] = 90.0;
+        //             RCLCPP_WARN(rclcpp::get_logger("Ads7138SystemHardware"),
+        //                         "No min_angle/max_angle parameters for joint %s, defaulting to %f/%f",
+        //                         joint.name.c_str(), min_angles_[i], max_angles_[i]);
+        //         }
 
-                // Get calibration parameters
-                if (joint.parameters.count("adc_slope") > 0 && joint.parameters.count("adc_intercept") > 0) {
-                    adc_slopes_[i] = std::stod(joint.parameters.at("adc_slope"));
-                    adc_intercepts_[i] = std::stod(joint.parameters.at("adc_intercept"));
-                } else {
-                    // Default to linear mapping if not specified
-                    adc_slopes_[i] = 1.0;
-                    adc_intercepts_[i] = 0.0;
-                    RCLCPP_WARN(rclcpp::get_logger("Ads7138SystemHardware"),
-                                "No adc_slope/adc_intercept parameters for joint %s, defaulting to %f/%f",
-                                joint.name.c_str(), adc_slopes_[i], adc_intercepts_[i]);
-                }
+        //         // Get calibration parameters
+        //         if (joint.parameters.count("adc_slope") > 0 && joint.parameters.count("adc_intercept") > 0) {
+        //             adc_slopes_[i] = std::stod(joint.parameters.at("adc_slope"));
+        //             adc_intercepts_[i] = std::stod(joint.parameters.at("adc_intercept"));
+        //         } else {
+        //             // Default to linear mapping if not specified
+        //             adc_slopes_[i] = 1.0;
+        //             adc_intercepts_[i] = 0.0;
+        //             RCLCPP_WARN(rclcpp::get_logger("Ads7138SystemHardware"),
+        //                         "No adc_slope/adc_intercept parameters for joint %s, defaulting to %f/%f",
+        //                         joint.name.c_str(), adc_slopes_[i], adc_intercepts_[i]);
+        //         }
 
-                // RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"),
-                //          "Joint [%s] mapped to ADS7138 channel [%d], angle range [%f, %f], calibration [%f, %f]",
-                //          joint.name.c_str(), channel_mapping_[i], min_angles_[i], max_angles_[i],
-                //          adc_slopes_[i], adc_intercepts_[i]);
+        //         // RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"),
+        //         //          "Joint [%s] mapped to ADS7138 channel [%d], angle range [%f, %f], calibration [%f, %f]",
+        //         //          joint.name.c_str(), channel_mapping_[i], min_angles_[i], max_angles_[i],
+        //         //          adc_slopes_[i], adc_intercepts_[i]);
 
-            } catch (const std::exception &e) {
-                RCLCPP_FATAL(rclcpp::get_logger("Ads7138SystemHardware"),
-                             "Failed to parse interface parameters for joint '%s': %s", joint.name.c_str(), e.what());
-                return hardware_interface::CallbackReturn::ERROR;
-            }
-        }
+        //     } catch (const std::exception &e) {
+        //         RCLCPP_FATAL(rclcpp::get_logger("Ads7138SystemHardware"),
+        //                      "Failed to parse interface parameters for joint '%s': %s", joint.name.c_str(), e.what());
+        //         return hardware_interface::CallbackReturn::ERROR;
+        //     }
+        // }
 
         return hardware_interface::CallbackReturn::SUCCESS;
     }
+
+    // std::vector<hardware_interface::StateInterface> Pca9685SystemHardware::export_state_interfaces() {
+    //     std::vector<hardware_interface::StateInterface> state_interfaces;
+
+    //     for (auto i = 0u; i < info_.joints.size(); i++) {
+    //         // Only export state interfaces if they have the adc_channel parameter
+    //         // This allows us to work with joints that already have state interfaces from other components
+    //         if (info_.joints[i].parameters.count("adc_channel") > 0) {
+    //             state_interfaces.emplace_back(hardware_interface::StateInterface(
+    //                 info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_states_[i]));
+
+    //             RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"),
+    //                         "Exporting state interface for joint [%s] mapped to ADS7138 channel [%d]",
+    //                         info_.joints[i].name.c_str(), channel_mapping_[i]);
+    //         }
+    //     }
+
+    //     return state_interfaces;
+    // }
 
     std::vector<hardware_interface::StateInterface> Pca9685SystemHardware::export_state_interfaces() {
         std::vector<hardware_interface::StateInterface> state_interfaces;
 
         for (auto i = 0u; i < info_.joints.size(); i++) {
-            // Only export state interfaces if they have the adc_channel parameter
-            // This allows us to work with joints that already have state interfaces from other components
-            if (info_.joints[i].parameters.count("adc_channel") > 0) {
-                state_interfaces.emplace_back(hardware_interface::StateInterface(
-                    info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_states_[i]));
-
-                RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"),
-                            "Exporting state interface for joint [%s] mapped to ADS7138 channel [%d]",
-                            info_.joints[i].name.c_str(), channel_mapping_[i]);
-            }
+            state_interfaces.emplace_back(hardware_interface::StateInterface(
+                info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_commands_[i]));
         }
 
         return state_interfaces;
@@ -298,23 +309,15 @@ namespace pca9685_hardware_interface {
 
         RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Successfully configured!");
 
+        // Setup the ADS7138 object
         // try {
-        //     // Get the shared pointer for the I2C bus
-        //     i2c_bus_ = hardware::I2CPeripheral::getInstance(cfg_.i2c_device);
+        //     ads_.setup(i2c_bus_, cfg_.ads_i2c_address);
         // } catch (const std::exception &e) {
-        //     RCLCPP_FATAL(rclcpp::get_logger("Ads7138SystemHardware"), "Error initializing I2C Bus: %s", e.what());
+        //     RCLCPP_FATAL(rclcpp::get_logger("Ads7138SystemHardware"), "Error setting up ADS7138: %s", e.what());
         //     return hardware_interface::CallbackReturn::ERROR;
         // }
 
-        // Setup the ADS7138 object
-        try {
-            ads_.setup(i2c_bus_, cfg_.ads_i2c_address);
-        } catch (const std::exception &e) {
-            RCLCPP_FATAL(rclcpp::get_logger("Ads7138SystemHardware"), "Error setting up ADS7138: %s", e.what());
-            return hardware_interface::CallbackReturn::ERROR;
-        }
-
-        RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"), "Successfully configured!");
+        // RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"), "Successfully configured!");
 
         return hardware_interface::CallbackReturn::SUCCESS;
     }
@@ -328,14 +331,6 @@ namespace pca9685_hardware_interface {
         i2c_bus_.reset();
 
         RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Successfully cleaned up!");
-
-        RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"), "Cleaning up ...please wait...");
-
-        // Release the shared pointer (this will automatically close the I2C bus once the
-        // last shared pointer instance is destroyed via the I2CPeripheral destructor)
-        i2c_bus_.reset();
-
-        RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"), "Successfully cleaned up!");
 
         return hardware_interface::CallbackReturn::SUCCESS;
     }
@@ -364,47 +359,47 @@ namespace pca9685_hardware_interface {
 
         RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Successfully activated!");
 
-        RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"), "Activating ...please wait...");
+        // RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"), "Activating ...please wait...");
 
-        // Initialize hw_states_ with default values
-        for (auto i = 0u; i < hw_states_.size(); i++) {
-            if (std::isnan(hw_states_[i])) {
-                hw_states_[i] = 0;  // Default to middle position
-            }
-        }
+        // // Initialize hw_states_ with default values
+        // for (auto i = 0u; i < hw_states_.size(); i++) {
+        //     if (std::isnan(hw_states_[i])) {
+        //         hw_states_[i] = 0;  // Default to middle position
+        //     }
+        // }
 
-        // Initialize the ADS7138 object
-        try {
-            ads_.connect();
-            ads_.init();
-            rclcpp::sleep_for(std::chrono::milliseconds(5));  // Wait for the device to stabilize
+        // // Initialize the ADS7138 object
+        // try {
+        //     ads_.connect();
+        //     ads_.init();
+        //     rclcpp::sleep_for(std::chrono::milliseconds(5));  // Wait for the device to stabilize
 
-            // Set conversion rate based on configuration
-            uint8_t rate_setting;
-            if (cfg_.ads_conversion_rate <= 1.0)
-                rate_setting = ads7138_hardware_interface::ADS7138_CONV_RATE_1K;
-            else if (cfg_.ads_conversion_rate <= 2.0)
-                rate_setting = ads7138_hardware_interface::ADS7138_CONV_RATE_2K;
-            else if (cfg_.ads_conversion_rate <= 5.0)
-                rate_setting = ads7138_hardware_interface::ADS7138_CONV_RATE_5K;
-            else if (cfg_.ads_conversion_rate <= 10.0)
-                rate_setting = ads7138_hardware_interface::ADS7138_CONV_RATE_10K;
-            else if (cfg_.ads_conversion_rate <= 20.0)
-                rate_setting = ads7138_hardware_interface::ADS7138_CONV_RATE_20K;
-            else if (cfg_.ads_conversion_rate <= 50.0)
-                rate_setting = ads7138_hardware_interface::ADS7138_CONV_RATE_50K;
-            else if (cfg_.ads_conversion_rate <= 100.0)
-                rate_setting = ads7138_hardware_interface::ADS7138_CONV_RATE_100K;
-            else
-                rate_setting = ads7138_hardware_interface::ADS7138_CONV_RATE_200K;
+        //     // Set conversion rate based on configuration
+        //     uint8_t rate_setting;
+        //     if (cfg_.ads_conversion_rate <= 1.0)
+        //         rate_setting = ads7138_hardware_interface::ADS7138_CONV_RATE_1K;
+        //     else if (cfg_.ads_conversion_rate <= 2.0)
+        //         rate_setting = ads7138_hardware_interface::ADS7138_CONV_RATE_2K;
+        //     else if (cfg_.ads_conversion_rate <= 5.0)
+        //         rate_setting = ads7138_hardware_interface::ADS7138_CONV_RATE_5K;
+        //     else if (cfg_.ads_conversion_rate <= 10.0)
+        //         rate_setting = ads7138_hardware_interface::ADS7138_CONV_RATE_10K;
+        //     else if (cfg_.ads_conversion_rate <= 20.0)
+        //         rate_setting = ads7138_hardware_interface::ADS7138_CONV_RATE_20K;
+        //     else if (cfg_.ads_conversion_rate <= 50.0)
+        //         rate_setting = ads7138_hardware_interface::ADS7138_CONV_RATE_50K;
+        //     else if (cfg_.ads_conversion_rate <= 100.0)
+        //         rate_setting = ads7138_hardware_interface::ADS7138_CONV_RATE_100K;
+        //     else
+        //         rate_setting = ads7138_hardware_interface::ADS7138_CONV_RATE_200K;
 
-            ads_.set_conversion_rate(rate_setting);
-            rclcpp::sleep_for(std::chrono::milliseconds(5));  // Wait for the device to stabilize
+        //     ads_.set_conversion_rate(rate_setting);
+        //     rclcpp::sleep_for(std::chrono::milliseconds(5));  // Wait for the device to stabilize
 
-        } catch (const std::exception &e) {
-            RCLCPP_FATAL(rclcpp::get_logger("Ads7138SystemHardware"), "Error initializing ADS7138: %s", e.what());
-            return hardware_interface::CallbackReturn::ERROR;
-        }
+        // } catch (const std::exception &e) {
+        //     RCLCPP_FATAL(rclcpp::get_logger("Ads7138SystemHardware"), "Error initializing ADS7138: %s", e.what());
+        //     return hardware_interface::CallbackReturn::ERROR;
+        // }
 
         return hardware_interface::CallbackReturn::SUCCESS;
     }
@@ -432,70 +427,72 @@ namespace pca9685_hardware_interface {
 
     hardware_interface::return_type Pca9685SystemHardware::read(const rclcpp::Time & /*time*/,
                                                                 const rclcpp::Duration & /*period*/) {
-        // Collect channels to read
-        std::vector<uint8_t> channels_to_read;
-        std::vector<size_t> indices_map;  // Maps channel to joint index
+        // // Collect channels to read
+        // std::vector<uint8_t> channels_to_read;
+        // std::vector<size_t> indices_map;  // Maps channel to joint index
 
-        for (auto i = 0u; i < info_.joints.size(); i++) {
-            if (info_.joints[i].parameters.count("adc_channel") > 0) {
-                channels_to_read.push_back(channel_mapping_[i]);
-                indices_map.push_back(i);
-            }
-        }
+        // for (auto i = 0u; i < info_.joints.size(); i++) {
+        //     if (info_.joints[i].parameters.count("adc_channel") > 0) {
+        //         channels_to_read.push_back(channel_mapping_[i]);
+        //         indices_map.push_back(i);
+        //     }
+        // }
 
-        if (channels_to_read.empty()) {
-            return hardware_interface::return_type::OK;
-        }
+        // if (channels_to_read.empty()) {
+        //     return hardware_interface::return_type::OK;
+        // }
 
-        // Read each channel individually instead of using auto-sequence
-        bool any_success = false;
+        // // Read each channel individually instead of using auto-sequence
+        // bool any_success = false;
 
-        for (size_t i = 0; i < channels_to_read.size(); i++) {
-            uint8_t channel = channels_to_read[i];
-            size_t joint_idx = indices_map[i];
+        // for (size_t i = 0; i < channels_to_read.size(); i++) {
+        //     uint8_t channel = channels_to_read[i];
+        //     size_t joint_idx = indices_map[i];
 
-            int channel_attempts = 0;
-            bool channel_success = false;
+        //     int channel_attempts = 0;
+        //     bool channel_success = false;
 
-            while (!channel_success && channel_attempts < MAX_READ_ATTEMPTS) {
-                try {
-                    // Ensure we're connected
-                    ads_.connect();
+        //     while (!channel_success && channel_attempts < MAX_READ_ATTEMPTS) {
+        //         try {
+        //             // Ensure we're connected
+        //             ads_.connect();
 
-                    // Use simpler single-channel read - avoid auto-sequence
-                    uint16_t adc_value = ads_.read_channel(channel);
+        //             // Use simpler single-channel read - avoid auto-sequence
+        //             uint16_t adc_value = ads_.read_channel(channel);
 
-                    // Convert to angle
-                    hw_states_[joint_idx] = adc_value_to_angle(adc_value, joint_idx);
+        //             // Convert to angle
+        //             hw_states_[joint_idx] = adc_value_to_angle(adc_value, joint_idx);
 
-                    channel_success = true;
-                    any_success = true;
+        //             channel_success = true;
+        //             any_success = true;
 
-                    RCLCPP_DEBUG(rclcpp::get_logger("Pca9685SystemHardware"),
-                                 "Joint '%s' (channel %d): ADC=%d, Angle=%f", info_.joints[joint_idx].name.c_str(),
-                                 channel, adc_value, hw_states_[joint_idx]);
+        //             RCLCPP_DEBUG(rclcpp::get_logger("Pca9685SystemHardware"),
+        //                          "Joint '%s' (channel %d): ADC=%d, Angle=%f", info_.joints[joint_idx].name.c_str(),
+        //                          channel, adc_value, hw_states_[joint_idx]);
 
-                } catch (const std::exception &e) {
-                    channel_attempts++;
+        //         } catch (const std::exception &e) {
+        //             channel_attempts++;
 
-                    RCLCPP_WARN(rclcpp::get_logger("Pca9685SystemHardware"),
-                                "Failed to read channel %d (attempt %d/%d): %s", channel, channel_attempts,
-                                MAX_READ_ATTEMPTS, e.what());
+        //             RCLCPP_WARN(rclcpp::get_logger("Pca9685SystemHardware"),
+        //                         "Failed to read channel %d (attempt %d/%d): %s", channel, channel_attempts,
+        //                         MAX_READ_ATTEMPTS, e.what());
 
-                    // Add delay between attempts
-                    rclcpp::sleep_for(std::chrono::microseconds(500 * channel_attempts)); // Progressive delay
-                }
-            }
+        //             // Add delay between attempts
+        //             rclcpp::sleep_for(std::chrono::microseconds(500 * channel_attempts)); // Progressive delay
+        //         }
+        //     }
 
-            // If we couldn't read this channel, log but continue with others
-            if (!channel_success) {
-                RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to read channel %d after %d attempts",
-                             channel, MAX_READ_ATTEMPTS);
-            }
-        }
+        //     // If we couldn't read this channel, log but continue with others
+        //     if (!channel_success) {
+        //         RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to read channel %d after %d attempts",
+        //                      channel, MAX_READ_ATTEMPTS);
+        //     }
+        // }
 
-        // As long as we read at least one channel successfully, return OK
-        return any_success ? hardware_interface::return_type::OK : hardware_interface::return_type::ERROR;
+        // // As long as we read at least one channel successfully, return OK
+        // return any_success ? hardware_interface::return_type::OK : hardware_interface::return_type::ERROR;
+
+        return hardware_interface::return_type::OK;
     }
 
     // Convert commanded position to PWM duty cycle using calibration data
@@ -530,7 +527,8 @@ namespace pca9685_hardware_interface {
         for (auto i = 0u; i < hw_commands_.size(); i++) {
             if (current_command_values_[i] != hw_commands_[i]) {
                 // Calculate duty cycle using calibration data
-                double angle = (hw_commands_[i] * 180 / M_PI) + 90;
+                // double angle = (hw_commands_[i] * 180 / M_PI) + 90;
+                double angle = hw_commands_[i] + 90;
                 double duty_cycle_ms = angle_to_duty_cycle(angle, i);
 
                 channels_to_update.push_back(servo_channels_[i]);
@@ -544,6 +542,7 @@ namespace pca9685_hardware_interface {
                 hw_commands_[i], duty_cycle_ms);
             }
         }
+        pca_.connect();
         for (auto i = 0u; i < channels_to_update.size(); i++) {
 
             pca_.set_pwm_ms(channels_to_update[i], duty_cycles_ms[i]);

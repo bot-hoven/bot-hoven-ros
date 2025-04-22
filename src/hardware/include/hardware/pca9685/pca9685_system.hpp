@@ -80,7 +80,7 @@ namespace pca9685_hardware_interface {
         // Device parameters
         Config cfg_;
         pca9685_hardware_interface::PCA9685 pca_;
-        ads7138_hardware_interface::ADS7138 ads_;
+        // ads7138_hardware_interface::ADS7138 ads_;
 
         // Interface parameters
         std::vector<double> min_positions_;
