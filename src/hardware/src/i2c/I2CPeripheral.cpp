@@ -153,25 +153,95 @@ namespace hardware {
         }
     }
 
-    void I2CPeripheral::RecoverBus() {
-        // Close and reopen the bus
+    /**
+     * @brief Attempts to recover the I2C bus from a hung state
+     * 
+     * This method implements multiple recovery strategies:
+     * 1. Close and reopen the bus
+     * 2. Use ioctl I2C_BUS_RESET if supported by the driver
+     * 3. Send SMBus quick commands to each known device
+     * 
+     * @return true if recovery was successful, false otherwise
+     */
+    bool I2CPeripheral::RecoverBus() {
+        std::lock_guard<std::mutex> lock(bus_mutex_);
+        
+        bool recovery_successful = false;
+        
+        // Step 1: Try SMBus quick commands to unstick devices
         if (bus_fd_ >= 0) {
-            close(bus_fd_);
-            bus_fd_ = -1;
+            std::vector<uint8_t> known_addresses = {0x40, 0x41, 0x20, 0x21, 0x10, 0x11, 0x12, 0x13};
+            
+            for (auto addr : known_addresses) {
+                if (ioctl(bus_fd_, I2C_SLAVE, addr) >= 0) {
+                    // Try SMBus quick command (sends a single bit)
+                    i2c_smbus_write_quick(bus_fd_, I2C_SMBUS_WRITE);
+                    // No need to check result, just attempt for each device
+                    usleep(1000);  // Small delay between attempts
+                }
+            }
         }
         
-        // Short delay
-        usleep(5000);
-        
-        // Reopen the bus
-        OpenBus(device_);
-        
-        // Reconnect to the current device if needed
-        if (current_i2c_address_ > 0) {
-            ConnectToPeripheral(current_i2c_address_);
+        // Step 2: Try ioctl I2C_BUS_RESET if supported
+        if (bus_fd_ >= 0) {
+            // Define I2C_BUS_RESET if not available in system headers
+            #ifndef I2C_BUS_RESET
+            #define I2C_BUS_RESET 0x0702
+            #endif
+            
+            recovery_successful = (ioctl(bus_fd_, I2C_BUS_RESET, 0) >= 0);
         }
         
-        // std::cout << "I2C bus recovered" << std::endl;
+        // Step 3: Close and reopen the bus
+        try {
+            if (bus_fd_ >= 0) {
+                close(bus_fd_);
+                bus_fd_ = -1;
+            }
+            
+            // Wait before reopening
+            usleep(10000);  // 10ms
+            
+            OpenBus(device_);
+            
+            // Reconnect to the current device if needed
+            if (current_i2c_address_ > 0) {
+                ConnectToPeripheral(current_i2c_address_);
+            }
+            
+            // Test the bus by reading a device we know exists
+            // Try with one device from each PCB
+            bool bus_working = false;
+            
+            // Test left PCB device
+            if (ioctl(bus_fd_, I2C_SLAVE, 0x20) >= 0) {  // MCP23017 left
+                try {
+                    // Try to read IODIRA register
+                    i2c_smbus_read_byte_data(bus_fd_, 0x00);
+                    bus_working = true;
+                } catch (...) {
+                    // Ignore errors
+                }
+            }
+            
+            // If left failed, try right PCB device
+            if (!bus_working && ioctl(bus_fd_, I2C_SLAVE, 0x21) >= 0) {  // MCP23017 right
+                try {
+                    // Try to read IODIRA register
+                    i2c_smbus_read_byte_data(bus_fd_, 0x00);
+                    bus_working = true;
+                } catch (...) {
+                    // Ignore errors
+                }
+            }
+            
+            recovery_successful = bus_working;
+            
+        } catch (const std::exception&) {
+            recovery_successful = false;
+        }
+        
+        return recovery_successful;
     }
 
     /**

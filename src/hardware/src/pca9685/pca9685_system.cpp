@@ -36,7 +36,7 @@ namespace pca9685_hardware_interface {
         pwm_max_values_.resize(info_.joints.size());
         pwm_slopes_.resize(info_.joints.size());
         pwm_intercepts_.resize(info_.joints.size());
-        current_command_values_.resize(info_.joints.size(), 0.5);  // Default to middle position
+        current_command_values_.resize(info_.joints.size(), 0.0);  // Default to middle position
 
         // Validate the command interface
         for (auto i = 0u; i < info_.joints.size(); i++) {
@@ -64,10 +64,10 @@ namespace pca9685_hardware_interface {
                 const hardware_interface::ComponentInfo &joint = info_.joints[i];
 
                 // Print all parameters for debugging
-                for (const auto &param : joint.parameters) {
-                    RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Joint [%s] Parameter: [%s] = [%s]",
-                                joint.name.c_str(), param.first.c_str(), param.second.c_str());
-                }
+                // for (const auto &param : joint.parameters) {
+                //     RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Joint [%s] Parameter: [%s] = [%s]",
+                //                 joint.name.c_str(), param.first.c_str(), param.second.c_str());
+                // }
 
                 min_positions_.push_back(std::stod(joint.command_interfaces[0].min));
                 max_positions_.push_back(std::stod(joint.command_interfaces[0].max));
@@ -107,11 +107,11 @@ namespace pca9685_hardware_interface {
                                 joint.name.c_str(), pwm_slopes_[i], pwm_intercepts_[i]);
                 }
 
-                RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"),
-                           "Joint [%s]: channel=%d, min_pos=%f, max_pos=%f, pwm_min=%d, pwm_max=%d, slope=%f, intercept=%f", 
-                           joint.name.c_str(), servo_channels_[i], min_positions_[i],
-                           max_positions_[i], pwm_min_values_[i], pwm_max_values_[i], pwm_slopes_[i],
-                           pwm_intercepts_[i]);
+                // RCLCPP_INFO(
+                //     rclcpp::get_logger("Pca9685SystemHardware"),
+                //     "Joint [%s]: channel=%d, min_pos=%f, max_pos=%f, pwm_min=%d, pwm_max=%d, slope=%f, intercept=%f",
+                //     joint.name.c_str(), servo_channels_[i], min_positions_[i], max_positions_[i], pwm_min_values_[i],
+                //     pwm_max_values_[i], pwm_slopes_[i], pwm_intercepts_[i]);
             }
         } catch (const std::exception &e) {
             RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to parse interface parameters: %s",
@@ -158,7 +158,8 @@ namespace pca9685_hardware_interface {
         //     const hardware_interface::ComponentInfo &joint = info_.joints[i];
 
         //     // Print all parameters for this joint
-        //     // RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"), "Joint [%s] parameters:", joint.name.c_str());
+        //     // RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"), "Joint [%s] parameters:",
+        //     joint.name.c_str());
         //     // for (const auto &param : joint.parameters) {
         //     //     RCLCPP_INFO(rclcpp::get_logger("Ads7138SystemHardware"), "  %s = %s",
         //     //              param.first.c_str(), param.second.c_str());
@@ -180,7 +181,8 @@ namespace pca9685_hardware_interface {
         //     }
 
         //     if (!has_position_interface) {
-        //         RCLCPP_WARN(rclcpp::get_logger("Ads7138SystemHardware"), "Joint '%s' has no position state interface.",
+        //         RCLCPP_WARN(rclcpp::get_logger("Ads7138SystemHardware"), "Joint '%s' has no position state
+        //         interface.",
         //                     joint.name.c_str());
         //         continue;
         //     }
@@ -239,7 +241,8 @@ namespace pca9685_hardware_interface {
 
         //     } catch (const std::exception &e) {
         //         RCLCPP_FATAL(rclcpp::get_logger("Ads7138SystemHardware"),
-        //                      "Failed to parse interface parameters for joint '%s': %s", joint.name.c_str(), e.what());
+        //                      "Failed to parse interface parameters for joint '%s': %s", joint.name.c_str(),
+        //                      e.what());
         //         return hardware_interface::CallbackReturn::ERROR;
         //     }
         // }
@@ -350,7 +353,7 @@ namespace pca9685_hardware_interface {
             pca_.set_pwm_freq(cfg_.pca_freq_hz);
 
             // Explicitly ensure auto-increment is enabled
-            pca_.enable_auto_increment();
+            // pca_.enable_auto_increment();
 
         } catch (const std::exception &e) {
             RCLCPP_FATAL(rclcpp::get_logger("Pca9685SystemHardware"), "Error initializing PCA9685: %s", e.what());
@@ -466,14 +469,14 @@ namespace pca9685_hardware_interface {
         //             channel_success = true;
         //             any_success = true;
 
-        //             RCLCPP_DEBUG(rclcpp::get_logger("Pca9685SystemHardware"),
+        //             RCLCPP_DEBUG(rclcpp::get_logger("Ads7138SystemHardware"),
         //                          "Joint '%s' (channel %d): ADC=%d, Angle=%f", info_.joints[joint_idx].name.c_str(),
         //                          channel, adc_value, hw_states_[joint_idx]);
 
         //         } catch (const std::exception &e) {
         //             channel_attempts++;
 
-        //             RCLCPP_WARN(rclcpp::get_logger("Pca9685SystemHardware"),
+        //             RCLCPP_WARN(rclcpp::get_logger("Ads7138ystemHardware"),
         //                         "Failed to read channel %d (attempt %d/%d): %s", channel, channel_attempts,
         //                         MAX_READ_ATTEMPTS, e.what());
 
@@ -484,7 +487,8 @@ namespace pca9685_hardware_interface {
 
         //     // If we couldn't read this channel, log but continue with others
         //     if (!channel_success) {
-        //         RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to read channel %d after %d attempts",
+        //         RCLCPP_ERROR(rclcpp::get_logger("Ads7138SystemHardware"), "Failed to read channel %d after %d
+        //         attempts",
         //                      channel, MAX_READ_ATTEMPTS);
         //     }
         // }
@@ -499,21 +503,23 @@ namespace pca9685_hardware_interface {
     double Pca9685SystemHardware::angle_to_duty_cycle(double angle, int joint_index) {
         // Ensure joint_index is valid
         if (joint_index < 0 || joint_index >= static_cast<int>(info_.joints.size())) {
-            RCLCPP_ERROR(get_logger(), "Invalid joint index: %d", joint_index);
+            RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "Invalid joint index: %d", joint_index);
             return 1.5;  // Default to neutral position (1.5ms)
         }
-    
+
         // Calculate PWM in microseconds using the linear calibration
         // Directly apply slope and intercept to the command value
         int pwm_us = static_cast<int>((pwm_slopes_[joint_index] * (angle)) + pwm_intercepts_[joint_index]);
-        
+
         // Constrain PWM to safe limits
         int min_us = pwm_min_values_[joint_index];
         int max_us = pwm_max_values_[joint_index];
-        
-        if (pwm_us < min_us) pwm_us = min_us;
-        if (pwm_us > max_us) pwm_us = max_us;
-        
+
+        if (pwm_us < min_us)
+            pwm_us = min_us;
+        if (pwm_us > max_us)
+            pwm_us = max_us;
+
         // Convert microseconds to milliseconds for set_pwm_ms
         return pwm_us / 1000.0;
     }
@@ -527,7 +533,6 @@ namespace pca9685_hardware_interface {
         for (auto i = 0u; i < hw_commands_.size(); i++) {
             if (current_command_values_[i] != hw_commands_[i]) {
                 // Calculate duty cycle using calibration data
-                // double angle = (hw_commands_[i] * 180 / M_PI) + 90;
                 double angle = hw_commands_[i] + 90;
                 double duty_cycle_ms = angle_to_duty_cycle(angle, i);
 
@@ -536,71 +541,104 @@ namespace pca9685_hardware_interface {
 
                 // Update the current value so we don't keep sending the same command
                 current_command_values_[i] = hw_commands_[i];
-                
-                RCLCPP_DEBUG(rclcpp::get_logger("Pca9685SystemHardware"),
-                "Servo: %d (channel %d), Command: %f, Duty Cycle: %f ms", i, servo_channels_[i],
-                hw_commands_[i], duty_cycle_ms);
+
+                RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Servo: %d (channel %d), Command: %f, Duty Cycle: %f ms", i,
+                             servo_channels_[i], hw_commands_[i], duty_cycle_ms);
             }
         }
-        pca_.connect();
-        for (auto i = 0u; i < channels_to_update.size(); i++) {
 
-            pca_.set_pwm_ms(channels_to_update[i], duty_cycles_ms[i]);
+        // If nothing to update, return OK
+        if (channels_to_update.empty()) {
+            return hardware_interface::return_type::OK;
         }
 
+        // Add error handling with retries
+        const int MAX_RETRIES = 3;
+        const std::chrono::milliseconds RETRY_DELAY(50);
+        const std::chrono::microseconds INTER_COMMAND_DELAY(500);
+        bool success = false;
 
-        // // If nothing to update, return OK
-        // if (channels_to_update.empty()) {
-        //     return hardware_interface::return_type::OK;
-        // }
+        for (int retry = 0; retry < MAX_RETRIES && !success; retry++) {
+            try {
+                // If this is a retry, log the attempt
+                if (retry > 0) {
+                    RCLCPP_WARN(rclcpp::get_logger("Pca9685SystemHardware"), "Retry attempt %d for writing to PCA9685", retry);
+                }
 
-        // // Try to write values to the I2C bus, re-attempt up to MAX_WRITE_ATTEMPTS times
-        // num_write_attempts_ = 0;
-        // write_success_ = false;
+                // Try to (re)connect to the device
+                pca_.connect();
 
-        // while (!write_success_ && num_write_attempts_ < MAX_WRITE_ATTEMPTS) {
-        //     try {
-        //         pca_.connect();  // This function may throw an exception
+                // Process each channel
+                for (auto i = 0u; i < channels_to_update.size(); i++) {
+                    try {
+                        pca_.set_pwm_ms(channels_to_update[i], duty_cycles_ms[i]);
 
-        //         // Convert milliseconds to microseconds for better precision
-        //         std::vector<uint16_t> us_values;
-        //         for (double ms : duty_cycles_ms) {
-        //             us_values.push_back(static_cast<uint16_t>(ms * 1000.0));
-        //         }
+                        // Add delay between writes, but not after the last one
+                        if (i < channels_to_update.size() - 1) {
+                            std::this_thread::sleep_for(INTER_COMMAND_DELAY);
+                        }
+                    } catch (const std::exception &e) {
+                        RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "Error writing to channel %d: %s", channels_to_update[i], e.what());
+                        throw;  // Re-throw to be caught by the outer try/catch
+                    }
+                }
 
-        //         // Use batch write if multiple servos need updating
-        //         if (channels_to_update.size() > 1) {
-        //             // Use batch write function with auto-increment
-        //             pca_.write_microseconds_batch(channels_to_update, us_values);
-                    
+                // If we got here, everything succeeded
+                success = true;
 
-        //             RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Updated %zu servos in batch mode",
-        //                         channels_to_update.size());
-        //         } else {
-        //             // Single servo update
-        //             pca_.write_microseconds(channels_to_update[0], us_values[0]);
+            } catch (const std::exception &e) {
+                RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "Error during write operation (attempt %d/%d): %s", retry + 1, MAX_RETRIES,
+                             e.what());
 
-        //             RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Updated servo at channel %d with %d us",
-        //                         channels_to_update[0], us_values[0]);
-        //         }
+                // Check if it looks like an I2C bus error
+                std::string error_msg = e.what();
+                bool is_i2c_error =
+                    (error_msg.find("I/O error") != std::string::npos ||
+                     error_msg.find("timeout") != std::string::npos || error_msg.find("busy") != std::string::npos ||
+                     error_msg.find("arbitration") != std::string::npos);
 
-        //         write_success_ = true;
-        //     } catch (const std::exception &e) {
-        //         num_write_attempts_++;
-        //         RCLCPP_WARN(rclcpp::get_logger("Pca9685SystemHardware"),
-        //                     "Failed to write to PCA9685, re-trying (attempt %d): %s", num_write_attempts_, e.what());
-        //         rclcpp::sleep_for(std::chrono::nanoseconds(WRITE_ATTEMP_DELAY_US * 1000));
-        //     }
-        // }
+                if (is_i2c_error) {
+                    RCLCPP_WARN(rclcpp::get_logger("Pca9685SystemHardware"), "Detected I2C bus error, attempting bus recovery");
+                    bool recovery_success = i2c_bus_->RecoverBus();
+                    if (recovery_success) {
+                        RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "I2C bus recovery successful");
+                    } else {
+                        RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "I2C bus recovery failed");
+                    }
+                }
 
-        // if (num_write_attempts_ == MAX_WRITE_ATTEMPTS) {
-        //     RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"),
-        //                  "Failed to write to PCA9685 after maximum attempts");
-        //     return hardware_interface::return_type::ERROR;
-        // }
+                if (retry < MAX_RETRIES - 1) {
+                    // Not the last attempt, wait before retrying
+                    RCLCPP_INFO(rclcpp::get_logger("Pca9685SystemHardware"), "Waiting before retry attempt %d...", retry + 2);
+                    std::this_thread::sleep_for(RETRY_DELAY);
+
+                    // On severe failures, try resetting the device
+                    if (retry >= 1) {  // Only try reset after the first retry fails
+                        try {
+                            RCLCPP_WARN(rclcpp::get_logger("Pca9685SystemHardware"), "Attempting to reset and reinitialize PCA9685...");
+                            pca_.init();  // Reset and reinitialize the device
+
+                            // Apply device settings like PWM frequency
+                            pca_.set_pwm_freq(cfg_.pca_freq_hz);
+
+                            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                        } catch (const std::exception &reset_error) {
+                            RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to reset PCA9685: %s", reset_error.what());
+                        }
+                    }
+                }
+            }
+        }
+
+        // Return appropriate status based on success
+        if (!success) {
+            RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"), "Failed to write to PCA9685 after %d attempts", MAX_RETRIES);
+            return hardware_interface::return_type::ERROR;
+        }
 
         return hardware_interface::return_type::OK;
     }
+
 }  // namespace pca9685_hardware_interface
 
 PLUGINLIB_EXPORT_CLASS(pca9685_hardware_interface::Pca9685SystemHardware, hardware_interface::SystemInterface)

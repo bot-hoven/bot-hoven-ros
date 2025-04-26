@@ -18,6 +18,7 @@ namespace hardware {
         ~I2CPeripheral();
 
         // Public methods for I2C operations
+        bool RecoverBus();
         void WriteRegisterByte(const uint8_t register_address, const uint8_t value);
         uint8_t ReadRegisterByte(const uint8_t register_address);
         void ConnectToPeripheral(const uint8_t address);
@@ -49,7 +50,6 @@ namespace hardware {
         // Methods to open and close the I2C bus
         void OpenBus(const std::string& device);
         void CloseBus();
-        void RecoverBus();
 
         // Singleton instance and mutex
         static std::shared_ptr<I2CPeripheral> instance_;

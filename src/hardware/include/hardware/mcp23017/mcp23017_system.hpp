@@ -79,6 +79,7 @@ namespace mcp23017_hardware_interface {
 
         // Internal variables
         uint8_t current_solenoid_values_ = 0;
+        std::vector<int> solenoid_channels_;
         int num_write_attempts_ = 0;
         bool write_success_ = false;
     };
