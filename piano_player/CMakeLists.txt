@@ -15,15 +15,6 @@ find_package(trajectory_msgs REQUIRED)
 find_package(control_msgs REQUIRED)
 
 # Add executables
-add_executable(song_player src/song_player.cpp)
-ament_target_dependencies(song_player
-  rclcpp
-  rclcpp_action
-  std_msgs
-  trajectory_msgs
-  control_msgs
-)
-
 add_executable(configurable_song_player src/configurable_song_player.cpp)
 ament_target_dependencies(configurable_song_player
   rclcpp
@@ -33,20 +24,9 @@ ament_target_dependencies(configurable_song_player
   control_msgs
 )
 
-add_executable(chord_player src/chord_player.cpp)
-ament_target_dependencies(chord_player
-  rclcpp
-  rclcpp_action
-  std_msgs
-  trajectory_msgs
-  control_msgs
-)
-
 # Install executables
 install(TARGETS
-  song_player
   configurable_song_player
-  chord_player
   DESTINATION lib/${PROJECT_NAME}
 )
 
