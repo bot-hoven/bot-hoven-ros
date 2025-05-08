@@ -88,7 +88,7 @@ Commands can be sent via the `song_command` topic:
 
 ```bash
 # Load a song
-ros2 topic pub --once /song_command std_msgs/msg/String "data: 'load:jingle_bells.csv'"
+ros2 topic pub --once /song_command std_msgs/msg/String "data: 'load:mary_had_a_little_lamb.csv'"
 
 # Start playing
 ros2 topic pub --once /song_command std_msgs/msg/String "data: 'play'"

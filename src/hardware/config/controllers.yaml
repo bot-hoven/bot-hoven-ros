@@ -37,6 +37,7 @@ left_stepper_controller:
     state_interfaces:
       - position
     
+    interpolation_method: none
     allow_partial_joints_goal: true
     constraints:
       stopped_velocity_tolerance: 0.01
@@ -92,6 +93,7 @@ right_stepper_controller:
     state_interfaces:
       - position
     
+    interpolation_method: none
     allow_partial_joints_goal: true
     constraints:
       stopped_velocity_tolerance: 0.01
