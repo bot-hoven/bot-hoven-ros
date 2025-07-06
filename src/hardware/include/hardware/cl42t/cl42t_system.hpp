@@ -30,6 +30,7 @@ namespace cl42t_hardware_interface {
         int bus_speed_hz_;
         int bits_per_word_;
         std::string stepper_side_;
+        double cl42t_resolution_;
     };
 
     class Cl42tSystemHardware : public hardware_interface::SystemInterface {
@@ -124,7 +125,6 @@ namespace cl42t_hardware_interface {
         double angular_resolution_;
         int num_pulses_;
         double desired_position_;
-        double cl42t_resolution_;
         
         std::chrono::steady_clock::time_point last_command_time_;
         double previous_position_command_;

@@ -28,9 +28,13 @@ namespace mcp23017_hardware_interface {
         }
 
         hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+        hw_states_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+        solenoid_channels_.resize(info_.joints.size(), 0);  // Default to channel 0
 
         // Validate the command interface
-        for (const hardware_interface::ComponentInfo &joint : info_.joints) {
+        for (auto i = 0u; i < info_.joints.size(); i++) {
+            const hardware_interface::ComponentInfo &joint = info_.joints[i];
+
             // MCP23017System has one command interface on each output
             if (joint.command_interfaces.size() != 1) {
                 RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"),
@@ -44,6 +48,20 @@ namespace mcp23017_hardware_interface {
                              "Joint '%s' have %s command interfaces found. '%s' expected.", joint.name.c_str(),
                              joint.command_interfaces[0].name.c_str(), hardware_interface::HW_IF_POSITION);
                 return hardware_interface::CallbackReturn::ERROR;
+            }
+
+            // Read the solenoid channel parameter
+            if (joint.parameters.count("solenoid_channel") > 0) {
+                try {
+                    solenoid_channels_[i] = std::stoi(joint.parameters.at("solenoid_channel"));
+                    RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Joint '%s' uses solenoid channel %d",
+                                joint.name.c_str(), solenoid_channels_[i]);
+                } catch (const std::exception &param_e) {
+                    RCLCPP_ERROR(rclcpp::get_logger("Mcp23017SystemHardware"),
+                                 "Failed to parse solenoid_channel for joint '%s': %s", joint.name.c_str(),
+                                 param_e.what());
+                    // Keep the default channel 0
+                }
             }
         }
 
@@ -74,9 +92,12 @@ namespace mcp23017_hardware_interface {
 
         for (auto i = 0u; i < info_.joints.size(); i++) {
             state_interfaces.emplace_back(hardware_interface::StateInterface(
-                info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_commands_[i]));
-        }
+                info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_states_[i]));
 
+            // RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"),
+            //             "Exporting state interface for joint [%s] mapped to MCP23017 channel [%d]",
+            //             info_.joints[i].name.c_str(), channel_mapping_[i]);
+        }
         return state_interfaces;
     }
 
@@ -158,6 +179,9 @@ namespace mcp23017_hardware_interface {
 
     hardware_interface::return_type Mcp23017SystemHardware::read(const rclcpp::Time & /*time*/,
                                                                  const rclcpp::Duration & /*period*/) {
+        for (auto i = 0u; i < hw_states_.size(); i++) {
+            hw_states_[i] = hw_commands_[i];
+        }
         return hardware_interface::return_type::OK;
     }
 
@@ -167,6 +191,14 @@ namespace mcp23017_hardware_interface {
         num_write_attempts_ = 0;
         write_success_ = false;
 
+        // Maps to store finger name for each channel
+        const std::vector<std::string> finger_names = {"thumb", "index", "middle", "ring", "pinky"};
+
+        // Determine hand based on address
+        bool is_left_hand = (cfg_.i2c_address == 0x20);
+        std::string hand_str = is_left_hand ? "Left" : "Right";
+
+        // Build the solenoid values using channel mapping
         for (auto i = 0u; i < hw_commands_.size(); i++) {
             // Round the value to the nearest integer (0 or 1)
             uint8_t bit_value = static_cast<uint8_t>(hw_commands_[i]);
@@ -174,44 +206,87 @@ namespace mcp23017_hardware_interface {
             // Ensure the value is clamped to 0 or 1
             bit_value = std::min<uint8_t>(1, bit_value);
 
-            new_solenoid_values_ |= (bit_value << i);
+            // Get the assigned channel for this joint
+            int channel = solenoid_channels_[i];
 
-            // This causes more yap than Tony
-            // RCLCPP_INFO(
-            //     rclcpp::get_logger("Mcp23017SystemHardware"),
-            //     "Joint '%d' has command '%f', rounded to '%d'.", i, hw_commands_[i], bit_value);
+            // Set the appropriate bit in the output register
+            if (bit_value) {
+                new_solenoid_values_ |= (1 << channel);
+            }
         }
 
-        // Only perform the write if the new state is different from the current state
-        if (new_solenoid_values_ != current_solenoid_values_) {
+    // Only perform the write if the new state is different from the current state
+    if (new_solenoid_values_ != current_solenoid_values_) {
+        // Try to write values to the I2C bus, attempt multiple times if necessary
+        while (!write_success_ && num_write_attempts_ < MAX_WRITE_ATTEMPTS) {
+            try {
+                mcp_.connect();                             // This function may throw an exception
+                mcp_.set_gpio_state(new_solenoid_values_);  // This function may throw an exception
+                current_solenoid_values_ = new_solenoid_values_;
+                write_success_ = true;
 
-            // Try to write values to the I2C bus, attempt multiple times if necessary
-            while (!write_success_ && num_write_attempts_ < MAX_WRITE_ATTEMPTS) {
-                try {
-                    mcp_.connect(); // This function may throw an exception
-                    mcp_.set_gpio_state(new_solenoid_values_);  // This function may throw an exception
-                    current_solenoid_values_ = new_solenoid_values_;
-                    write_success_ = true;
+                // Create a string representation of finger states
+                std::string solenoid_status = "";
 
-                    for (auto i = 0u; i < hw_commands_.size(); ++i) {
-                        uint8_t bit_value = (current_solenoid_values_ >> i) & 0x01;
-                        RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Solenoid %d: %d", i, bit_value);
+                // For each possible finger
+                for (int i = 0; i < 5; i++) {
+                    std::string finger_name;
+                    int channel;
+
+                    // The finger name and channel depend on whether it's left or right hand
+                    if (is_left_hand) {
+                        // Left hand: numbered from pinky to thumb
+                        // finger_name = finger_names[4 - i];  // Reverse the index
+                        channel = 4 - i;                    // Channel 0=pinky, 4=thumb
+                    } else {
+                        // Right hand: numbered from thumb to pinky
+                        channel = i;  // Channel 0=thumb, 4=pinky
                     }
-                } catch (const std::exception &e) {
-                    num_write_attempts_++;
-                    RCLCPP_WARN(rclcpp::get_logger("Mcp23017SystemHardware"),
-                                "Failed to write to MCP23017, re-trying (attempt %d): %s", num_write_attempts_,
-                                e.what());
-                    // Wait I2C_REWRITE_DELAY_US ms between re-write attempts
-                    rclcpp::sleep_for(std::chrono::nanoseconds(I2C_REWRITE_DELAY_US * NS_PER_US));
+                    
+                    finger_name = finger_names[i];
+                    // Get the bit value for this channel
+                    uint8_t state = (current_solenoid_values_ >> channel) & 0x01;
+
+                    // Add to the status string
+                    solenoid_status += finger_name + ":" + std::to_string(state) + " ";
                 }
-            }
-            if (num_write_attempts_ == MAX_WRITE_ATTEMPTS) {
-                RCLCPP_ERROR(rclcpp::get_logger("Pca9685SystemHardware"),
-                             "Failed to write to PCA9685 after maximum attempts");
-                return hardware_interface::return_type::ERROR;
+
+                RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "%s hand solenoids: %s", hand_str.c_str(), solenoid_status.c_str());
+
+            } catch (const std::exception &e) {
+                num_write_attempts_++;
+                RCLCPP_WARN(rclcpp::get_logger("Mcp23017SystemHardware"), "Failed to write to MCP23017, re-trying (attempt %d): %s",
+                            num_write_attempts_, e.what());
+                
+                // Attempt bus recovery if this looks like a bus hang
+                // Check if the error message contains typical I2C failure indicators
+                std::string error_msg = e.what();
+                bool is_i2c_error = (error_msg.find("I/O error") != std::string::npos ||
+                                    error_msg.find("timeout") != std::string::npos ||
+                                    error_msg.find("busy") != std::string::npos ||
+                                    error_msg.find("arbitration") != std::string::npos);
+                
+                if (is_i2c_error) {
+                    RCLCPP_WARN(rclcpp::get_logger("Mcp23017SystemHardware"), "Detected I2C bus error, attempting bus recovery");
+                    bool recovery_success = i2c_bus_->RecoverBus();
+                    if (recovery_success) {
+                        RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "I2C bus recovery successful");
+                    } else {
+                        RCLCPP_ERROR(rclcpp::get_logger("Mcp23017SystemHardware"), "I2C bus recovery failed");
+                    }
+                }
+                
+                // Wait between re-write attempts
+                rclcpp::sleep_for(std::chrono::nanoseconds(I2C_REWRITE_DELAY_US * NS_PER_US));
             }
         }
+
+        if (num_write_attempts_ == MAX_WRITE_ATTEMPTS) {
+            RCLCPP_ERROR(rclcpp::get_logger("Mcp23017SystemHardware"), "Failed to write to MCP23017 after maximum attempts");
+            return hardware_interface::return_type::ERROR;
+        }
+    }
+
         return hardware_interface::return_type::OK;
     }
 

@@ -1,38 +1,97 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!-- thumb -->
     <joint name="lh_servo_1">
         <command_interface name="position">
             <param name="min">${servo_min}</param>
             <param name="max">${servo_max}</param>
         </command_interface>
         <state_interface name="position" />
+        <!-- PCA9685 parameters -->
+        <param name="servo_channel">4</param>
+        <param name="pwm_min">500</param>
+        <param name="pwm_max">2500</param>
+        <param name="pwm_slope">13.10</param>
+        <param name="pwm_intercept">339.41</param>
+        <!-- ADS7138 parameters -->
+        <param name="adc_channel">4</param>
+        <param name="adc_slope">2.33</param>
+        <param name="adc_intercept">91.48</param>
     </joint>
+
+    <!-- index -->
     <joint name="lh_servo_2">
         <command_interface name="position">
             <param name="min">${servo_min}</param>
             <param name="max">${servo_max}</param>
         </command_interface>
         <state_interface name="position" />
+        <!-- PCA9685 parameters -->
+        <param name="servo_channel">3</param>
+        <param name="pwm_min">500</param>
+        <param name="pwm_max">2500</param>
+        <param name="pwm_slope">13.20</param>
+        <param name="pwm_intercept">319.56</param>
+        <!-- ADS7138 parameters -->
+        <param name="adc_channel">3</param>
+        <param name="adc_slope">2.33</param>
+        <param name="adc_intercept">85.52</param>
     </joint>
+
+    <!-- middle -->
     <joint name="lh_servo_3">
         <command_interface name="position">
             <param name="min">${servo_min}</param>
             <param name="max">${servo_max}</param>
         </command_interface>
         <state_interface name="position" />
+        <!-- PCA9685 parameters -->
+        <param name="servo_channel">2</param>
+        <param name="pwm_min">500</param>
+        <param name="pwm_max">2500</param>
+        <param name="pwm_slope">12.33</param>
+        <param name="pwm_intercept">306.41</param>
+        <!-- ADS7138 parameters -->
+        <param name="adc_channel">2</param>
+        <param name="adc_slope">2.27</param>
+        <param name="adc_intercept">83.03</param>
     </joint>
+
+    <!-- ring -->
     <joint name="lh_servo_4">
         <command_interface name="position">
             <param name="min">${servo_min}</param>
             <param name="max">${servo_max}</param>
         </command_interface>
         <state_interface name="position" />
+        <!-- PCA9685 parameters -->
+        <param name="servo_channel">1</param>
+        <param name="pwm_min">500</param>
+        <param name="pwm_max">2500</param>
+        <param name="pwm_slope">12.84</param>
+        <param name="pwm_intercept">287.44</param>
+        <!-- ADS7138 parameters -->
+        <param name="adc_channel">1</param>
+        <param name="adc_slope">2.53</param>
+        <param name="adc_intercept">88.97</param>
     </joint>
+
+    <!-- pinky -->
     <joint name="lh_servo_5">
         <command_interface name="position">
             <param name="min">${servo_min}</param>
             <param name="max">${servo_max}</param>
         </command_interface>
         <state_interface name="position" />
+        <!-- PCA9685 parameters -->
+        <param name="servo_channel">0</param>
+        <param name="pwm_min">500</param>
+        <param name="pwm_max">2500</param>
+        <param name="pwm_slope">12.14</param>
+        <param name="pwm_intercept">519.92</param>
+        <!-- ADS7138 parameters -->
+        <param name="adc_channel">0</param>
+        <param name="adc_slope">1.83</param>
+        <param name="adc_intercept">101.71</param>
     </joint>
 </robot>

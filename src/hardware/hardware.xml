@@ -17,6 +17,14 @@
     </description>
   </class>
   <class
+    name="ads7138_hardware_interface/Ads7138SystemHardware"
+    type="ads7138_hardware_interface::Ads7138SystemHardware"
+    base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ROS2 control hardware interface for the ADS7138 12-bit 8-channel ADC
+    </description>
+  </class>
+  <class
     name="mcp23017_hardware_interface/Mcp23017SystemHardware"
     type="mcp23017_hardware_interface::Mcp23017SystemHardware"
     base_class_type="hardware_interface::SystemInterface">

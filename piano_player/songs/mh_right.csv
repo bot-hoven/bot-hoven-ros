@@ -1,0 +1,116 @@
+name=Mary Had a Little Lamb,tempo=100
+# Format: note_name,finger,hand,component,position,delta_time
+# 
+# Component: servo or solenoid
+# Position: angle in degrees for servo, 0/1 for solenoid
+# Delta_time: time in seconds since the last event
+#
+# E D C D E E E (rest) D D D (rest) E G G (rest) E D C D E E E E D D E D C
+#
+# First note: E5 (right index finger)
+E5,middle,right,servo,-10.0,0
+E5,middle,right,solenoid,1,0
+E5,middle,right,solenoid,0,1.0
+# Second note: D5 (right middle finger)
+D5,index,right,servo,0.0,0
+D5,index,right,solenoid,1,0
+D5,index,right,solenoid,0,1.0
+# Third note: C5 (right ring finger)
+C5,thumb,right,servo,8.0,0
+C5,thumb,right,solenoid,1,0
+C5,thumb,right,solenoid,0,1.0
+# Fourth note: D5 (right middle finger)
+D5,index,right,servo,0.0,0
+D5,index,right,solenoid,1,0
+D5,index,right,solenoid,0,1.0
+# Fifth note: E5 (right index finger)
+E5,middle,right,servo,-10,0
+E5,middle,right,solenoid,1,0
+E5,middle,right,solenoid,0,0.8
+# Sixth note: E5 (right index finger)
+E5,middle,right,servo,-10,0
+E5,middle,right,solenoid,1,0.2
+E5,middle,right,solenoid,0,0.8
+# Seventh note: E5 (right index finger) - hold for 2 beats
+E5,middle,right,servo,-10,0
+E5,middle,right,solenoid,1,0.2
+E5,middle,right,solenoid,0,2.0
+# Rest
+# Eighth note: D5 (right middle finger)
+D5,index,right,servo,0.0,0
+D5,index,right,solenoid,1,0
+D5,index,right,solenoid,0,0.8
+# Ninth note: D5 (right middle finger)
+D5,index,right,servo,0.0,0
+D5,index,right,solenoid,1,0.2
+D5,index,right,solenoid,0,0.8
+# Tenth note: D5 (right middle finger) - hold for 2 beats
+D5,index,right,servo,0.0,0
+D5,index,right,solenoid,1,0.2
+D5,index,right,solenoid,0,2.0
+# Rest
+# Eleventh note: E5 (right index finger)
+E5,middle,right,servo,-10,0
+E5,middle,right,solenoid,1,0
+E5,middle,right,solenoid,0,1.0
+# Twelfth note: G5 (right thumb finger)
+G5,ring,right,servo,-5.0,0
+G5,ring,right,solenoid,1,0
+G5,ring,right,solenoid,0,0.8
+# Thirteenth note: G5 (right thumb finger) - hold for 2 beats
+G5,ring,right,servo,-5.0,0
+G5,ring,right,solenoid,1,0.2
+G5,ring,right,solenoid,0,2.0
+# Rest
+# Fourteenth note: E5 (right index finger)
+E5,middle,right,servo,-10,0
+E5,middle,right,solenoid,1,0
+E5,middle,right,solenoid,0,1.0
+# Fifteenth note: D5 (right middle finger)
+D5,index,right,servo,0.0,0
+D5,index,right,solenoid,1,0
+D5,index,right,solenoid,0,1.0
+# Sixteenth note: C5 (right ring finger)
+C5,thumb,right,servo,8.0,0
+C5,thumb,right,solenoid,1,0
+C5,thumb,right,solenoid,0,1.0
+# Seventeenth note: D5 (right middle finger)
+D5,index,right,servo,0.0,0
+D5,index,right,solenoid,1,0
+D5,index,right,solenoid,0,1.0
+# Eighteenth note: E5 (right index finger)
+E5,middle,right,servo,-10,0
+E5,middle,right,solenoid,1,0
+E5,middle,right,solenoid,0,0.8
+# Nineteenth note: E5 (right index finger)
+E5,middle,right,servo,-10,0.2
+E5,middle,right,solenoid,1,0
+E5,middle,right,solenoid,0,0.8
+# Twentieth note: E5 (right index finger)
+E5,middle,right,servo,-10,0
+E5,middle,right,solenoid,1,0.2
+E5,middle,right,solenoid,0,0.8
+# Twenty-first note: E5 (right index finger)
+E5,middle,right,servo,-10,0
+E5,middle,right,solenoid,1,0.2
+E5,middle,right,solenoid,0,1.0
+# Twenty-second note: D5 (right middle finger)
+D5,index,right,servo,0.0,0
+D5,index,right,solenoid,1,0
+D5,index,right,solenoid,0,0.8
+# Twenty-third note: D5 (right middle finger)
+D5,index,right,servo,0.0,0
+D5,index,right,solenoid,1,0.2
+D5,index,right,solenoid,0,1.0
+# Twenty-fourth note: E5 (right index finger)
+E5,middle,right,servo,-10,0
+E5,middle,right,solenoid,1,0.0
+E5,middle,right,solenoid,0,1.0
+# Twenty-fifth note: D5 (right middle finger)
+D5,index,right,servo,0.0,0
+D5,index,right,solenoid,1,0
+D5,index,right,solenoid,0,1.0
+# Last note: C5 (right ring finger) - hold for 2 beats
+C5,thumb,right,servo,8.0,0
+C5,thumb,right,solenoid,1,0
+C5,thumb,right,solenoid,0,2.0

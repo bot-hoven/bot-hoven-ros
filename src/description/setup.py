@@ -19,7 +19,10 @@ setup(
         ('share/' + package_name + '/description', ['description/right_hand.xacro']),
         ('share/' + package_name + '/description', ['description/finger.xacro']),
         ('share/' + package_name + '/description', ['description/gazebo_control.xacro']),
+<<<<<<< HEAD
         # ('share/' + package_name + '/description' + '/meshes', glob('meshes/*')),
+=======
+>>>>>>> 394a04ccd59f7fd11b4b6038555c4a7760203cfe
         ('share/' + package_name + '/description' + '/meshes', glob('description/meshes/*')),
         # ('share/' + package_name + '/description', ['description/common.xacro']),
         ('share/' + package_name + '/worlds', ['worlds/bothoven_world.sdf']),

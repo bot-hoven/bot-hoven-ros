@@ -8,9 +8,9 @@ WORKSPACE_DIR="$(pwd)"
 WORKSPACE_NAME="$(basename $WORKSPACE_DIR)"
 
 # Stop and remove existing container if it exists
-echo "Stopping and removing any existing container..."
-docker stop $CONTAINER_NAME >/dev/null 2>&1
-docker rm $CONTAINER_NAME >/dev/null 2>&1
+#echo "Stopping and removing any existing container..."
+#docker stop $CONTAINER_NAME >/dev/null 2>&1
+#docker rm $CONTAINER_NAME >/dev/null 2>&1
 
 # Build the Docker image
 # echo "Building Docker image..."
@@ -33,6 +33,8 @@ docker run -it --name $CONTAINER_NAME \
   -v bothoven-bashhistory:/commandhistory \
   -v /etc/localtime:/etc/localtime:ro \
   -w "/$WORKSPACE_NAME" \
+  --name $1 \
+  --rm \
   $IMAGE_NAME \
   /bin/bash -c "for dev in /dev/i2c-1 /dev/i2c-13 /dev/i2c-14; do if [ -e \$dev ]; then sudo chown :i2c \$dev && sudo chmod g+rw \$dev; fi; done && if [ -e /dev/spidev0.0 ]; then sudo chown :spi /dev/spidev0.0 && sudo chmod g+rw /dev/spidev0.0; fi && source /opt/ros/\$ROS_DISTRO/setup.bash && bash"
 

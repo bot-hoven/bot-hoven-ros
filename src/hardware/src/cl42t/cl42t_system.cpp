@@ -21,6 +21,7 @@ hardware_interface::CallbackReturn Cl42tSystemHardware::on_init(const hardware_i
         cfg_.spi_mode_ = std::stoi(info.hardware_parameters.at("spi_mode"));
         cfg_.bits_per_word_ = std::stoi(info.hardware_parameters.at("bits_per_word"));
         cfg_.stepper_side_ = info.hardware_parameters.at("stepper_side");
+        cfg_.cl42t_resolution_ = std::stod(info.hardware_parameters.at("max_position_error"));
     } catch (const std::exception &e) {
         RCLCPP_FATAL(rclcpp::get_logger("Cl42tSystemHardware"), "Failed to parse CL42T parameters: %s", e.what());
         return hardware_interface::CallbackReturn::ERROR;
@@ -63,7 +64,7 @@ hardware_interface::CallbackReturn Cl42tSystemHardware::on_init(const hardware_i
 }
 
 hardware_interface::CallbackReturn Cl42tSystemHardware::on_configure(const rclcpp_lifecycle::State & /*previous_state*/) {
-    RCLCPP_INFO(rclcpp::get_logger("Cl42tSystemHardware"), "Configuring ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("Cl42tSystemHardware"), "Configuring SPI Interface...please wait...");
     try {
         // Create the SPI peripheral.
         spi_peripheral_ = new hardware::SPIPeripheral(cfg_.spi_device_);
@@ -81,10 +82,27 @@ hardware_interface::CallbackReturn Cl42tSystemHardware::on_configure(const rclcp
         return hardware_interface::CallbackReturn::ERROR;
     }
 
-    RCLCPP_INFO(rclcpp::get_logger("Cl42tSystemHardware"), "Working so far...");
-    // Reset the state interface
-    set_state(position_state_interface_name_, 0.0);
-    previous_position_command_ = 0.0;
+    RCLCPP_INFO(rclcpp::get_logger("Cl42tSystemHardware"), "Initializing start-up state...");
+    // Read initial position from hardware
+    try {
+        double initial_position = comm_.read_position(cfg_.stepper_side_);
+        
+        // Set the state interface to the current hardware position
+        set_state(position_state_interface_name_, initial_position);
+        
+        // Initialize previous command to match the current position
+        previous_position_command_ = initial_position;
+        
+        RCLCPP_INFO(rclcpp::get_logger("Cl42tSystemHardware"), 
+            "Initial position read: %f", initial_position);
+            
+    } catch (const std::exception &e) {
+        RCLCPP_FATAL(rclcpp::get_logger("Cl42tSystemHardware"), 
+            "Failed to read initial position: %s", e.what());
+        return hardware_interface::CallbackReturn::ERROR;
+    }
+
+    RCLCPP_INFO(rclcpp::get_logger("Cl42tSystemHardware"), "Successfully Configured.");
 
     return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -100,7 +118,6 @@ hardware_interface::CallbackReturn Cl42tSystemHardware::on_cleanup(const rclcpp_
 
 hardware_interface::CallbackReturn Cl42tSystemHardware::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
     RCLCPP_INFO(rclcpp::get_logger("Cl42tSystemHardware"), "Activating ...please wait...");
-    // last_command_time_ = std::chrono::steady_clock::now();
     // Initialize the CL42T communication interface.
     try {
         comm_.init();
@@ -108,9 +125,6 @@ hardware_interface::CallbackReturn Cl42tSystemHardware::on_activate(const rclcpp
         RCLCPP_FATAL(rclcpp::get_logger("Cl42tSystemHardware"), "Error initializing CL42T: %s", e.what());
         return hardware_interface::CallbackReturn::ERROR;
     }
-
-    // TODO: Get the stepper resolution after calibration setting to 0.01 for now
-    cl42t_resolution_ = 0.1;
 
     RCLCPP_INFO(rclcpp::get_logger("Cl42tSystemHardware"), "Successfully activated!");
     return hardware_interface::CallbackReturn::SUCCESS;
@@ -130,7 +144,7 @@ hardware_interface::return_type Cl42tSystemHardware::read(const rclcpp::Time & /
 
     // Get the current position from the CL42T driver
     // First send the read request to the CL42T driver
-    if (std::abs(previous_position - previous_command) >= cl42t_resolution_) {
+    if (std::abs(previous_position - previous_command) >= cfg_.cl42t_resolution_) {
         try {
             current_position = comm_.read_position(cfg_.stepper_side_);
             // RCLCPP_INFO(rclcpp::get_logger("Cl42tSystemHardware"), "Sent read command to: %s", cfg_.stepper_side_.c_str());
@@ -170,7 +184,7 @@ hardware_interface::return_type Cl42tSystemHardware::write(const rclcpp::Time& /
 
     // Check if the position change is within the resolution
     // Kept this in here because I dont want it to keep slamming the SPI if its an impossible request
-    if (std::abs(position_change) >= cl42t_resolution_) {
+    if (std::abs(position_change) >= cfg_.cl42t_resolution_) {
 
         // Send the command over SPI
         if (previous_position_command_ != desired_position_) {

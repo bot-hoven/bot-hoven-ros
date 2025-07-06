@@ -12,15 +12,14 @@ controller_manager:
     left_solenoid_controller:
       type: forward_command_controller/ForwardCommandController
     
-    # Right Hand Controllers (commented out until hardware is available)
-    # right_stepper_controller:
-    #   type: joint_trajectory_controller/JointTrajectoryController
+    right_stepper_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
     
-    # right_servo_controller:
-    #   type: joint_trajectory_controller/JointTrajectoryController
+    right_servo_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
     
-    # right_solenoid_controller:
-    #   type: forward_command_controller/ForwardCommandController
+    right_solenoid_controller:
+      type: forward_command_controller/ForwardCommandController
     
     # Joint State Broadcaster
     joint_state_broadcaster:
@@ -38,6 +37,7 @@ left_stepper_controller:
     state_interfaces:
       - position
     
+    interpolation_method: none
     allow_partial_joints_goal: true
     constraints:
       stopped_velocity_tolerance: 0.01
@@ -59,6 +59,7 @@ left_servo_controller:
     state_interfaces:
       - position
     
+    interpolation_method: none
     allow_partial_joints_goal: true
     constraints:
       stopped_velocity_tolerance: 0.01
@@ -81,58 +82,59 @@ left_solenoid_controller:
     
     allow_partial_joints_goal: true
 
-# Right Stepper Controller (commented out until hardware is available)
-# right_stepper_controller:
-#   ros__parameters:
-#     joints:
-#       - rh_stepper
-#     
-#     command_interfaces:
-#       - position
-#     
-#     state_interfaces:
-#       - position
-#     
-#     allow_partial_joints_goal: true
-#     constraints:
-#       stopped_velocity_tolerance: 0.01
-#       goal_time: 0.0
+right_stepper_controller:
+  ros__parameters:
+    joints:
+      - rh_stepper
+    
+    command_interfaces:
+      - position
+    
+    state_interfaces:
+      - position
+    
+    interpolation_method: none
+    allow_partial_joints_goal: true
+    constraints:
+      stopped_velocity_tolerance: 0.01
+      goal_time: 0.0
 
-# Right Servo Controller (commented out until hardware is available)
-# right_servo_controller:
-#   ros__parameters:
-#     joints:
-#       - rh_servo_1
-#       - rh_servo_2
-#       - rh_servo_3
-#       - rh_servo_4
-#       - rh_servo_5
-#     
-#     command_interfaces:
-#       - position
-#     
-#     state_interfaces:
-#       - position
-#     
-#     allow_partial_joints_goal: true
-#     constraints:
-#       stopped_velocity_tolerance: 0.01
-#       goal_time: 0.0
+right_servo_controller:
+  ros__parameters:
+    joints:
+      - rh_servo_1
+      - rh_servo_2
+      - rh_servo_3
+      - rh_servo_4
+      - rh_servo_5
+    
+    command_interfaces:
+      - position
+    
+    state_interfaces:
+      - position
+    
+    interpolation_method: none
+    allow_partial_joints_goal: true
+    constraints:
+      stopped_velocity_tolerance: 0.01
+      goal_time: 0.0
 
-# Right Solenoid Controller (commented out until hardware is available)
-# right_solenoid_controller:
-#   ros__parameters:
-#     joints:
-#       - rh_solenoid_1
-#       - rh_solenoid_2
-#       - rh_solenoid_3
-#       - rh_solenoid_4
-#       - rh_solenoid_5
-#     
-#     command_interfaces:
-#       - position
-#     
-#     allow_partial_joints_goal: true
+right_solenoid_controller:
+  ros__parameters:
+    joints:
+      - rh_solenoid_1
+      - rh_solenoid_2
+      - rh_solenoid_3
+      - rh_solenoid_4
+      - rh_solenoid_5
+    
+    command_interfaces:
+      - position
+
+    interface_name: position
+    
+    allow_partial_joints_goal: true
 
 # ================ old code ================
 

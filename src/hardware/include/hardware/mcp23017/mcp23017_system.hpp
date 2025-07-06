@@ -73,11 +73,13 @@ namespace mcp23017_hardware_interface {
         std::vector<double> min_positions_;
         std::vector<double> max_positions_;
         std::vector<double> hw_commands_;
+        std::vector<double> hw_states_;
         // std::vector<std::string> position_state_interface_names_;
         // std::vector<std::string> position_command_interface_names_;
 
         // Internal variables
         uint8_t current_solenoid_values_ = 0;
+        std::vector<int> solenoid_channels_;
         int num_write_attempts_ = 0;
         bool write_success_ = false;
     };
