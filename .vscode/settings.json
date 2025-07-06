@@ -1,3 +1,13 @@
 {
-    "cmake.sourceDirectory": "/bot-hoven-ros/src/hardware"
+    "cmake.sourceDirectory": "/bot-hoven-ros/src/hardware",
+    "python.autoComplete.extraPaths": [
+        "/home/alessandro/codes/capstone/bot-hoven-ros/src/install/description/lib/python3.10/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/alessandro/codes/capstone/bot-hoven-ros/src/install/description/lib/python3.10/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
 }

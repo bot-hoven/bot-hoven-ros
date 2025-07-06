@@ -8,14 +8,14 @@
       <visual>
         <origin xyz="0 0.027359073967098360841 -0.036000000000000004219" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://description/meshes/large_solenoid.stl"/>
+          <mesh filename="package://description/description/meshes/large_solenoid.stl"/>
         </geometry>
         <material name="large_solenoid_material"/>
       </visual>
       <visual>
         <origin xyz="1.3877787807814456755e-17 0.0074929958267665672245 0" rpy="3.141592653589793116 0 0" />
         <geometry>
-          <mesh filename="package://description/meshes/large_finger_solenoid.stl"/>
+          <mesh filename="package://description/description/meshes/large_finger_solenoid.stl"/>
         </geometry>
         <material name="large_finger_solenoid_material"/>
       </visual>
@@ -31,7 +31,7 @@
       <visual>
         <origin xyz="0.063368257669539254651 -5.4787295081876186131e-05 -0.0050000000000000044409" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://description/meshes/finger_arm_large.stl"/>
+          <mesh filename="package://description/description/meshes/finger_arm_large.stl"/>
         </geometry>
         <material name="finger_arm_large_material"/>
       </visual>
