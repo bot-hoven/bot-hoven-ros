@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!-- thumb -->
+    <joint name="rh_solenoid_1">
+        <command_interface name="position">
+            <param name="min">${solenoid_min}</param>
+            <param name="max">${solenoid_max}</param>
+        </command_interface>
+        <state_interface name="position" />
+        <param name="solenoid_channel">0</param>
+    </joint>
+    
+    <!-- index -->
+    <joint name="rh_solenoid_2">
+        <command_interface name="position">
+            <param name="min">${solenoid_min}</param>
+            <param name="max">${solenoid_max}</param>
+        </command_interface>
+        <state_interface name="position" />
+        <param name="solenoid_channel">1</param>
+    </joint>
+    
+    <!-- middle -->
+    <joint name="rh_solenoid_3">
+        <command_interface name="position">
+            <param name="min">${solenoid_min}</param>
+            <param name="max">${solenoid_max}</param>
+        </command_interface>
+        <state_interface name="position" />
+        <param name="solenoid_channel">2</param>
+    </joint>
+    
+    <!-- ring -->
+    <joint name="rh_solenoid_4">
+        <command_interface name="position">
+            <param name="min">${solenoid_min}</param>
+            <param name="max">${solenoid_max}</param>
+        </command_interface>
+        <state_interface name="position" />
+        <param name="solenoid_channel">3</param>
+    </joint>
+    
+    <!-- pinky -->
+    <joint name="rh_solenoid_5">
+        <command_interface name="position">
+            <param name="min">${solenoid_min}</param>
+            <param name="max">${solenoid_max}</param>
+        </command_interface>
+        <state_interface name="position" />
+        <param name="solenoid_channel">4</param>
+    </joint>
+</robot>

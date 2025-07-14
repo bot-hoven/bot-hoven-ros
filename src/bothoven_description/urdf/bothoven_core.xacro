@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<robot name="bothoven"
+  xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find bothoven_description)/urdf/left_hand.xacro" />
+  <xacro:include filename="$(find bothoven_description)/urdf/right_hand.xacro" />
+
+  <xacro:property name="mesh_dir" value="file://$(find bothoven_description)/meshes" />
+
+  <!-- dimensions -->
+  <xacro:property name="rail_length" value="1.2192" />
+  <xacro:property name="rail_width" value="0.05" />
+  <xacro:property name="rail_height" value="0.02" />
+  <xacro:property name="hand_width" value="0.4064" />
+
+  <!-- hand origins relative to the rail center -->
+  <xacro:property name="lh_start_point" value="-0.3" />
+  <xacro:property name="rh_start_point" value="0.3" />
+
+  <!-- servo joint limits -->
+  <xacro:property name="servo_min" value="-0.087266462599716473902" />
+  <xacro:property name="servo_max" value="0.087266462599716473902" />
+
+  <!-- solenoid joint limits -->
+  <xacro:property name="solenoid_min" value="0" />
+  <xacro:property name="solenoid_max" value="0.52359877559829881566" />
+
+  <!-- colours -->
+  <material name="finger_mount_plate_material">
+    <color rgba="0.231 0.380 0.706 1.0"/>
+  </material>
+
+  <material name="servo_mechanism_top_mount_material">
+    <color rgba="0.250 0.250 0.250 1.0"/>
+  </material>
+
+  <material name="servo_material">
+    <color rgba="0.302 0.314 0.8 1.0"/>
+  </material>
+
+  <material name="large_solenoid_material">
+    <color rgba="0.980 0.714 0.004 1.0"/>
+  </material>
+
+  <material name="large_finger_solenoid_material">
+    <color rgba="0.769 0.886 0.953 1.0"/>
+  </material>
+
+  <material name="finger_arm_large_material">
+    <color rgba="0.973 0.529 0.004 1.0"/>
+  </material>
+
+  <material name="rail_material">
+    <color rgba="0.7 0.7 0.7 1.0"/>
+  </material>
+
+  <!-- robot base -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.01 ${rail_length} ${rail_height}"/>
+      </geometry>
+      <material name="rail_material"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.01 ${rail_length} ${rail_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="10.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+    </inertial>
+  </link>
+
+  <!-- create hands -->
+  <xacro:left_hand parent_link="base_link" rail_origin="${lh_start_point}" hand_width="${hand_width}" rail_length="${rail_length}" mesh_dir="${mesh_dir}"/>
+  <xacro:right_hand parent_link="base_link" rail_origin="${rh_start_point}" hand_width="${hand_width}" rail_length="${rail_length}" mesh_dir="${mesh_dir}"/>
+</robot>

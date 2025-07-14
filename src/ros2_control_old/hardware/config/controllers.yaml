@@ -1,0 +1,234 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+
+    # Left Hand Controllers
+    left_stepper_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+    
+    left_servo_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+    
+    left_solenoid_controller:
+      type: forward_command_controller/ForwardCommandController
+    
+    right_stepper_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+    
+    right_servo_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+    
+    right_solenoid_controller:
+      type: forward_command_controller/ForwardCommandController
+    
+    # Joint State Broadcaster
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+# Left Stepper Controller
+left_stepper_controller:
+  ros__parameters:
+    joints:
+      - lh_stepper
+    
+    command_interfaces:
+      - position
+    
+    state_interfaces:
+      - position
+    
+    interpolation_method: none
+    allow_partial_joints_goal: true
+    constraints:
+      stopped_velocity_tolerance: 0.01
+      goal_time: 0.0
+
+# Left Servo Controller
+left_servo_controller:
+  ros__parameters:
+    joints:
+      - lh_servo_1
+      - lh_servo_2
+      - lh_servo_3
+      - lh_servo_4
+      - lh_servo_5
+    
+    command_interfaces:
+      - position
+    
+    state_interfaces:
+      - position
+    
+    interpolation_method: none
+    allow_partial_joints_goal: true
+    constraints:
+      stopped_velocity_tolerance: 0.01
+      goal_time: 0.0
+
+# Left Solenoid Controller
+left_solenoid_controller:
+  ros__parameters:
+    joints:
+      - lh_solenoid_1
+      - lh_solenoid_2
+      - lh_solenoid_3
+      - lh_solenoid_4
+      - lh_solenoid_5
+    
+    command_interfaces:
+      - position
+    
+    interface_name: position
+    
+    allow_partial_joints_goal: true
+
+right_stepper_controller:
+  ros__parameters:
+    joints:
+      - rh_stepper
+    
+    command_interfaces:
+      - position
+    
+    state_interfaces:
+      - position
+    
+    interpolation_method: none
+    allow_partial_joints_goal: true
+    constraints:
+      stopped_velocity_tolerance: 0.01
+      goal_time: 0.0
+
+right_servo_controller:
+  ros__parameters:
+    joints:
+      - rh_servo_1
+      - rh_servo_2
+      - rh_servo_3
+      - rh_servo_4
+      - rh_servo_5
+    
+    command_interfaces:
+      - position
+    
+    state_interfaces:
+      - position
+    
+    interpolation_method: none
+    allow_partial_joints_goal: true
+    constraints:
+      stopped_velocity_tolerance: 0.01
+      goal_time: 0.0
+
+right_solenoid_controller:
+  ros__parameters:
+    joints:
+      - rh_solenoid_1
+      - rh_solenoid_2
+      - rh_solenoid_3
+      - rh_solenoid_4
+      - rh_solenoid_5
+    
+    command_interfaces:
+      - position
+
+    interface_name: position
+    
+    allow_partial_joints_goal: true
+
+# ================ old code ================
+
+# controller_manager:
+#   ros__parameters:
+#     update_rate: 5  # Update rate in Hz
+#     controller_manager_timeout: 5.0
+
+#     joint_state_broadcaster:
+#       # type: joint_state_broadcaster/JointStateBroadcaster
+#       type: joint_state_broadcaster/JointStateBroadcaster
+    
+#     left_hand_controller:
+#       type: joint_trajectory_controller/JointTrajectoryController
+
+#     # right_hand_controller:
+#     #   type: joint_trajectory_controller/JointTrajectoryController
+
+# left_hand_controller:
+#   ros__parameters:
+#     interpolation_method: none
+#     allow_partial_joints_goal: True
+#     update_rate: 1
+#     trajectory_ready_points: 1
+
+#     constraints:
+#       goal_time: 0.0
+#       stopped_velocity_tolerance: 100.0
+#     # action_monitor_rate: 20.0
+#     # open_loop_control: true
+#     # constraints:
+#     #   stopped_velocity_tolerance: 0.01
+#     #   goal_time: 0.0
+#     #   left_hand_stepper_joint:
+#     #     trajectory: 0.05
+#     #     goal: 0.03
+#     joints:
+#       - left_hand_stepper_joint
+#       - left_hand_thumb_solenoid_joint
+#       - left_hand_thumb_servo_joint
+#       - left_hand_index_finger_solenoid_joint
+#       - left_hand_index_finger_servo_joint
+#       - left_hand_middle_finger_solenoid_joint
+#       - left_hand_middle_finger_servo_joint
+#       - left_hand_ring_finger_solenoid_joint
+#       - left_hand_ring_finger_servo_joint
+#       - left_hand_pinky_solenoid_joint
+#       - left_hand_pinky_servo_joint
+#     gains:
+#       left_hand_stepper_joint: {p: 0.0, i: 0.0, d: 0.0, i_clamp: 0.0}
+#       left_hand_thumb_solenoid_joint: {p: 0.0, i: 0.0, d: 0.0, i_clamp: 0.0}
+#       left_hand_thumb_servo_joint: {p: 0.0, i: 0.0, d: 0.0, i_clamp: 0.0}
+#       left_hand_index_finger_solenoid_joint: {p: 0.0, i: 0.0, d: 0.0, i_clamp: 0.0}
+#       left_hand_index_finger_servo_joint: {p: 0.0, i: 0.0, d: 0.0, i_clamp: 0.0}
+#       left_hand_middle_finger_solenoid_joint: {p: 0.0, i: 0.0, d: 0.0, i_clamp: 0.0}
+#       left_hand_middle_finger_servo_joint: {p: 0.0, i: 0.0, d: 0.0, i_clamp: 0.0}
+#       left_hand_ring_finger_solenoid_joint: {p: 0.0, i: 0.0, d: 0.0, i_clamp: 0.0}
+#       left_hand_ring_finger_servo_joint: {p: 0.0, i: 0.0, d: 0.0, i_clamp: 0.0}
+#       left_hand_pinky_solenoid_joint: {p: 0.0, i: 0.0, d: 0.0, i_clamp: 0.0}
+#       left_hand_pinky_servo_joint: {p: 0.0, i: 0.0, d: 0.0, i_clamp: 0.0}
+#     # gains:
+#     #   left_hand_stepper_joint: {p: 1.0, i: 0.0, d: 1.0}
+#     command_interfaces:
+#       - position
+#     state_interfaces:
+#       - position
+
+# right_hand_controller:
+#   ros__parameters:
+#     interpolation_method: none
+#     allow_partial_joints_goal: True
+#     action_monitor_rate: 20.0
+#     open_loop_control: true
+#     # constraints:
+#     #   stopped_velocity_tolerance: 0.01
+#     #   goal_time: 0.0
+#     #   right_hand_stepper_joint:
+#     #     trajectory: 0.05
+#     #     goal: 0.03
+#     joints:
+#       - right_hand_stepper_joint
+#       - right_hand_thumb_solenoid_joint
+#       - right_hand_thumb_servo_joint
+#       - right_hand_index_finger_solenoid_joint
+#       - right_hand_index_finger_servo_joint
+#       - right_hand_middle_finger_solenoid_joint
+#       - right_hand_middle_finger_servo_joint
+#       - right_hand_ring_finger_solenoid_joint
+#       - right_hand_ring_finger_servo_joint
+#       - right_hand_pinky_solenoid_joint
+#       - right_hand_pinky_servo_joint
+#     gains:
+#       right_hand_stepper_joint: {p: 1.0, i: 0.0, d: 1.0}
+#     command_interfaces:
+#       - position
+#     state_interfaces:
+#       - position

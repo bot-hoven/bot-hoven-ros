@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="bothoven">
+
+  <xacro:arg name="use_sim" default="false" />
+
+  <xacro:include filename="$(find bothoven_description)/urdf/bothoven_core.xacro" />
+  <xacro:include filename="$(find bothoven_description)/ros2_control/ros2_control.xacro" />
+
+  <xacro:bothoven_ros2_control use_sim="$(arg use_sim)" />
+
+  <xacro:if value="$(arg use_sim)">
+    <gazebo>
+      <plugin filename="libgz_ros2_control-system.so"
+        name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <parameters>$(find bothoven_bringup)/config/controllers.yaml</parameters>
+      </plugin>
+    </gazebo>
+  </xacro:if>
+</robot>

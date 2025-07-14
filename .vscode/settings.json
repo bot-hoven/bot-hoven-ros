@@ -1,6 +1,5 @@
 {
     "cmake.sourceDirectory": "/bot-hoven-ros/src/hardware",
-<<<<<<< HEAD
     "python.autoComplete.extraPaths": [
         "/home/alessandro/codes/capstone/bot-hoven-ros/src/install/description/lib/python3.10/site-packages",
         "/opt/ros/humble/lib/python3.10/site-packages",
@@ -11,9 +10,4 @@
         "/opt/ros/humble/lib/python3.10/site-packages",
         "/opt/ros/humble/local/lib/python3.10/dist-packages"
     ]
-=======
-    "files.associations": {
-        "*.tcc": "cpp"
-    }
->>>>>>> 394a04ccd59f7fd11b4b6038555c4a7760203cfe
 }
