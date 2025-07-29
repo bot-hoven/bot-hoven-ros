@@ -2,10 +2,8 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     <joint name="lh_stepper">
         <command_interface name="position">
-            <!-- <param name="min">${lh_stepper_min}</param>
-            <param name="max">${lh_stepper_max}</param> -->
-            <param name="min">0.000</param>
-            <param name="max">0.900</param>
+            <param name="min">${left_stepper_min}</param>
+            <param name="max">${left_stepper_max}</param>
         </command_interface>
         <state_interface name="position" />
     </joint>

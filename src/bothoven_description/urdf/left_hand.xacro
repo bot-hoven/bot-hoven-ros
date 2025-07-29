@@ -3,10 +3,7 @@
   <xacro:include filename="$(find bothoven_description)/urdf/finger.xacro" />
 
   <!-- left hand macro -->
-  <xacro:macro name="left_hand" params="parent_link hand_width rail_origin rail_length mesh_dir">
-    <xacro:property name="half_hand_width" value="${hand_width / 2}" />
-    <xacro:property name="half_rail_length" value="${rail_length / 2}" />
-
+  <xacro:macro name="left_hand" params="parent_link left_stepper_min left_stepper_max rail_origin mesh_dir">
     <joint name="lh_stepper" type="prismatic">
       <origin xyz="0 ${rail_origin} 0" rpy="0 0 ${pi}" />
       <parent link="${parent_link}" />
@@ -14,8 +11,9 @@
       <axis xyz="0 -1 0" />
       <!-- limit travel based on the rail length, accounting for hand width, relative to hand
       starting point -->
-      <limit effort="100" velocity="1.0" lower="${-(half_rail_length + rail_origin)}"
-        upper="${half_rail_length - rail_origin - half_hand_width}" />
+      <limit effort="100" velocity="1.0"
+        lower="${left_stepper_min}"
+        upper="${left_stepper_max}" />
     </joint>
 
     <!-- mount plate link -->

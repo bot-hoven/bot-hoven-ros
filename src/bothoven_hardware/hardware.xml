@@ -1,0 +1,35 @@
+<library path="bothoven_hardware">
+  <class
+    name="cl42t_hardware_interface/Cl42tSystemHardware"
+    type="cl42t_hardware_interface::Cl42tSystemHardware"
+    base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ROS2 control hardware interface for SPI communication to the 
+      CL42TV4.1 stepper motor driver via a micro controller
+    </description>
+  </class>
+  <class
+    name="pca9685_hardware_interface/Pca9685SystemHardware"
+    type="pca9685_hardware_interface::Pca9685SystemHardware"
+    base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ROS2 control hardware interface for the PCA9685 PWM driver
+    </description>
+  </class>
+  <class
+    name="ads7138_hardware_interface/Ads7138SystemHardware"
+    type="ads7138_hardware_interface::Ads7138SystemHardware"
+    base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ROS2 control hardware interface for the ADS7138 12-bit 8-channel ADC
+    </description>
+  </class>
+  <class
+    name="mcp23017_hardware_interface/Mcp23017SystemHardware"
+    type="mcp23017_hardware_interface::Mcp23017SystemHardware"
+    base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ROS2 control hardware interface for the MCP23017 IO Expander driver
+    </description>
+  </class>
+</library>

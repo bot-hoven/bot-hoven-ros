@@ -1,24 +1,22 @@
-FROM osrf/ros:humble-desktop-full
+FROM osrf/ros:jazzy-desktop-full
 
 RUN apt-get update && \
     apt-get install -y \
-    ros-humble-ros2-control \
-    ros-humble-ros2-controllers \
-    ros-humble-hardware-interface \
-    ros-humble-ros-gz-sim \
-    ros-humble-ros-gz-bridge \
-    ros-humble-ros-gz-image \
-    ros-humble-gz-ros2-control \
-    ros-humble-joint-state-publisher-gui \
-    ros-humble-xacro \
+    ros-jazzy-ros2-control \
+    ros-jazzy-ros2-controllers \
+    ros-jazzy-hardware-interface \
+    ros-jazzy-ros-gz-sim \
+    ros-jazzy-ros-gz-bridge \
+    ros-jazzy-ros-gz-image \
+    ros-jazzy-gz-ros2-control \
+    ros-jazzy-joint-state-publisher-gui \
+    ros-jazzy-xacro \
     libgpiod-dev \
     libi2c-dev && \
     rm -rf /var/lib/apt/lists/*
 
-RUN rosdep update
-
 ENV ROS_DOMAIN_ID=17
 
-RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+RUN echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc
 
 CMD ["/bin/bash"]

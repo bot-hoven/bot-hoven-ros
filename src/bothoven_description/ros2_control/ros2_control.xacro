@@ -13,10 +13,9 @@
           <plugin>cl42t_hardware_interface/Cl42tSystemHardware</plugin>
           <param name="spi_device">/dev/spidev0.0</param>
           <param name="spi_mode">1</param>
-          <param name="bus_speed_hz">1000000</param>
+          <param name="bus_speed_hz">500000</param>
           <param name="bits_per_word">8</param>
           <param name="stepper_side">l</param>
-          <param name="max_position_error">0.002</param>
         </hardware>
       </xacro:unless>
       <xacro:include filename="$(find bothoven_description)/ros2_control/left_stepper_joint.xacro" />
@@ -36,7 +35,6 @@
           <param name="bus_speed_hz">1000000</param>
           <param name="bits_per_word">8</param>
           <param name="stepper_side">r</param>
-          <param name="max_position_error">0.002</param>
         </hardware>
       </xacro:unless>
       <xacro:include filename="$(find bothoven_description)/ros2_control/right_stepper_joint.xacro" />
@@ -56,8 +54,8 @@
           <param name="pca_i2c_address">64</param>
           <param name="min_duty_cycle_ms">0.5</param>
           <param name="max_duty_cycle_ms">2.5</param>
-          <param name="ads_i2c_address">16</param>          <!-- 0x10 -->
-          <param name="ads_conversion_rate">20</param>          <!-- 20 kSPS -->
+          <param name="ads_i2c_address">16</param>      <!-- 0x10 -->
+          <param name="ads_conversion_rate">20</param>  <!-- 20 kSPS -->
         </hardware>
       </xacro:unless>
       <xacro:include filename="$(find bothoven_description)/ros2_control/left_servo_joints.xacro" />

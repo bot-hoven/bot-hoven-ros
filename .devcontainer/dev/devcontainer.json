@@ -1,15 +1,16 @@
 {
-  "name": "bothoven",
-  "containerName": "bothoven-container",
+  "name": "bothoven-dev",
   "dockerFile": "Dockerfile",
 
   "runArgs": [
+    "--name=bothoven-dev",
     "--privileged",
     "--network=host"
   ],
 
   "workspaceMount": "source=${localWorkspaceFolder},target=/${localWorkspaceFolderBasename},type=bind",
   "workspaceFolder": "/${localWorkspaceFolderBasename}",
+  
   "mounts": [
     {
       "source": "/etc/localtime",
@@ -19,8 +20,7 @@
     {
       "source": "${localEnv:HOME}/.Xauthority",
       "target": "/root/.Xauthority",
-      "type": "bind",
-      "readonly": true
+      "type": "bind"
     },
     {
       "source": "/tmp/.X11-unix",
@@ -30,7 +30,8 @@
   ],
 
   "containerEnv": {
-    "DISPLAY": "${localEnv:DISPLAY}"
+    "DISPLAY": "${localEnv:DISPLAY}",
+    "QT_X11_NO_MITSHM": "1"
   },
 
   "customizations": {
