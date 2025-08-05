@@ -13,7 +13,8 @@
           <plugin>cl42t_hardware_interface/Cl42tSystemHardware</plugin>
           <param name="spi_device">/dev/spidev0.0</param>
           <param name="spi_mode">1</param>
-          <param name="bus_speed_hz">500000</param>
+          <!-- <param name="bus_speed_hz">500000</param> -->
+          <param name="bus_speed_hz">125000</param>
           <param name="bits_per_word">8</param>
           <param name="stepper_side">l</param>
         </hardware>
@@ -32,86 +33,13 @@
           <plugin>cl42t_hardware_interface/Cl42tSystemHardware</plugin>
           <param name="spi_device">/dev/spidev0.0</param>
           <param name="spi_mode">1</param>
-          <param name="bus_speed_hz">1000000</param>
+          <!-- <param name="bus_speed_hz">500000</param> -->
+          <param name="bus_speed_hz">125000</param>
           <param name="bits_per_word">8</param>
           <param name="stepper_side">r</param>
         </hardware>
       </xacro:unless>
       <xacro:include filename="$(find bothoven_description)/ros2_control/right_stepper_joint.xacro" />
-    </ros2_control>
-
-    <ros2_control name="left_servo_driver" type="system">
-      <xacro:if value="${use_sim}">
-        <hardware>
-          <plugin>gz_ros2_control/GazeboSimSystem</plugin>
-        </hardware>
-      </xacro:if>
-      <xacro:unless value="${use_sim}">
-        <hardware>
-          <plugin>pca9685_hardware_interface/Pca9685SystemHardware</plugin>
-          <param name="i2c_device">/dev/i2c-1</param>
-          <param name="pca_frequency_hz">50</param>
-          <param name="pca_i2c_address">64</param>
-          <param name="min_duty_cycle_ms">0.5</param>
-          <param name="max_duty_cycle_ms">2.5</param>
-          <param name="ads_i2c_address">16</param>      <!-- 0x10 -->
-          <param name="ads_conversion_rate">20</param>  <!-- 20 kSPS -->
-        </hardware>
-      </xacro:unless>
-      <xacro:include filename="$(find bothoven_description)/ros2_control/left_servo_joints.xacro" />
-    </ros2_control>
-
-    <ros2_control name="right_servo_driver" type="system">
-      <xacro:if value="${use_sim}">
-        <hardware>
-          <plugin>gz_ros2_control/GazeboSimSystem</plugin>
-        </hardware>
-      </xacro:if>
-      <xacro:unless value="${use_sim}">
-        <hardware>
-          <plugin>pca9685_hardware_interface/Pca9685SystemHardware</plugin>
-          <param name="i2c_device">/dev/i2c-1</param>
-          <param name="pca_frequency_hz">50</param>
-          <param name="pca_i2c_address">65</param>
-          <param name="min_duty_cycle_ms">0.5</param>
-          <param name="max_duty_cycle_ms">2.5</param>
-          <param name="ads_i2c_address">18</param>
-          <param name="ads_conversion_rate">20</param>
-        </hardware>
-      </xacro:unless>
-      <xacro:include filename="$(find bothoven_description)/ros2_control/right_servo_joints.xacro" />
-    </ros2_control>
-
-    <ros2_control name="left_solenoid_driver" type="system">
-      <xacro:if value="${use_sim}">
-        <hardware>
-          <plugin>gz_ros2_control/GazeboSimSystem</plugin>
-        </hardware>
-      </xacro:if>
-      <xacro:unless value="${use_sim}">
-        <hardware>
-          <plugin>mcp23017_hardware_interface/Mcp23017SystemHardware</plugin>
-          <param name="i2c_device">/dev/i2c-1</param>
-          <param name="i2c_address">32</param>
-        </hardware>
-      </xacro:unless>
-      <xacro:include filename="$(find bothoven_description)/ros2_control/left_solenoid_joints.xacro" />
-    </ros2_control>
-
-    <ros2_control name="right_solenoid_driver" type="system">
-      <xacro:if value="${use_sim}">
-        <hardware>
-          <plugin>gz_ros2_control/GazeboSimSystem</plugin>
-        </hardware>
-      </xacro:if>
-      <xacro:unless value="${use_sim}">
-        <hardware>
-          <plugin>mcp23017_hardware_interface/Mcp23017SystemHardware</plugin>
-          <param name="i2c_device">/dev/i2c-1</param>
-          <param name="i2c_address">33</param>
-        </hardware>
-      </xacro:unless>
-      <xacro:include filename="$(find bothoven_description)/ros2_control/right_solenoid_joints.xacro" />
     </ros2_control>
 
   </xacro:macro>

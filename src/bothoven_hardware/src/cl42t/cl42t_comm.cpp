@@ -1,206 +1,190 @@
-#include "bothoven_hardware/cl42t/cl42t_comm.h"
-
-// System includes for SPI operations.
+#include "bothoven_hardware/cl42t/cl42t_comm.hpp"
+#include <cmath>
+#include <cstdint>
 #include <cstring>
+#include <fcntl.h>
+#include <linux/spi/spidev.h>
+#include <rclcpp/rclcpp.hpp>
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <vector>
-#include <thread>
-#include <chrono>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
-namespace cl42t_hardware_interface {
+namespace hardware {
 
-    CL42TComm::CL42TComm() : spi_dev_(nullptr), bits_per_word_(0), bus_speed_hz_(0), mode_(0) {}
+Cl42tComm::Cl42tComm(const std::string &device) : device_(device) {
+  open_bus(device_);
+}
 
-    CL42TComm::~CL42TComm() {}
+void Cl42tComm::open_bus(const std::string &device) {
+  spi_fd_ = open(device.c_str(), O_RDWR);
+  if (spi_fd_ < 0) {
+    std::ostringstream error_message;
+    error_message << "Error opening SPI device: " << device;
+    throw std::runtime_error(error_message.str());
+  }
+}
 
-    void CL42TComm::setup(hardware::SPIPeripheral* spi_dev, uint8_t bits_per_word, uint32_t bus_speed_hz, int mode) {
-        if (spi_dev == nullptr) {
-            throw std::runtime_error("Invalid SPI peripheral pointer.");
-        }
-        // Transfer ownership of spi_dev.
-        spi_dev_.reset(spi_dev);
-        bits_per_word_ = bits_per_word;
-        bus_speed_hz_ = bus_speed_hz;
-        mode_ = mode;
-    }
+void Cl42tComm::shutdown() {
+  if (spi_fd_ >= 0) {
+    close(spi_fd_);
+    spi_fd_ = -1;
+  }
+}
 
-    void CL42TComm::init() {
-        if (!spi_dev_) {
-            throw std::runtime_error("SPI peripheral not initialized in CL42TComm.");
-        }
-        // Initialize the SPI peripheral with the stored parameters.
-        spi_dev_->InitPeripheral(bits_per_word_, bus_speed_hz_, mode_);
-    }
+void Cl42tComm::init_peripheral(uint8_t bits, uint32_t speed_hz, uint8_t mode) {
+  bits_per_word_ = bits;
+  bus_speed_hz_ = speed_hz;
 
-    void CL42TComm::send_command(std::string cmd) {
-        if (!spi_dev_) {
-            throw std::runtime_error("SPI peripheral not initialized in CL42TComm.");
-        }
+  switch (mode) {
+  case 0:
+    mode_ = SPI_MODE_0;
+    break;
+  case 1:
+    mode_ = SPI_MODE_1;
+    break;
+  case 2:
+    mode_ = SPI_MODE_2;
+    break;
+  case 3:
+    mode_ = SPI_MODE_3;
+    break;
+  default:
+    mode_ = SPI_MODE_0;
+    break;
+  }
 
-        // Write the command via SPI.
-        spi_dev_->WriteData(reinterpret_cast<const uint8_t*>(cmd.c_str()), cmd.size());
-    }
+  set_mode(mode_);
+  set_bits_per_word(bits);
+  set_speed(speed_hz);
 
-    void CL42TComm::send_position(const std::string& stepper_side, double position) {
-        // Build the output message
-        std::ostringstream oss;
-        oss << "p" << stepper_side << position;
-        std::string command = oss.str();
+  // set MSB first
+  uint8_t lsb = 0;
+  if (ioctl(spi_fd_, SPI_IOC_WR_LSB_FIRST, &lsb) < 0) {
+    close(spi_fd_);
+    throw std::runtime_error("Failed to set bit order");
+  }
+}
 
-        if (command.empty() || command.back() != '\0') {
-            command.push_back('\0');
-        }
+bool Cl42tComm::send_command(const std::string &command) {
+  std::vector<uint8_t> tx_data(command.begin(), command.end());
+  std::vector<uint8_t> rx_data(tx_data.size());
 
-        // Send the command via SPI.
-        send_command(command);
-    }
+  if (tx_data.empty())
+    return false;
 
+  struct spi_ioc_transfer transfer = {};
+  transfer.tx_buf = reinterpret_cast<uintptr_t>(tx_data.data());
+  transfer.rx_buf = reinterpret_cast<uintptr_t>(rx_data.data());
+  transfer.len = tx_data.size();
+  transfer.delay_usecs = 0;
+  transfer.speed_hz = bus_speed_hz_;
+  transfer.bits_per_word = bits_per_word_;
 
+  if (ioctl(spi_fd_, SPI_IOC_MESSAGE(1), &transfer) < 0) {
+    throw std::runtime_error("SPI transfer failed");
+  }
+  return true;
+}
 
-    double CL42TComm::read_position(const std::string& stepper_side) {
-        const size_t MAX_RESPONSE_LEN = 32;
-        double position = -1;
-        std::vector<uint8_t> rx_buffer;
-        std::vector<uint8_t> tx_dummy(1, 0xFF);
-        if (!spi_dev_) {
-            throw std::runtime_error("SPI peripheral not initialized.");
-        }
+std::vector<uint8_t> Cl42tComm::read_response(size_t response_size) {
+  std::vector<uint8_t> tx_dummy(response_size, 0xFF);
+  std::vector<uint8_t> rx_data(response_size);
 
-        // Build the command (e.g., "rl\0")
-        std::string command = "r" + stepper_side;
-        // Ensure the command string is null-terminated.
-        if (command.empty() || command.back() != '\0') {
-            command.push_back('\0');
-        }
+  struct spi_ioc_transfer transfer {};
+  transfer.tx_buf = reinterpret_cast<uintptr_t>(tx_dummy.data());
+  transfer.rx_buf = reinterpret_cast<uintptr_t>(rx_data.data());
+  transfer.len = response_size;
+  transfer.delay_usecs = 0;
+  transfer.speed_hz = bus_speed_hz_;
+  transfer.bits_per_word = bits_per_word_;
 
-        try {
-            // Send read command for stepper side
-            spi_dev_->Transfer(reinterpret_cast<const uint8_t*>(command.c_str()), nullptr, command.size());
+  if (ioctl(spi_fd_, SPI_IOC_MESSAGE(1), &transfer) < 0) {
+    throw std::runtime_error("SPI transfer failed");
+  }
 
-            // Allow response preparation time
-            std::this_thread::sleep_for(std::chrono::microseconds(100));
+  // std::ostringstream oss;
+  // oss << "Received [" << response_size << " bytes]:";
+  // for (uint8_t b : rx_data) {
+  //   oss << ' ' << std::hex << std::uppercase << std::setw(2)
+  //       << std::setfill('0') << static_cast<int>(b);
+  // }
+  // oss << std::dec;
+  // RCLCPP_INFO_STREAM(rclcpp::get_logger("Cl42tSystemHardware"), oss.str());
 
-            uint8_t rx_byte;
-            do {
-                spi_dev_->Transfer(tx_dummy.data(), &rx_byte, 1);
-                rx_buffer.push_back(rx_byte);
-            } while (rx_byte != '\0' && rx_buffer.size() < MAX_RESPONSE_LEN);
+  return rx_data;
+}
 
-            // Convert to string (may contain embedded nulls)
-            std::string response(reinterpret_cast<char*>(rx_buffer.data()), rx_buffer.size());
+float Cl42tComm::get_position(char motor) {
+  std::string pos_req = "g"; // get
+  pos_req += motor;
+  pos_req.resize(6, '\0'); // pico expects 6 byte request messages
+  bool success = send_command(pos_req);
+  if (!success) {
+    return std::numeric_limits<float>::quiet_NaN();
+  }
 
-            // Trim the response: remove any characters that are not digits, a decimal point, or a sign.
-            std::string trimmed_response;
-            for (char c : response) {
-                if ((c >= '0' && c <= '9') || c == '.' || c == '-' || c == '+') {
-                    trimmed_response.push_back(c);
-                }
-            }
+  rclcpp::sleep_for(std::chrono::milliseconds(
+      1)); // give pico time to load position into MISO
 
-            // Convert the trimmed string to a double.
-            char* end;
-            position = std::strtod(trimmed_response.c_str(), &end);
-            if (end == trimmed_response.c_str()) {
-                std::ostringstream error_message;
-                error_message << "Failed to convert response to double: " << trimmed_response;
-                throw std::runtime_error(error_message.str());
-            }
-        } catch (const std::exception& e) {
-            // std::cerr << "Error: " << e.what() << std::endl;
-            return -1;
-        }
+  std::vector<uint8_t> pos_res;
+  try {
+    pos_res = read_response(4);
+  } catch (std::exception &e) {
+    RCLCPP_WARN_STREAM(rclcpp::get_logger("Cl42tSystemHardware"),
+                       "Error reading position for motor " << motor << ": "
+                                                           << e.what());
+    return std::numeric_limits<float>::quiet_NaN();
+  }
 
-        // // Send command + read response in one transaction.
+  float pos_value;
+  std::memcpy(&pos_value, pos_res.data(), sizeof(pos_value));
+  return pos_value;
+}
 
-        // std::vector<uint8_t> tx_data(command.begin(), command.end());
-        // tx_data.resize(MAX_RESPONSE_LEN, 0xFF);  // Pad with dummy bytes
+bool Cl42tComm::set_velocity(char motor, float vel_mps) {
+  std::string vel_req;
+  vel_req.resize(6, '\0');
+  vel_req[0] = 's';
+  vel_req[1] = motor;
 
-        // std::vector<uint8_t> rx_data(tx_data.size());
-        // spi_dev_->Transfer(tx_data.data(), rx_data.data(), tx_data.size());
+  std::memcpy(&vel_req[2], &vel_mps, sizeof(vel_mps));
 
-        // // Extract a null-terminated string from the received data.
-        // std::string response;
-        // for (uint8_t byte : rx_data) {
-        //     if (byte == '\0') break;
-        //     response.push_back(static_cast<char>(byte));
-        // }
+  RCLCPP_INFO_STREAM(rclcpp::get_logger("Cl42tSystemHardware"),
+                     "Sending: " << vel_mps);
 
-        // if (response.empty()) {
-        //     // throw std::runtime_error("Received an empty response from SPI.");
-        //     response = "-1\0";
-        // }
+  bool success;
+  try {
+    success = send_command(vel_req);
+  } catch (std::exception &e) {
+    RCLCPP_WARN_STREAM(rclcpp::get_logger("Cl42tSystemHardware"),
+                       "Error sending velocity to pico " << motor << ": "
+                                                         << e.what());
+    return std::numeric_limits<float>::quiet_NaN();
+  }
+  return success;
+}
 
-        // // Debug: Print the raw response
-        // // RCLCPP_INFO(get_logger(), "Raw response: %s", response.c_str());
+void Cl42tComm::set_mode(uint8_t mode) {
+  mode_ = mode;
+  if (ioctl(spi_fd_, SPI_IOC_WR_MODE, &mode_) < 0) {
+    throw std::runtime_error("Failed to set SPI mode");
+  }
+}
 
-        // // Trim the response: remove any characters that are not digits, a decimal point, or a sign.
-        // std::string trimmed_response;
-        // for (char c : response) {
-        //     if ((c >= '0' && c <= '9') || c == '.' || c == '-' || c == '+') {
-        //         trimmed_response.push_back(c);
-        //     }
-        // }
+void Cl42tComm::set_speed(uint32_t speed_hz) {
+  bus_speed_hz_ = speed_hz;
+  if (ioctl(spi_fd_, SPI_IOC_WR_MAX_SPEED_HZ, &bus_speed_hz_) < 0) {
+    throw std::runtime_error("Failed to set SPI speed");
+  }
+}
 
-        // // Debug: Print the trimmed response
-        // // RCLCPP_INFO(get_logger(), "Trimmed response: %s", trimmed_response.c_str());
+void Cl42tComm::set_bits_per_word(uint8_t bits) {
+  bits_per_word_ = bits;
+  if (ioctl(spi_fd_, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word_) < 0) {
+    throw std::runtime_error("Failed to set SPI bits per word");
+  }
+}
 
-        // // Convert the trimmed string to a double.
-        // char* end;
-        // double position = std::strtod(trimmed_response.c_str(), &end);
-        // if (end == trimmed_response.c_str()) {
-        //     std::ostringstream error_message;
-        //     error_message << "Failed to convert response to double: " << trimmed_response;
-        //     throw std::runtime_error(error_message.str());
-        // }
-
-        return position;
-    }
-
-    // double CL42TComm::read_position(const std::string &stepper_side) {
-    //     if (!spi_dev_) {
-    //         throw std::runtime_error("SPI peripheral not initialized.");
-    //     }
-
-    //     // Build the command (e.g., "r l\0")
-    //     std::string command = "r " + stepper_side + '\0';
-
-    //     // Send command + read response in one transaction
-    //     const size_t MAX_RESPONSE_LEN = 32;
-    //     std::vector<uint8_t> tx_data(command.begin(), command.end());
-    //     tx_data.resize(MAX_RESPONSE_LEN, 0xFF);  // Pad with dummy bytes
-
-    //     std::vector<uint8_t> rx_data(tx_data.size());
-    //     spi_dev_->Transfer(tx_data.data(), rx_data.data(), tx_data.size());
-
-    //     // Extract null-terminated string
-    //     std::string response;
-    //     for (uint8_t byte : rx_data) {
-    //         if (byte == '\0') break;
-    //         response += static_cast<char>(byte);
-    //     }
-
-    //     if (response.empty()) {
-    //         return -1;
-    //     }
-
-    //     // Convert to double
-    //     char* end;
-    //     double position = std::strtod(response.c_str(), &end);
-    //     if (end == response.c_str()) {
-    //         std::ostringstream error_message;
-    //         error_message << "Failed to convert response to double: " << response;
-    //         throw std::runtime_error(error_message.str());
-    //         // throw std::runtime_error("Failed to convert response to double.");
-    //     }
-
-    //     // // Pi (receive binary):
-    //     // float pos_float;
-    //     // memcpy(&pos_float, rx_data.data(), sizeof(float));
-    //     // double position = pos_float;
-
-    //     return position;
-    // }
-
-}  // namespace cl42t_hardware_interface
+} // namespace hardware

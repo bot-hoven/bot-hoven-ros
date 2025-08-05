@@ -13,6 +13,7 @@ RUN apt-get update && \
     ros-jazzy-xacro \
     libgpiod-dev \
     libi2c-dev && \
+    clang-format && \
     rm -rf /var/lib/apt/lists/*
 
 ENV ROS_DOMAIN_ID=17

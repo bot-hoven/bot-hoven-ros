@@ -20,7 +20,6 @@ add_library(
   src/cl42t/cl42t_comm.cpp
   src/cl42t/cl42t_system.cpp
   src/i2c/I2CPeripheral.cpp
-  src/spi/SPIPeripheral.cpp
   src/pca9685/pca9685_comm.cpp
   src/pca9685/pca9685_system.cpp
   src/mcp23017/mcp23017_comm.cpp
