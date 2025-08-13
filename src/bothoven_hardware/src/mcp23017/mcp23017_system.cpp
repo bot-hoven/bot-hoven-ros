@@ -12,247 +12,282 @@
 #include "rclcpp/rclcpp.hpp"
 
 namespace mcp23017_hardware_interface {
-    hardware_interface::CallbackReturn Mcp23017SystemHardware::on_init(const hardware_interface::HardwareInfo &info) {
-        if (hardware_interface::SystemInterface::on_init(info) != hardware_interface::CallbackReturn::SUCCESS) {
-            return hardware_interface::CallbackReturn::ERROR;
-        }
+hardware_interface::CallbackReturn
+Mcp23017SystemHardware::on_init(const hardware_interface::HardwareInfo &info) {
+  if (hardware_interface::SystemInterface::on_init(info) !=
+      hardware_interface::CallbackReturn::SUCCESS) {
+    return hardware_interface::CallbackReturn::ERROR;
+  }
 
-        // Try to parse the MCP23017 parameters
-        try {
-            cfg_.i2c_device = info_.hardware_parameters.at("i2c_device");
-            cfg_.i2c_address = std::stoi(info_.hardware_parameters.at("i2c_address"));
-        } catch (const std::exception &e) {
-            RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Failed to parse MCP23017 parameters: %s",
-                         e.what());
-            return hardware_interface::CallbackReturn::ERROR;
-        }
+  // Try to parse the MCP23017 parameters
+  try {
+    cfg_.i2c_device = info_.hardware_parameters.at("i2c_device");
+    cfg_.i2c_address = std::stoi(info_.hardware_parameters.at("i2c_address"));
+  } catch (const std::exception &e) {
+    RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"),
+                 "Failed to parse MCP23017 parameters: %s", e.what());
+    return hardware_interface::CallbackReturn::ERROR;
+  }
 
-        hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
-        hw_states_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
-        solenoid_channels_.resize(info_.joints.size(), 0);  // Default to channel 0
+  hw_commands_.resize(info_.joints.size(),
+                      std::numeric_limits<double>::quiet_NaN());
+  hw_states_.resize(info_.joints.size(),
+                    std::numeric_limits<double>::quiet_NaN());
+  solenoid_channels_.resize(info_.joints.size(), 0); // Default to channel 0
 
-        // Validate the command interface
-        for (auto i = 0u; i < info_.joints.size(); i++) {
-            const hardware_interface::ComponentInfo &joint = info_.joints[i];
+  // Validate the command interface
+  for (auto i = 0u; i < info_.joints.size(); i++) {
+    const hardware_interface::ComponentInfo &joint = info_.joints[i];
 
-            // MCP23017System has one command interface on each output
-            if (joint.command_interfaces.size() != 1) {
-                RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"),
-                             "Joint '%s' has %zu command interfaces found. 1 expected.", joint.name.c_str(),
-                             joint.command_interfaces.size());
-                return hardware_interface::CallbackReturn::ERROR;
-            }
-
-            if (joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION) {
-                RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"),
-                             "Joint '%s' have %s command interfaces found. '%s' expected.", joint.name.c_str(),
-                             joint.command_interfaces[0].name.c_str(), hardware_interface::HW_IF_POSITION);
-                return hardware_interface::CallbackReturn::ERROR;
-            }
-
-            // Read the solenoid channel parameter
-            if (joint.parameters.count("solenoid_channel") > 0) {
-                try {
-                    solenoid_channels_[i] = std::stoi(joint.parameters.at("solenoid_channel"));
-                    RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Joint '%s' uses solenoid channel %d",
-                                joint.name.c_str(), solenoid_channels_[i]);
-                } catch (const std::exception &param_e) {
-                    RCLCPP_ERROR(rclcpp::get_logger("Mcp23017SystemHardware"),
-                                 "Failed to parse solenoid_channel for joint '%s': %s", joint.name.c_str(),
-                                 param_e.what());
-                    // Keep the default channel 0
-                }
-            }
-        }
-
-        // Try parse the interface parameters
-        try {
-            for (const hardware_interface::ComponentInfo &joint : info_.joints) {
-                min_positions_.push_back(std::stod(joint.command_interfaces[0].min));
-                max_positions_.push_back(std::stod(joint.command_interfaces[0].max));
-            }
-        } catch (const std::exception &e) {
-            RCLCPP_FATAL(get_logger(), "Failed to parse interface parameters: %s", e.what());
-            return CallbackReturn::ERROR;
-        }
-
-        // Validate position bounds
-        for (auto i = 0u; i < info_.joints.size(); i++) {
-            if (min_positions_[i] > max_positions_[i]) {
-                RCLCPP_FATAL(get_logger(), "Invalid Position bounds specified.");
-                return CallbackReturn::ERROR;
-            }
-        }
-
-        return hardware_interface::CallbackReturn::SUCCESS;
+    // MCP23017System has one command interface on each output
+    if (joint.command_interfaces.size() != 1) {
+      RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"),
+                   "Joint '%s' has %zu command interfaces found. 1 expected.",
+                   joint.name.c_str(), joint.command_interfaces.size());
+      return hardware_interface::CallbackReturn::ERROR;
     }
 
-    std::vector<hardware_interface::StateInterface> Mcp23017SystemHardware::export_state_interfaces() {
-        std::vector<hardware_interface::StateInterface> state_interfaces;
-
-        for (auto i = 0u; i < info_.joints.size(); i++) {
-            state_interfaces.emplace_back(hardware_interface::StateInterface(
-                info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_states_[i]));
-
-            // RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"),
-            //             "Exporting state interface for joint [%s] mapped to MCP23017 channel [%d]",
-            //             info_.joints[i].name.c_str(), channel_mapping_[i]);
-        }
-        return state_interfaces;
+    if (joint.command_interfaces[0].name !=
+        hardware_interface::HW_IF_POSITION) {
+      RCLCPP_FATAL(
+          rclcpp::get_logger("Mcp23017SystemHardware"),
+          "Joint '%s' have %s command interfaces found. '%s' expected.",
+          joint.name.c_str(), joint.command_interfaces[0].name.c_str(),
+          hardware_interface::HW_IF_POSITION);
+      return hardware_interface::CallbackReturn::ERROR;
     }
 
-    std::vector<hardware_interface::CommandInterface> Mcp23017SystemHardware::export_command_interfaces() {
-        std::vector<hardware_interface::CommandInterface> command_interfaces;
-        for (auto i = 0u; i < info_.joints.size(); i++) {
-            command_interfaces.emplace_back(hardware_interface::CommandInterface(
-                info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_commands_[i]));
+    // Read the solenoid channel parameter
+    if (joint.parameters.count("solenoid_channel") > 0) {
+      try {
+        solenoid_channels_[i] =
+            std::stoi(joint.parameters.at("solenoid_channel"));
+        RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"),
+                    "Joint '%s' uses solenoid channel %d", joint.name.c_str(),
+                    solenoid_channels_[i]);
+      } catch (const std::exception &param_e) {
+        RCLCPP_ERROR(rclcpp::get_logger("Mcp23017SystemHardware"),
+                     "Failed to parse solenoid_channel for joint '%s': %s",
+                     joint.name.c_str(), param_e.what());
+        // Keep the default channel 0
+      }
+    }
+  }
+
+  // Try parse the interface parameters
+  try {
+    for (const hardware_interface::ComponentInfo &joint : info_.joints) {
+      min_positions_.push_back(std::stod(joint.state_interfaces[0].min));
+      max_positions_.push_back(std::stod(joint.state_interfaces[0].max));
+    }
+  } catch (const std::exception &e) {
+    RCLCPP_FATAL(get_logger(), "Failed to parse interface parameters: %s",
+                 e.what());
+    return CallbackReturn::ERROR;
+  }
+
+  // Validate position bounds
+  for (auto i = 0u; i < info_.joints.size(); i++) {
+    if (min_positions_[i] > max_positions_[i]) {
+      RCLCPP_FATAL(get_logger(), "Invalid Position bounds specified.");
+      return CallbackReturn::ERROR;
+    }
+  }
+
+  return hardware_interface::CallbackReturn::SUCCESS;
+}
+
+std::vector<hardware_interface::StateInterface>
+Mcp23017SystemHardware::export_state_interfaces() {
+  std::vector<hardware_interface::StateInterface> state_interfaces;
+
+  for (auto i = 0u; i < info_.joints.size(); i++) {
+    state_interfaces.emplace_back(hardware_interface::StateInterface(
+        info_.joints[i].name, hardware_interface::HW_IF_POSITION,
+        &hw_states_[i]));
+
+    // RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"),
+    //             "Exporting state interface for joint [%s] mapped to MCP23017
+    //             channel [%d]", info_.joints[i].name.c_str(),
+    //             channel_mapping_[i]);
+  }
+  return state_interfaces;
+}
+
+std::vector<hardware_interface::CommandInterface>
+Mcp23017SystemHardware::export_command_interfaces() {
+  std::vector<hardware_interface::CommandInterface> command_interfaces;
+  for (auto i = 0u; i < info_.joints.size(); i++) {
+    command_interfaces.emplace_back(hardware_interface::CommandInterface(
+        info_.joints[i].name, hardware_interface::HW_IF_POSITION,
+        &hw_commands_[i]));
+  }
+
+  return command_interfaces;
+}
+
+hardware_interface::CallbackReturn Mcp23017SystemHardware::on_configure(
+    const rclcpp_lifecycle::State & /*previous_state*/) {
+  RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"),
+              "Configuring ...please wait...");
+
+  try {
+    // Get the shared pointer for the I2C bus
+    i2c_bus_ = hardware::I2CPeripheral::getInstance(cfg_.i2c_device);
+  } catch (const std::exception &e) {
+    RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"),
+                 "Error initializing I2C Bus: %s", e.what());
+    return hardware_interface::CallbackReturn::ERROR;
+  }
+
+  // Setup the MCP23017 object
+  try {
+    mcp_.setup(i2c_bus_, cfg_.i2c_address);
+  } catch (const std::exception &e) {
+    RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"),
+                 "Error setting initial state of MCP23017: %s", e.what());
+    return hardware_interface::CallbackReturn::ERROR;
+  }
+
+  RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"),
+              "Successfully configured!");
+
+  return hardware_interface::CallbackReturn::SUCCESS;
+}
+
+hardware_interface::CallbackReturn Mcp23017SystemHardware::on_cleanup(
+    const rclcpp_lifecycle::State & /*previous_state*/) {
+  RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"),
+              "Cleaning up ...please wait...");
+
+  // Release the shared pointer (this will automatically close the I2C bus once
+  // the last shared pointer instance is destroyed via the I2CPeripheral
+  // destructor)
+  i2c_bus_.reset();
+
+  RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"),
+              "Successfully cleaned up!");
+
+  return hardware_interface::CallbackReturn::SUCCESS;
+}
+
+hardware_interface::CallbackReturn Mcp23017SystemHardware::on_activate(
+    const rclcpp_lifecycle::State & /*previous_state*/) {
+  for (auto i = 0u; i < hw_commands_.size(); i++) {
+    if (std::isnan(hw_commands_[i])) {
+      hw_commands_[i] = 0;
+    }
+  }
+
+  // Initialize the MCP23017 object
+  try {
+    mcp_.connect();
+    mcp_.init();
+  } catch (const std::exception &e) {
+    RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"),
+                 "Error initializing MCP23017: %s", e.what());
+    return hardware_interface::CallbackReturn::ERROR;
+  }
+
+  RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"),
+              "Successfully activated!");
+  return hardware_interface::CallbackReturn::SUCCESS;
+}
+
+hardware_interface::CallbackReturn Mcp23017SystemHardware::on_deactivate(
+    const rclcpp_lifecycle::State & /*previous_state*/) {
+  RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"),
+              "Successfully deactivated!");
+  return hardware_interface::CallbackReturn::SUCCESS;
+}
+
+hardware_interface::return_type
+Mcp23017SystemHardware::read(const rclcpp::Time & /*time*/,
+                             const rclcpp::Duration & /*period*/) {
+  for (auto i = 0u; i < hw_states_.size(); i++) {
+    hw_states_[i] = std::max(min_positions_[i],
+                             std::min(hw_commands_[i], max_positions_[i]));
+  }
+  return hardware_interface::return_type::OK;
+}
+
+hardware_interface::return_type
+Mcp23017SystemHardware::write(const rclcpp::Time & /*time*/,
+                              const rclcpp::Duration & /*period*/) {
+  uint8_t new_solenoid_values_ = 0;
+  num_write_attempts_ = 0;
+  write_success_ = false;
+
+  bool is_left_hand = (cfg_.i2c_address == 0x20);
+  std::string hand_str = is_left_hand ? "Left" : "Right";
+
+  // Build the solenoid values using channel mapping
+  for (auto i = 0u; i < hw_commands_.size(); i++) {
+    // anything greater than 0.0 should activate that solenoid
+    uint8_t bit_value = hw_commands_[i] > 0.0 ? 1 : 0;
+
+    // Get the assigned channel for this joint
+    int channel = solenoid_channels_[i];
+
+    // Set the appropriate bit in the output register
+    if (bit_value) {
+      new_solenoid_values_ |= (1 << channel);
+    }
+  }
+
+  // Only perform the write if the new state is different from the current state
+  if (new_solenoid_values_ != current_solenoid_values_) {
+    // Try to write values to the I2C bus, attempt multiple times if necessary
+    while (!write_success_ && num_write_attempts_ < MAX_WRITE_ATTEMPTS) {
+      try {
+        mcp_.connect();
+        mcp_.set_gpio_state(new_solenoid_values_);
+        current_solenoid_values_ = new_solenoid_values_;
+        write_success_ = true;
+      } catch (const std::exception &e) {
+        num_write_attempts_++;
+        RCLCPP_WARN(rclcpp::get_logger("Mcp23017SystemHardware"),
+                    "Failed to write to MCP23017, re-trying (attempt %d): %s",
+                    num_write_attempts_, e.what());
+
+        // Attempt bus recovery if this looks like a bus hang
+        // Check if the error message contains typical I2C failure indicators
+        std::string error_msg = e.what();
+        bool is_i2c_error =
+            (error_msg.find("I/O error") != std::string::npos ||
+             error_msg.find("timeout") != std::string::npos ||
+             error_msg.find("busy") != std::string::npos ||
+             error_msg.find("arbitration") != std::string::npos);
+
+        if (is_i2c_error) {
+          RCLCPP_WARN(rclcpp::get_logger("Mcp23017SystemHardware"),
+                      "Detected I2C bus error, attempting bus recovery");
+          bool recovery_success = i2c_bus_->RecoverBus();
+          if (recovery_success) {
+            RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"),
+                        "I2C bus recovery successful");
+          } else {
+            RCLCPP_ERROR(rclcpp::get_logger("Mcp23017SystemHardware"),
+                         "I2C bus recovery failed");
+          }
         }
 
-        return command_interfaces;
+        // Wait between re-write attempts
+        rclcpp::sleep_for(
+            std::chrono::nanoseconds(I2C_REWRITE_DELAY_US * NS_PER_US));
+      }
     }
 
-    hardware_interface::CallbackReturn Mcp23017SystemHardware::on_configure(
-        const rclcpp_lifecycle::State & /*previous_state*/) {
-        RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Configuring ...please wait...");
-
-        try {
-            // Get the shared pointer for the I2C bus
-            i2c_bus_ = hardware::I2CPeripheral::getInstance(cfg_.i2c_device);
-        } catch (const std::exception &e) {
-            RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Error initializing I2C Bus: %s", e.what());
-            return hardware_interface::CallbackReturn::ERROR;
-        }
-
-        // Setup the MCP23017 object
-        try {
-            mcp_.setup(i2c_bus_, cfg_.i2c_address);
-        } catch (const std::exception &e) {
-            RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Error setting initial state of MCP23017: %s",
-                         e.what());
-            return hardware_interface::CallbackReturn::ERROR;
-        }
-
-        RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Successfully configured!");
-
-        return hardware_interface::CallbackReturn::SUCCESS;
+    if (num_write_attempts_ == MAX_WRITE_ATTEMPTS) {
+      RCLCPP_ERROR(rclcpp::get_logger("Mcp23017SystemHardware"),
+                   "Failed to write to MCP23017 after maximum attempts");
+      return hardware_interface::return_type::ERROR;
     }
+  }
+  return hardware_interface::return_type::OK;
+}
 
-    hardware_interface::CallbackReturn Mcp23017SystemHardware::on_cleanup(
-        const rclcpp_lifecycle::State & /*previous_state*/) {
-        RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Cleaning up ...please wait...");
+} // namespace mcp23017_hardware_interface
 
-        // Release the shared pointer (this will automatically close the I2C bus once the
-        // last shared pointer instance is destroyed via the I2CPeripheral destructor)
-        i2c_bus_.reset();
-
-        RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Successfully cleaned up!");
-
-        return hardware_interface::CallbackReturn::SUCCESS;
-    }
-
-    hardware_interface::CallbackReturn Mcp23017SystemHardware::on_activate(
-        const rclcpp_lifecycle::State & /*previous_state*/) {
-        for (auto i = 0u; i < hw_commands_.size(); i++) {
-            if (std::isnan(hw_commands_[i])) {
-                hw_commands_[i] = 0;
-            }
-        }
-
-        // Initialize the MCP23017 object
-        try {
-            mcp_.connect();
-            mcp_.init();
-        } catch (const std::exception &e) {
-            RCLCPP_FATAL(rclcpp::get_logger("Mcp23017SystemHardware"), "Error initializing MCP23017: %s", e.what());
-            return hardware_interface::CallbackReturn::ERROR;
-        }
-
-        RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Successfully activated!");
-        return hardware_interface::CallbackReturn::SUCCESS;
-    }
-
-    hardware_interface::CallbackReturn Mcp23017SystemHardware::on_deactivate(
-        const rclcpp_lifecycle::State & /*previous_state*/) {
-        RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "Successfully deactivated!");
-        return hardware_interface::CallbackReturn::SUCCESS;
-    }
-
-    hardware_interface::return_type Mcp23017SystemHardware::read(const rclcpp::Time & /*time*/,
-                                                                 const rclcpp::Duration & /*period*/) {
-        for (auto i = 0u; i < hw_states_.size(); i++) {
-            hw_states_[i] = hw_commands_[i];
-        }
-        return hardware_interface::return_type::OK;
-    }
-
-    hardware_interface::return_type Mcp23017SystemHardware::write(const rclcpp::Time & /*time*/,
-                                                                  const rclcpp::Duration & /*period*/) {
-        uint8_t new_solenoid_values_ = 0;
-        num_write_attempts_ = 0;
-        write_success_ = false;
-
-        bool is_left_hand = (cfg_.i2c_address == 0x20);
-        std::string hand_str = is_left_hand ? "Left" : "Right";
-
-        // Build the solenoid values using channel mapping
-        for (auto i = 0u; i < hw_commands_.size(); i++) {
-            // anything greater than 0.0 should activate that solenoid
-            uint8_t bit_value = hw_commands_[i] > 0.0 ? 1 : 0;
-
-            // Get the assigned channel for this joint
-            int channel = solenoid_channels_[i];
-
-            // Set the appropriate bit in the output register
-            if (bit_value) {
-                new_solenoid_values_ |= (1 << channel);
-            }
-        }
-
-    // Only perform the write if the new state is different from the current state
-    if (new_solenoid_values_ != current_solenoid_values_) {
-        // Try to write values to the I2C bus, attempt multiple times if necessary
-        while (!write_success_ && num_write_attempts_ < MAX_WRITE_ATTEMPTS) {
-            try {
-                mcp_.connect();
-                mcp_.set_gpio_state(new_solenoid_values_);
-                current_solenoid_values_ = new_solenoid_values_;
-                write_success_ = true;
-            } catch (const std::exception &e) {
-                num_write_attempts_++;
-                RCLCPP_WARN(rclcpp::get_logger("Mcp23017SystemHardware"), "Failed to write to MCP23017, re-trying (attempt %d): %s",
-                            num_write_attempts_, e.what());
-                
-                // Attempt bus recovery if this looks like a bus hang
-                // Check if the error message contains typical I2C failure indicators
-                std::string error_msg = e.what();
-                bool is_i2c_error = (error_msg.find("I/O error") != std::string::npos ||
-                                    error_msg.find("timeout") != std::string::npos ||
-                                    error_msg.find("busy") != std::string::npos ||
-                                    error_msg.find("arbitration") != std::string::npos);
-                
-                if (is_i2c_error) {
-                    RCLCPP_WARN(rclcpp::get_logger("Mcp23017SystemHardware"), "Detected I2C bus error, attempting bus recovery");
-                    bool recovery_success = i2c_bus_->RecoverBus();
-                    if (recovery_success) {
-                        RCLCPP_INFO(rclcpp::get_logger("Mcp23017SystemHardware"), "I2C bus recovery successful");
-                    } else {
-                        RCLCPP_ERROR(rclcpp::get_logger("Mcp23017SystemHardware"), "I2C bus recovery failed");
-                    }
-                }
-                
-                // Wait between re-write attempts
-                rclcpp::sleep_for(std::chrono::nanoseconds(I2C_REWRITE_DELAY_US * NS_PER_US));
-            }
-        }
-
-        if (num_write_attempts_ == MAX_WRITE_ATTEMPTS) {
-            RCLCPP_ERROR(rclcpp::get_logger("Mcp23017SystemHardware"), "Failed to write to MCP23017 after maximum attempts");
-            return hardware_interface::return_type::ERROR;
-        }
-    }
-        return hardware_interface::return_type::OK;
-    }
-
-}  // namespace mcp23017_hardware_interface
-
-PLUGINLIB_EXPORT_CLASS(mcp23017_hardware_interface::Mcp23017SystemHardware, hardware_interface::SystemInterface)
+PLUGINLIB_EXPORT_CLASS(mcp23017_hardware_interface::Mcp23017SystemHardware,
+                       hardware_interface::SystemInterface)

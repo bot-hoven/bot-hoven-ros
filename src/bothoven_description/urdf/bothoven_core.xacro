@@ -11,7 +11,7 @@
   <xacro:property name="rail_length" value="1.2192" />
   <xacro:property name="rail_width" value="0.05" />
   <xacro:property name="rail_height" value="0.02" />
-  <xacro:property name="hand_width" value="0.4064" />
+  <xacro:property name="hand_width" value="0.205" />
 
   <!-- hand origins relative to the rail center -->
   <xacro:property name="lh_start_point" value="-0.3" />
@@ -23,7 +23,8 @@
 
   <!-- solenoid joint limits -->
   <xacro:property name="solenoid_min" value="0" />
-  <xacro:property name="solenoid_max" value="0.52359877559829881566" />
+  <!-- <xacro:property name="solenoid_max" value="0.52359877559829881566" /> -->
+  <xacro:property name="solenoid_max" value="0.4" />
 
   <!-- stepper joint limits -->
   <xacro:property name="left_stepper_min" value="${-(rail_length/2 + lh_start_point)}" />

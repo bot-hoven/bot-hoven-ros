@@ -38,15 +38,15 @@ Cl42tSystemHardware::on_init(const hardware_interface::HardwareInfo &info) {
     return hardware_interface::CallbackReturn::ERROR;
   }
   if (joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION ||
-      joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION) {
+      joint.command_interfaces[0].name != hardware_interface::HW_IF_VELOCITY) {
     RCLCPP_FATAL(rclcpp::get_logger("Cl42tSystemHardware"),
-                 "Expected position interfaces on joint '%s'.",
+                 "Incorrect interface type on joint '%s'.",
                  joint.name.c_str());
     return hardware_interface::CallbackReturn::ERROR;
   }
   try {
-    min_position_ = std::stod(joint.command_interfaces[0].min);
-    max_position_ = std::stod(joint.command_interfaces[0].max);
+    min_position_ = std::stod(joint.state_interfaces[0].min);
+    max_position_ = std::stod(joint.state_interfaces[0].max);
   } catch (const std::exception &e) {
     RCLCPP_FATAL(rclcpp::get_logger("Cl42tSystemHardware"),
                  "Failed to parse interface parameters: %s", e.what());
@@ -103,7 +103,7 @@ std::vector<hardware_interface::CommandInterface>
 Cl42tSystemHardware::export_command_interfaces() {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
   command_interfaces.emplace_back(hardware_interface::CommandInterface(
-      info_.joints[0].name, hardware_interface::HW_IF_POSITION, &hw_command_));
+      info_.joints[0].name, hardware_interface::HW_IF_VELOCITY, &hw_command_));
   return command_interfaces;
 }
 
@@ -149,17 +149,17 @@ Cl42tSystemHardware::read(const rclcpp::Time & /*time*/,
                            << ": Received nan position from pico.");
   }
   hw_state_ = current_position;
-  RCLCPP_INFO_STREAM(rclcpp::get_logger("Cl42tSystemHardware"),
-                     info_.name.c_str()
-                         << ": Received position: " << current_position);
+  // RCLCPP_INFO_STREAM(rclcpp::get_logger("Cl42tSystemHardware"),
+  //                    info_.name.c_str()
+  //                        << ": Received position: " << current_position);
   return hardware_interface::return_type::OK;
 }
 
 hardware_interface::return_type
 Cl42tSystemHardware::write(const rclcpp::Time & /*time*/,
                            const rclcpp::Duration & /*period*/) {
-  RCLCPP_INFO_STREAM(rclcpp::get_logger("Cl42tSystemHardware"),
-                     "Commmanded position: " << hw_command_);
+  // RCLCPP_INFO_STREAM(rclcpp::get_logger("Cl42tSystemHardware"),
+  //                    "Commanded velocity: " << hw_command_);
   bool success =
       comm_->set_velocity(cfg_.stepper_side_, static_cast<float>(hw_command_));
   if (!success) {

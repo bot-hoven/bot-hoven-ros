@@ -9,14 +9,15 @@ RUN apt-get update && \
     ros-jazzy-ros-gz-bridge \
     ros-jazzy-ros-gz-image \
     ros-jazzy-gz-ros2-control \
-    ros-jazzy-joint-state-publisher-gui \
     ros-jazzy-xacro \
+    ros-jazzy-joint-state-publisher-gui \
+    ros-jazzy-plotjuggler-ros && \
     libgpiod-dev \
     libi2c-dev && \
     clang-format && \
     rm -rf /var/lib/apt/lists/*
 
-ENV ROS_DOMAIN_ID=17
+ENV ROS_DOMAIN_ID=42
 
 RUN echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc
 

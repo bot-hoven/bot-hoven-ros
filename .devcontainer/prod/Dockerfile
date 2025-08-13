@@ -13,7 +13,6 @@ RUN apt-get update && \
 RUN echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc
 
 ENV ROS_DOMAIN_ID=42
-# ENV CYCLONE_DDS_URI='<CycloneDDS><Domain><Id>${ROS_DOMAIN_ID}</Id><General><NetworkInterfaceAddress>AUTO</NetworkInterfaceAddress></General></Domain></CycloneDDS>'
 
 # Add real-time limits to /etc/security/limits.conf
 # RUN echo "@realtime soft rtprio 99" | sudo tee -a /etc/security/limits.conf && \

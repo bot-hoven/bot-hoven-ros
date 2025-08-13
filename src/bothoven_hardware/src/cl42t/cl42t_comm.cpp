@@ -71,8 +71,9 @@ bool Cl42tComm::send_command(const std::string &command) {
   std::vector<uint8_t> tx_data(command.begin(), command.end());
   std::vector<uint8_t> rx_data(tx_data.size());
 
-  if (tx_data.empty())
+  if (tx_data.empty()) {
     return false;
+  }
 
   struct spi_ioc_transfer transfer = {};
   transfer.tx_buf = reinterpret_cast<uintptr_t>(tx_data.data());
@@ -151,17 +152,13 @@ bool Cl42tComm::set_velocity(char motor, float vel_mps) {
 
   std::memcpy(&vel_req[2], &vel_mps, sizeof(vel_mps));
 
-  RCLCPP_INFO_STREAM(rclcpp::get_logger("Cl42tSystemHardware"),
-                     "Sending: " << vel_mps);
-
-  bool success;
+  bool success = false;
   try {
     success = send_command(vel_req);
   } catch (std::exception &e) {
     RCLCPP_WARN_STREAM(rclcpp::get_logger("Cl42tSystemHardware"),
                        "Error sending velocity to pico " << motor << ": "
                                                          << e.what());
-    return std::numeric_limits<float>::quiet_NaN();
   }
   return success;
 }

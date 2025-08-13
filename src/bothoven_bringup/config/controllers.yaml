@@ -27,16 +27,17 @@ left_stepper_controller:
   ros__parameters:
     dof_names:
       - lh_stepper
-    command_interface: position
+    command_interface: velocity
     reference_and_state_interfaces:
       - position
     gains:
       lh_stepper:
-        p: 1.5
-        i: 0.5
-        d: 0.1
-        i_clamp_max: 0.2
-        i_clamp_min: -0.2
+        p: 2.0
+        i: 0.2
+        d: 0.0
+        u_clamp_max: 0.75
+        u_clamp_min: -0.75
+        antiwindup_strategy: conditional_integration
 
 left_servo_controller:
   ros__parameters:
@@ -62,16 +63,17 @@ right_stepper_controller:
   ros__parameters:
     dof_names:
       - rh_stepper
-    command_interface: position
+    command_interface: velocity
     reference_and_state_interfaces:
       - position
     gains:
       rh_stepper:
-        p: 1.5
-        i: 0.5
-        d: 0.1
-        i_clamp_max: 0.2
-        i_clamp_min: -0.2
+        p: 2.0
+        i: 0.2
+        d: 0.0
+        u_clamp_max: 0.75
+        u_clamp_min: -0.75
+        antiwindup_strategy: conditional_integration
 
 right_servo_controller:
   ros__parameters:
