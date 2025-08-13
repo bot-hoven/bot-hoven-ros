@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import math
 import sys
 import threading
