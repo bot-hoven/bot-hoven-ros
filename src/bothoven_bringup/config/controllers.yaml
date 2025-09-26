@@ -1,0 +1,96 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+
+    left_stepper_controller:
+      type: pid_controller/PidController
+    
+    left_servo_controller:
+      type: forward_command_controller/ForwardCommandController
+    
+    left_solenoid_controller:
+      type: forward_command_controller/ForwardCommandController
+    
+    right_stepper_controller:
+      type: pid_controller/PidController
+    
+    right_servo_controller:
+      type: forward_command_controller/ForwardCommandController
+    
+    right_solenoid_controller:
+      type: forward_command_controller/ForwardCommandController
+    
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+left_stepper_controller:
+  ros__parameters:
+    dof_names:
+      - lh_stepper
+    command_interface: velocity
+    reference_and_state_interfaces:
+      - position
+    gains:
+      lh_stepper:
+        p: 2.0
+        i: 0.2
+        d: 0.0
+        u_clamp_max: 0.75
+        u_clamp_min: -0.75
+        antiwindup_strategy: conditional_integration
+
+left_servo_controller:
+  ros__parameters:
+    joints:
+      - lh_servo_1
+      - lh_servo_2
+      - lh_servo_3
+      - lh_servo_4
+      - lh_servo_5
+    interface_name: position
+
+left_solenoid_controller:
+  ros__parameters:
+    joints:
+      - lh_solenoid_1
+      - lh_solenoid_2
+      - lh_solenoid_3
+      - lh_solenoid_4
+      - lh_solenoid_5
+    interface_name: position
+
+right_stepper_controller:
+  ros__parameters:
+    dof_names:
+      - rh_stepper
+    command_interface: velocity
+    reference_and_state_interfaces:
+      - position
+    gains:
+      rh_stepper:
+        p: 2.0
+        i: 0.2
+        d: 0.0
+        u_clamp_max: 0.75
+        u_clamp_min: -0.75
+        antiwindup_strategy: conditional_integration
+
+right_servo_controller:
+  ros__parameters:
+    joints:
+      - rh_servo_1
+      - rh_servo_2
+      - rh_servo_3
+      - rh_servo_4
+      - rh_servo_5
+    interface_name: position
+
+right_solenoid_controller:
+  ros__parameters:
+    joints:
+      - rh_solenoid_1
+      - rh_solenoid_2
+      - rh_solenoid_3
+      - rh_solenoid_4
+      - rh_solenoid_5
+    interface_name: position

@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find bothoven_description)/urdf/finger.xacro" />
+
+  <!-- right hand macro -->
+  <xacro:macro name="right_hand" params="parent_link right_stepper_min right_stepper_max rail_origin mesh_dir">
+    <joint name="rh_stepper" type="prismatic">
+      <origin xyz="0 ${rail_origin} 0" rpy="0 0 ${pi}" />
+      <parent link="${parent_link}" />
+      <child link="rh_mount_plate" />
+      <axis xyz="0 -1 0" />
+      <!-- limit travel based on the rail length, accounting for hand width, relative to hand
+      starting point -->
+      <limit effort="100" velocity="1.0"
+        lower="${right_stepper_min}"
+        upper="${right_stepper_max}" />
+    </joint>
+
+    <!-- mount plate link -->
+    <link name="rh_mount_plate">
+      <visual>
+        <origin xyz="0.002343270376630176427 3.5176405913106556511e-06 0.060000000000000004718"
+          rpy="3.141592653589793116 -0 0" />
+        <geometry>
+          <mesh filename="${mesh_dir}/servo_mechanism_top_mount.stl" />
+        </geometry>
+        <material name="servo_mechanism_top_mount_material" />
+      </visual>
+      <visual>
+        <origin xyz="0.0023499287608851338049 0.033803517640591265736 -0.021799999999999989525"
+          rpy="1.9958838398273146999e-16 -6.5938365254384542654e-32 0" />
+        <geometry>
+          <mesh filename="${mesh_dir}/finger_mount_plate.stl" />
+        </geometry>
+        <material name="finger_mount_plate_material" />
+      </visual>
+      <visual>
+        <origin xyz="0.045938244354197944885 -0.043846468705386110187 0.078200000000000005618"
+          rpy="3.141592653589793116 -0 3.141592653589793116" />
+        <geometry>
+          <mesh filename="${mesh_dir}/servo.stl" />
+        </geometry>
+        <material name="servo_material" />
+      </visual>
+      <visual>
+        <origin xyz="0.045938244354197944885 -0.0063464687053861098404 0.078200000000000005618"
+          rpy="3.141592653589793116 -0 3.141592653589793116" />
+        <geometry>
+          <mesh filename="${mesh_dir}/servo.stl" />
+        </geometry>
+        <material name="servo_material" />
+      </visual>
+      <visual>
+        <origin xyz="0.045938244354197951824 0.068653531294613892588 0.078200000000000005618"
+          rpy="3.141592653589793116 -0 3.141592653589793116" />
+        <geometry>
+          <mesh filename="${mesh_dir}/servo.stl" />
+        </geometry>
+        <material name="servo_material" />
+      </visual>
+      <visual>
+        <origin xyz="0.045938244354197944885 0.031153531294613880098 0.078200000000000005618"
+          rpy="3.141592653589793116 -0 3.141592653589793116" />
+        <geometry>
+          <mesh filename="${mesh_dir}/servo.stl" />
+        </geometry>
+        <material name="servo_material" />
+      </visual>
+      <visual>
+        <origin xyz="0.045938244354197944885 -0.081346468705386101861 0.078200000000000005618"
+          rpy="3.141592653589793116 -0 3.141592653589793116" />
+        <geometry>
+          <mesh filename="${mesh_dir}/servo.stl" />
+        </geometry>
+        <material name="servo_material" />
+      </visual>
+      <inertial>
+        <origin xyz="-0.0061380588689649677459 3.5176405912781151864e-06 0.0021762323764684364524"
+          rpy="0 0 0" />
+        <mass value="0.1425418914513462143" />
+        <inertia ixx="0.00049040499142920430681" ixy="-4.2521531645534643096e-08"
+          ixz="3.8022632172476792943e-07" iyy="0.00017998199019841947194"
+          iyz="-9.7638013247875626937e-20" izz="0.00066917886277955795742" />
+      </inertial>
+    </link>
+
+    <!-- create 5 fingers, where 1 is leftmost (thumb) and 5 is rightmost (pinky)-->
+    <xacro:finger prefix="rh" parent_link="rh_mount_plate" finger_num="1"
+      xyz_mount="0.035323819514354752591 0.075003517640591335636 0.0050000000000000044409"
+      rpy_mount="3.141592653589793116 -0 -1.570796326794896558" mesh_dir="${mesh_dir}" />
+
+    <xacro:finger prefix="rh" parent_link="rh_mount_plate" finger_num="2"
+      xyz_mount="0.035323819514354745652 0.037503517640591260696 0.0050000000000000044409"
+      rpy_mount="3.141592653589793116 -0 -1.570796326794896558" mesh_dir="${mesh_dir}" />
+
+    <xacro:finger prefix="rh" parent_link="rh_mount_plate" finger_num="3"
+      xyz_mount="0.035323819514354745652 3.5176405912273889243e-06 0.0050000000000000044409"
+      rpy_mount="3.141592653589793116 -0 -1.570796326794896558" mesh_dir="${mesh_dir}" />
+
+    <xacro:finger prefix="rh" parent_link="rh_mount_plate" finger_num="4"
+      xyz_mount="0.035323819514354745652 -0.037496482359408805918 0.0050000000000000044409"
+      rpy_mount="3.141592653589793116 -0 -1.570796326794896558" mesh_dir="${mesh_dir}" />
+
+    <xacro:finger prefix="rh" parent_link="rh_mount_plate" finger_num="5"
+      xyz_mount="0.035323819514354745652 -0.074996482359408839224 0.0050000000000000044409"
+      rpy_mount="3.141592653589793116 -0 -1.570796326794896558" mesh_dir="${mesh_dir}" />
+  </xacro:macro>
+</robot>

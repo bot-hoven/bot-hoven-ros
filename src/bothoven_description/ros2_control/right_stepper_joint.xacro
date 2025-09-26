@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <joint name="rh_stepper">
+        <command_interface name="velocity" />
+        <state_interface name="position" >
+            <param name="min">${right_stepper_min}</param>
+            <param name="max">${right_stepper_max}</param>
+        </state_interface>
+    </joint>
+</robot>

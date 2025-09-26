@@ -1,33 +1,34 @@
 {
-  "name": "Bot-Hoven",
+  "name": "bothoven-prod",
   "dockerFile": "Dockerfile",
   "runArgs": [
+    "--name=bothoven-prod",
     "--privileged",
     "--network=host",
-    "-e",
-    "DISPLAY=${localEnv:DISPLAY}",
-    "-v",
-    "/tmp/.X11-unix:/tmp/.X11-unix",
-    "-v", 
-    "/sys/class/gpio:/sys/class/gpio",
-    "-v",
-    "/dev:/dev",
     "--cap-add=sys_nice",
     "--ulimit",
     "memlock=-1:-1",
-    "--ulimit", 
+    "--ulimit",
     "rtprio=99"
   ],
-  "postCreateCommand": "/bin/bash -c 'sudo chown :i2c /dev/i2c-1 && sudo chown :i2c /dev/i2c-13 && sudo chown :i2c /dev/i2c-14 && sudo chmod g+rw /dev/i2c-1 && sudo chmod g+rw /dev/i2c-13 && sudo chmod g+rw /dev/i2c-14'",
+
   "workspaceMount": "source=${localWorkspaceFolder},target=/${localWorkspaceFolderBasename},type=bind",
   "workspaceFolder": "/${localWorkspaceFolderBasename}",
   "mounts": [
-    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.bash_history,target=/home/ubuntu/.bash_history,type=bind",
-    "source=bothoven-devcontainer-bashhistory,target=/commandhistory,type=volume",
     {
       "source": "/etc/localtime",
       "target": "/etc/localtime",
       "type": "bind"
+    },
+    {
+      "source": "/dev",
+      "target": "/dev",
+      "type": "bind"
+    },
+    {
+      "source": "bothoven-devcontainer-bashhistory",
+      "target": "/commandhistory",
+      "type": "volume"
     }
   ],
   "customizations": {
